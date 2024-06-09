@@ -1,0 +1,10 @@
+<div class="mx-auto px-4 py-4 sm:px-8 lg:container">
+    <!-- Módulos -->
+    <div class="row mt-8">
+      <h3 class="text-sm font-semibold uppercase text-foreground">Módulos</h3>
+      <div class="grid mt-4 gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <app-card-module  *ngFor="let module of modules" [url]="module.slug" [title]="module.name" [subtitle]="module.slug" [image]="'assets/'+module.url"/>
+      </div>
+    </div>
+  </div>
+  
