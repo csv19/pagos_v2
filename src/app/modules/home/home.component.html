@@ -1,0 +1,22 @@
+<section>
+    <div class="h-auto bg-sky-800 shadow-xl py-4 flex flex-col justify-center items-center">
+        <img width="100" src="../../../assets/icons/logo.png" alt="">
+    </div>
+</section>
+<section>
+  <div class="flex p-4">
+    <div class="">
+      <!-- Módulos -->
+      <div class="row mt-8">
+        <div class="grid mt-4 gap-4 grid-rows-2 sm:grid-rows-3 md:grid-rows-4 lg:grid-rows-5">
+          <app-card-module  *ngFor="let module of modules" [url]="module.slug" [title]="module.name" [subtitle]="module.slug" [image]="'assets/'+module.url"/>
+        </div>
+      </div>
+    </div>
+    <div class="w-full">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</section>
+
+

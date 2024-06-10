@@ -23,7 +23,6 @@ export class HomeComponent {
   ){
     this.http.get(MODULE_URL).subscribe(
       (response)=>{
-        console.log(response);
         this.modules=response;
       }
     )

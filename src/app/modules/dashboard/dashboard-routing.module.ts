@@ -15,10 +15,10 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
-      { path: 'tributos-municipales', component: TributosMunicipalesComponent },
+      { path: 'tributos-municipales', component: TributosMunicipalesComponent, data:{authenticate:true}},
       { path: 'tramites-servicios', component: TramitesServiciosComponent },
       { path: 'multas', component: MultasComponent },
-      { path: 'campos-deportivos', component: CamposDeportivosComponent },
+      { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:true} },
       { path: 'talleres-utiles', component: TalleresUtilesComponent },
       { path: '**', redirectTo: 'errors/404' },
     ],
