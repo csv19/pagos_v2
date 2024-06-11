@@ -1,0 +1,8 @@
+{
+    "/api": {
+      "target": "https://ws5.pide.gob.pe/*",
+      "secure": false,
+      "changeOrigin": true
+    }
+  }
+  

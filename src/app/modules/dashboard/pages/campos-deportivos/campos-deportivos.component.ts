@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import {FormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, Validators, FormsModule, ReactiveFormsModule, FormControl,FormGroupDirective, NgForm, FormGroup } from '@angular/forms';
+import {ErrorStateMatcher} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -13,6 +14,12 @@ import { NgFor } from '@angular/common';
 const OPTION_DOCUMENT=environment.API_DOCUMENT;
 const PIDE_DNI=environment.API_DNI;
 const DASHBOARD_DNI=environment.API_DASHBOARD_DNI;
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
 @Component({
   selector: 'app-campos-deportivos',
   standalone: true,
@@ -29,19 +36,22 @@ const DASHBOARD_DNI=environment.API_DASHBOARD_DNI;
   templateUrl: './campos-deportivos.component.html',
   styleUrl: './campos-deportivos.component.scss'
 })
-export class CamposDeportivosComponent implements OnInit {
+export class CamposDeportivosComponent implements OnInit {   
    authenticate:boolean | undefined;
    dataDocument:any;
    isLinear = false;
+   matcher = new MyErrorStateMatcher();
+
   // Validador de formularios
    firstFormGroup = this._formBuilder.group({
     documentOptionCtrl:[ '', Validators.required],
     documentCtrl:[{ value:'', disabled: true }, Validators.required],
     nameCtrl: [{ value:'', disabled: true }, Validators.required],
     lastNameCtrl: [{ value:'', disabled: true }, Validators.required],
-    emailCtrl: [{ value:'', disabled: true }, Validators.required],
-    phoneCtrl: [{ value:'', disabled: true }, Validators.required],
-  });
+    emailCtrl: [{ value:'', disabled: true }, Validators.required, Validators.email],
+    phoneCtrl: [{ value:'', disabled: true }],
+  },{ validators: this.checkFieldsNotEmpty }); //REVISAR EL INPUT EMAIL
+
   secondFormGroup = this._formBuilder.group({
     secondCtrl: ['', Validators.required],
   });
@@ -65,23 +75,40 @@ export class CamposDeportivosComponent implements OnInit {
       this.authenticate = data['authenticate'];
     });
   }
+  checkFieldsNotEmpty(group: FormGroup) {
+    const document = group.get('documentCtrl')?.value;
+    const name = group.get('nameCtrl')?.value;
+    const lastName = group.get('lastName')?.value;
+    const email = group.get('emailCtrl')?.value;
+
+    return (document !== '' && name !== '' && lastName !== '' && email !== '') ? null : { fieldsEmpty: true };
+  }
   validateFirstFormGroup(){
     const option_document= this.firstFormGroup?.get('documentOptionCtrl');
     const document= this.firstFormGroup?.get('documentCtrl');
     const name= this.firstFormGroup?.get('nameCtrl');
     const lastName= this.firstFormGroup?.get('lastNameCtrl');
+    const email= this.firstFormGroup?.get('emailCtrl');
+    const phone= this.firstFormGroup?.get('phoneCtrl');
     return {
-      option_document,document,name,lastName
+      option_document,document,name,lastName,email,phone
     };
   }
   resetValidateFirstFormGroup(){
     const name = this.validateFirstFormGroup().name;
     const lastName = this.validateFirstFormGroup().lastName;
+    const email=this.validateFirstFormGroup().email;
+    const phone=this.validateFirstFormGroup().phone;
     name?.disable();
     lastName?.disable();
     name?.reset();
     lastName?.reset();
-    return{name,lastName};
+    email?.disable();
+    phone?.disable();
+    email?.reset();
+    phone?.reset();
+
+    return{name,lastName,email,phone};
   }
   makeDocument(option_document:any, nro_document:any){
     const name = this.validateFirstFormGroup().name;
@@ -99,7 +126,7 @@ export class CamposDeportivosComponent implements OnInit {
             lastName?.setValue(response.data.lastName);
           }
           if(response.code !== 200){
-            this.http.get<any>(PIDE_DNI).subscribe(
+            this.http.post<any>(PIDE_DNI,document).subscribe(
               (response) => {
                 if(response.code !=='ERROR' ){
                   name?.setValue(response.data.names);
@@ -130,7 +157,7 @@ export class CamposDeportivosComponent implements OnInit {
       console.log("RUC");
     }
   }
-  documentOption(){
+  getDocumentOption(){
     const {option_document, document}=this.validateFirstFormGroup();
     if(option_document){
       document?.enable();
@@ -138,11 +165,24 @@ export class CamposDeportivosComponent implements OnInit {
       this.resetValidateFirstFormGroup();
     }
   }
-  document(){
+  getDocument(){
     const option_document:any=this.validateFirstFormGroup().option_document;
     const document:any=this.validateFirstFormGroup().document;
+    const email=this.validateFirstFormGroup().email;
+    const phone=this.validateFirstFormGroup().phone;
     if(document){
-      this.makeDocument(option_document.value,document.value)
+      this.makeDocument(option_document.value,document.value);
+      email?.enable();
+      phone?.enable();
     }
   }
+  getEmailPhone(){
+    const email:any=this.validateFirstFormGroup().email;
+    const phone:any=this.validateFirstFormGroup().phone;
+    if(email.value !=='' && phone.value !==''){
+      console.log("DATA CON VALUE");
+      
+    }
+  }
+
 }
