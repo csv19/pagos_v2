@@ -20,7 +20,6 @@ export class HomeComponent implements OnInit {
   ){
     this.http.get(MODULE_URL).subscribe(
       (response)=>{
-        console.log(response);
         this.modules=response;
       }
     )

@@ -1,9 +1,6 @@
 @if(authenticate){
     <section class="w-full md:container mx-auto my-4">
       <h2 class="font-bold text-gray-500 uppercase">Reserva de Campos Deportivos</h2>
-        <!-- <button mat-raised-button (click)="isLinear = !isLinear" id="toggle-linear">
-            {{!isLinear ? 'Enable linear mode' : 'Disable linear mode'}}
-          </button> -->
           <mat-stepper [linear]="isLinear" #stepper>
             <mat-step [stepControl]="firstFormGroup">
               <form [formGroup]="firstFormGroup">
@@ -17,22 +14,26 @@
                   </mat-form-field>
                   <mat-form-field>
                     <mat-label>Documento</mat-label>
-                    <input matInput placeholder="Ingrese N° Documento" (change)="getDocument()" name="document" formControlName="documentCtrl" name="document">
-                    @if (firstFormGroup.get('documentCtrl')?.hasError('document')  && !firstFormGroup.get('documentCtrl')?.hasError('required')) {
-                      <mat-error>Porfavor documento</mat-error>
-                    }
+                    <input onlyNumber matInput placeholder="Ingrese N° Documento" (change)="getDocument()" name="document" formControlName="documentCtrl" [minlength]="sizeCharter" [maxlength]="sizeCharter" name="document">
                     @if (firstFormGroup.get('documentCtrl')?.hasError('required')) {
                       <mat-error>Documento <strong>requerido</strong></mat-error>
                     }
+                    @if (firstFormGroup.get('documentCtrl')?.hasError('minlength')){
+                      <mat-error>Documento erróneo</mat-error>
+                    }
                   </mat-form-field>
-                  <mat-form-field>
+                   <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
                     <mat-label>Nombres</mat-label>
                     <input matInput placeholder="Ingrese Nombres" formControlName="nameCtrl">
                   </mat-form-field>
-                  <mat-form-field>
+                  <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
                     <mat-label>Apellidos</mat-label>
                     <input matInput placeholder="Ingrese Apellidos" formControlName="lastNameCtrl">
-                  </mat-form-field>
+                  </mat-form-field> 
+                  <mat-form-field class="col-span-2" [ngStyle]="{'display':styleBlockRuc}">
+                    <mat-label>Nombres y Apellidos</mat-label>
+                    <input matInput placeholder="Ingrese Nombres y Apellidos" formControlName="fullNameCtrl">
+                  </mat-form-field> 
                   <mat-form-field>
                     <mat-label>Correo electrónico</mat-label>
                     <input type="email" [errorStateMatcher]="matcher" matInput placeholder="Ingrese Correo" formControlName="emailCtrl" >
@@ -45,21 +46,24 @@
                   </mat-form-field>
                   <mat-form-field>
                     <mat-label>Celular</mat-label>
-                    <input matInput placeholder="Ingrese Celular" formControlName="phoneCtrl">
+                    <input matInput placeholder="Ingrese Celular" onlyNumber formControlName="phoneCtrl">
                   </mat-form-field>
                 </div>
                 <div>
-                  <button mat-button matStepperNext [disabled]="firstFormGroup.invalid">Siguiente</button>
+                  <button mat-button (click)="setPerson()" matStepperNext [disabled]="firstFormGroup.invalid">Siguiente</button>
                 </div>
               </form>
             </mat-step>
             <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos">
               <form [formGroup]="secondFormGroup">
-                <mat-form-field class="mt-4">
-                  <mat-label>Address</mat-label>
-                  <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
-                         required>
+                <div class="mt-4 grid grid-cols-4 gap-4">
+                  <mat-form-field>
+                  <mat-label>Categorias</mat-label>
+                  <mat-select (ngModelChange)="getCategory()" name="category" formControlName="categoryCtrl">
+                    <mat-option *ngFor="let value of dataCategory" [value]="value.id">{{value.name}}</mat-option>
+                  </mat-select>
                 </mat-form-field>
+                </div>
                 <div>
                   <button mat-button matStepperPrevious>Back</button>
                   <button mat-button matStepperNext>Next</button>

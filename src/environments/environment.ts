@@ -5,7 +5,7 @@ export const environment = {
   //MODULE
   API_MODULE: 'https://dashboard.test:4435/v1/module',
   API_DOCUMENT: 'https://dashboard.test:4435/v1/document',
-  API_DASHBOARD_DNI: 'https://dashboard.test:4435/v1/search/person',
+  API_DASHBOARD_DOCUMENT: 'https://dashboard.test:4435/v1/search/person',
 
   //TRIBUTOS MUNICIPALES
   API_USER:'https://dashboard.test:4435/v1/verify/user',
