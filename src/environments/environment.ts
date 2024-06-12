@@ -15,6 +15,8 @@ export const environment = {
   //TRÁMITES Y SERVICIOS
   API_DNI: 'https://dashboard.test:4435/v1/reniec',
   API_CARNET: 'https://dashboard.test:4435/v1/carnet',
-  API_RUC:'https://dashboard.test:4435/v1/ruc'
+  API_RUC:'https://dashboard.test:4435/v1/ruc',
 
+  //HELPDESK
+  API_HOLIDAY:'https://helpdesk.munimagdalena.gob.pe/v1/coworking/holidays'
 };

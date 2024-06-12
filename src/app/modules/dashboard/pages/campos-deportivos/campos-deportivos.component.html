@@ -2,7 +2,7 @@
     <section class="w-full md:container mx-auto my-4">
       <h2 class="font-bold text-gray-500 uppercase">Reserva de Campos Deportivos</h2>
           <mat-stepper [linear]="isLinear" #stepper>
-            <mat-step [stepControl]="firstFormGroup">
+            <!-- <mat-step [stepControl]="firstFormGroup">
               <form [formGroup]="firstFormGroup">
                 <ng-template matStepLabel>Información Personal</ng-template>
                 <div class="mt-4 grid grid-cols-4 gap-4">
@@ -53,7 +53,7 @@
                   <button mat-button (click)="setPerson()" matStepperNext [disabled]="firstFormGroup.invalid">Siguiente</button>
                 </div>
               </form>
-            </mat-step>
+            </mat-step> -->
             <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos">
               <form [formGroup]="secondFormGroup">
                 <div class="mt-4 grid grid-cols-4 gap-4">
@@ -63,6 +63,32 @@
                     <mat-option *ngFor="let value of dataCategory" [value]="value.id">{{value.name}}</mat-option>
                   </mat-select>
                 </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Campos</mat-label>
+                  <mat-select (ngModelChange)="getField()" name="field" formControlName="fieldCtrl">
+                    <mat-option *ngFor="let value of dataField" [value]="value.id">{{value.name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Tipo de Reserva</mat-label>
+                  <mat-select (ngModelChange)="getTypeReservation()" name="type_reservation" formControlName="typeReservationCtrl">
+                    <mat-option *ngFor="let value of dataTypeReservation" [value]="value.id">{{value.name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Turno</mat-label>
+                  <mat-select (ngModelChange)="getShift()" name="shift" formControlName="shiftCtrl">
+                    <mat-option *ngFor="let value of dataShift" [value]="value.id">{{value.name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Fecha de Reserva</mat-label>
+                  <input formControlName="dateCtrl" matInput [matDatepickerFilter]="myFilter" [min]="currentDate" [matDatepicker]="picker">
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                
                 </div>
                 <div>
                   <button mat-button matStepperPrevious>Back</button>

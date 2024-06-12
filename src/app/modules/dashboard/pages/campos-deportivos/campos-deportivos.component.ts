@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import {provideNativeDateAdapter} from '@angular/material/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {FormBuilder, Validators, FormsModule, ReactiveFormsModule, FormControl,FormGroupDirective, NgForm, FormGroup } from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
@@ -17,7 +19,8 @@ const DASHBOARD_DOCUMENT=environment.API_DASHBOARD_DOCUMENT;
 const PIDE_DNI=environment.API_DNI;
 const PIDE_CE=environment.API_CARNET;
 const PIDE_RUC=environment.API_RUC;
-const OPTION_CATEGORY=environment.SERVER;
+const RESERVATION=environment.SERVER;
+const HOLIDAYS=environment.API_HOLIDAY;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -27,6 +30,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 @Component({
   selector: 'app-campos-deportivos',
   standalone: true,
+  providers:[provideNativeDateAdapter()],
   imports: [
     MatButtonModule,
     MatStepperModule,
@@ -37,15 +41,18 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDatepickerModule,
     NumberOnlyDirective
   ],
   templateUrl: './campos-deportivos.component.html',
   styleUrl: './campos-deportivos.component.scss'
 })
 export class CamposDeportivosComponent implements OnInit {   
+  currentDate:any;
    authenticate:boolean | undefined;
    styleBlockDocument:string='block'; styleBlockRuc:string='none'; sizeCharter!:number;
-   dataDocument:any; dataCategory:any;
+   dataHolidays: any[]=[];
+   dataDocument:any; dataCategory:any; dataField:any; dataTypeReservation:any; dataShift:any;
    isLinear = true; person_id!:number;
    person:any={
     typeDocument:'',
@@ -54,7 +61,6 @@ export class CamposDeportivosComponent implements OnInit {
     lastName:'',
    }
    matcher = new MyErrorStateMatcher();
-
   // Validador de formularios
    firstFormGroup = this._formBuilder.group({
     documentOptionCtrl:[ '', Validators.required],
@@ -68,9 +74,16 @@ export class CamposDeportivosComponent implements OnInit {
 
   secondFormGroup = this._formBuilder.group({
     categoryCtrl: ['', Validators.required],
+    fieldCtrl: [{ value:'', disabled: true }, Validators.required],
+    typeReservationCtrl: [{ value:'', disabled: true }, Validators.required],
+    shiftCtrl: [{ value:'', disabled: true }, Validators.required],
+    dateCtrl: [{ value:'', disabled: true }, Validators.required],
   });
   
   constructor(private route: ActivatedRoute, private _formBuilder: FormBuilder, private http: HttpClient,){
+    const today = new Date();
+    const tokenHoliday={token:'coworkingholiday'}
+    this.currentDate= today;
     this.http.get(OPTION_DOCUMENT).subscribe(
       (response) => {
         this.dataDocument = response;
@@ -79,7 +92,7 @@ export class CamposDeportivosComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
-    this.http.get(`${OPTION_CATEGORY}/campus/1`).subscribe(
+    this.http.get(`${RESERVATION}/campus/1`).subscribe(
       (response) => {
         this.dataCategory= response;
       },
@@ -87,6 +100,17 @@ export class CamposDeportivosComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
+    this.http.post<any>(HOLIDAYS,tokenHoliday).subscribe(
+      (response)=>{
+        if(response.code === 200){
+          this.dataHolidays=response.data;
+        }
+        console.log(response.data);
+      },
+      (error)=>{
+        console.error('Not found');
+      }
+    )
     this.route.data.subscribe();
     
   }
@@ -95,6 +119,20 @@ export class CamposDeportivosComponent implements OnInit {
       this.authenticate = data['authenticate'];
     });
   }
+  myFilter = (d: Date | null): boolean => {
+    const disabledDates:any[] = [];
+    const year=new Date().getFullYear();
+    this.dataHolidays.map(
+      (value:any)=> disabledDates.push(new Date(year, value.month, value.day)),
+    )
+    const day = (d || new Date()).getDay();
+    const restrinctDays=disabledDates.some(disabledDate => 
+      (d || new Date()).getFullYear() === disabledDate.getFullYear() &&
+       (d || new Date()).getMonth() === disabledDate.getMonth() &&
+       (d || new Date()).getDate() === disabledDate.getDate()
+     );
+     return day !== 0 && day !== 7 && !restrinctDays;
+  }; 
   checkFieldsNotEmpty(group: FormGroup) {
     const document = group.get('documentCtrl')?.value;
     const fullName = group.get('fullName')?.value;
@@ -242,6 +280,94 @@ export class CamposDeportivosComponent implements OnInit {
     
   }
   //SECOND GROUP
-  getCategory(){}
+  validateSecondFormGroup(){
+    const category= this.secondFormGroup?.get('categoryCtrl');
+    const field= this.secondFormGroup?.get('fieldCtrl');
+    const typeReservation= this.secondFormGroup?.get('typeReservationCtrl');
+    const shift= this.secondFormGroup?.get('shiftCtrl');
+    const date= this.secondFormGroup?.get('dateCtrl');
 
+    return {category, field, typeReservation,shift,date};
+    
+  }
+  resetValidateSecondFormGroup(value:number){
+    const field= this.validateSecondFormGroup().field;
+    const typeReservation= this.validateSecondFormGroup().typeReservation;
+    const shift= this.validateSecondFormGroup().shift;
+    const date= this.validateSecondFormGroup().date;
+    switch(value){
+      case 1: 
+            field?.enable();
+            field?.reset();
+            typeReservation?.disable();
+            typeReservation?.reset();
+            shift?.disable();
+            shift?.reset();
+            date?.disable();
+            break;
+      case 2: 
+            typeReservation?.enable();
+            typeReservation?.reset();
+            shift?.disable();
+            date?.disable();
+            break;
+      case 3:
+            shift?.enable();
+            shift?.reset();
+            date?.disable();
+            break;
+      case 4:
+            date?.enable();
+            break;
+      default:
+            field?.reset();
+            typeReservation?.reset();
+            shift?.reset();
+            date?.reset();
+    }
+  }
+  getSelectSecondFormGroup(route: string, data: any) {
+    let list = this.http.get(`${RESERVATION}/${route}`);
+    if (data) {
+        const values = data.join('/');
+        list = this.http.get(`${RESERVATION}/${route}/${values}`);
+    }
+    return list;
+  }
+
+  async  getCategory(){
+    const category= this.validateSecondFormGroup().category;
+    const route='field';
+    if(category?.value){
+      const data=[category.value];
+      this.dataField = await this.getSelectSecondFormGroup(route,data).toPromise();
+    }
+    this.resetValidateSecondFormGroup(1);
+  }
+  async getField(){
+    const category= this.validateSecondFormGroup().category;
+    const field= this.validateSecondFormGroup().field;
+    const route='fieldReservation';
+    if(category?.value && field?.value){
+      const data=[category.value,field.value];
+      this.dataTypeReservation= await this.getSelectSecondFormGroup(route,data).toPromise();
+    }
+    this.resetValidateSecondFormGroup(2);
+  }
+  async getTypeReservation(){
+    const category= this.validateSecondFormGroup().category;
+    const field= this.validateSecondFormGroup().field;
+    const typeReservation= this.validateSecondFormGroup().typeReservation;
+    const route='shift';
+    if(category?.value && field?.value && typeReservation?.value){
+      const data=false;
+      this.dataShift= await this.getSelectSecondFormGroup(route,data).toPromise();
+      this.dataShift=this.dataShift.shift;
+    }
+    this.resetValidateSecondFormGroup(3);
+  }
+  getShift(){
+    this.resetValidateSecondFormGroup(4);
+  }
+  
 }
