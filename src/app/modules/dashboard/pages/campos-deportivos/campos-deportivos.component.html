@@ -46,7 +46,8 @@
                   </mat-form-field>
                   <mat-form-field>
                     <mat-label>Celular</mat-label>
-                    <input matInput placeholder="Ingrese Celular" onlyNumber formControlName="phoneCtrl">
+                    <span matTextPrefix>+51 &nbsp;</span>
+                    <input type="tel" maxlength="9" matInput placeholder="Ingrese Celular" onlyNumber formControlName="phoneCtrl">
                   </mat-form-field>
                 </div>
                 <div>
@@ -83,12 +84,36 @@
                 </mat-form-field>
                 <mat-form-field>
                   <mat-label>Fecha de Reserva</mat-label>
-                  <input formControlName="dateCtrl" matInput [matDatepickerFilter]="myFilter" [min]="currentDate" [matDatepicker]="picker">
+                  <input (ngModelChange)="getDateReservation()"  formControlName="dateCtrl" matInput [matDatepickerFilter]="myFilter" [min]="currentDate" [max]="nextDate"[matDatepicker]="picker">
                   <mat-hint>MM/DD/YYYY</mat-hint>
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
-                
+                <mat-form-field>
+                  <mat-label>Horarios Disponibles</mat-label>
+                  <mat-select (ngModelChange)="getSchedule()" name="schedule" multiple formControlName="scheduleCtrl">
+                    <mat-select-trigger>
+                      {{1 || ''}}
+                        @if((secondFormGroup.get('scheduleCtrl')?.value?.length || 0)>1){
+                          <span>
+                          (+{{(secondFormGroup.get('scheduleCtrl')?.value?.length || 0) - 1}} {{secondFormGroup.get('scheduleCtrl')?.value?.length === 2 ? 'horario' : 'horarios'}})
+                          </span>
+                        }
+                      </mat-select-trigger>
+                      @if(dataSchedule && dataSchedule.length>0){
+                        <ng-container>
+                          <mat-option *ngFor="let value of dataSchedule" [value]="value.id">{{formatHour(value.hour_start)}}-{{formatHour(value.hour_end)}}</mat-option>
+                        </ng-container>
+                      }
+                  </mat-select>
+                  @if(dataSchedule.length >0 ){
+                    Tus horaios: <em>{{selectSchedule}}</em>
+                  }
+                  
+                </mat-form-field>
+                </div>
+                <div>
+                    <input type="text" disabled [value]="'S/'+price" name="price">
                 </div>
                 <div>
                   <button mat-button matStepperPrevious>Back</button>
