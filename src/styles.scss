@@ -18,7 +18,6 @@
     --destructive-foreground: 0 0% 98%;
     --border: 214 32% 91%;
   }
-
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 95%;
@@ -166,3 +165,21 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// Style to fix the weird border with angular material
+.mdc-text-field__input{
+  padding: 0 !important;  
+}
+.mat-mdc-select{
+border-color: transparent !important;
+padding: 0 !important;
+}
+.mdc-text-field__input:focus{
+  --tw-ring-color: transparent !important;
+}
+.mat-mdc-select:focus{
+  border-color: transparent !important;
+  --tw-ring-color: transparent !important;}
+.mdc-notched-outline__notch {
+  border-right: none !important;
+}
+

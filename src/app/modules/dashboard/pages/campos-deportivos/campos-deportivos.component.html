@@ -1,8 +1,8 @@
 @if(authenticate){
-    <section class="w-full md:container mx-auto my-4">
+    <section class="w-full">
       <h2 class="font-bold text-gray-500 uppercase">Reserva de Campos Deportivos</h2>
           <mat-stepper [linear]="isLinear" #stepper>
-            <!-- <mat-step [stepControl]="firstFormGroup">
+            <mat-step [stepControl]="firstFormGroup">
               <form [formGroup]="firstFormGroup">
                 <ng-template matStepLabel>Información Personal</ng-template>
                 <div class="mt-4 grid grid-cols-4 gap-4">
@@ -46,15 +46,15 @@
                   </mat-form-field>
                   <mat-form-field>
                     <mat-label>Celular</mat-label>
-                    <span matTextPrefix>+51 &nbsp;</span>
+                    <span class="font-medium" matTextPrefix>+51 &nbsp;</span>
                     <input type="tel" maxlength="9" matInput placeholder="Ingrese Celular" onlyNumber formControlName="phoneCtrl">
                   </mat-form-field>
                 </div>
                 <div>
-                  <button mat-button (click)="setPerson()" matStepperNext [disabled]="firstFormGroup.invalid">Siguiente</button>
+                  <button mat-raised-button color="primary" (click)="setPerson()" matStepperNext [disabled]="firstFormGroup.invalid">Siguiente</button>
                 </div>
               </form>
-            </mat-step> -->
+            </mat-step>
             <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos">
               <form [formGroup]="secondFormGroup">
                 <div class="mt-4 grid grid-cols-4 gap-4">
@@ -106,28 +106,29 @@
                         </ng-container>
                       }
                   </mat-select>
-                  @if(dataSchedule.length >0 ){
-                    Tus horaios: <em>{{selectSchedule}}</em>
-                  }
-                  
+
                 </mat-form-field>
                 </div>
+                <div class="flex justify-end">
+                  <mat-form-field floatLabel="always">
+                    <mat-label>Importe a Pagar</mat-label>
+                    <input matInput type="number" [value]="price" disabled class="example-right-align font-semibold" placeholder="0">
+                    <span class="font-medium" matTextPrefix>S/.&nbsp;</span>
+                    <span class="font-medium" matTextSuffix>.00</span>
+                  </mat-form-field>                </div>
                 <div>
-                    <input type="text" disabled [value]="'S/'+price" name="price">
-                </div>
-                <div>
-                  <button mat-button matStepperPrevious>Back</button>
-                  <button mat-button matStepperNext>Next</button>
+                  <button mat-raised-button color="primary" mat-raised-button color="primary" (click)="save()"
+                >Pagar Aquí</button>
                 </div>
               </form>
             </mat-step>
             <mat-step>
               <ng-template matStepLabel>Recibo de Pago</ng-template>
               <p>You are now done.</p>
-              <div>
+              <!-- <div>
                 <button mat-button matStepperPrevious>Back</button>
                 <button mat-button (click)="stepper.reset()">Reset</button>
-              </div>
+              </div> -->
             </mat-step>
           </mat-stepper>
     </section>

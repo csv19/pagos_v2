@@ -59,6 +59,14 @@ export class CamposDeportivosComponent implements OnInit {
     name:'',
     lastName:'',
    };
+   calendar:any={
+    category:'',
+    field:'',
+    typeReservation:'',
+    shift:'',
+    date:'',
+    schedule:[]
+   }
    typeReservationShift:any;price:string='';
    matcher = new MyErrorStateMatcher();
   // Validador de formularios
@@ -189,8 +197,80 @@ export class CamposDeportivosComponent implements OnInit {
     phone?.disable();
     email?.reset();
     phone?.reset();
+    this.person_id=0;
 
     return{name,lastName,email,phone};
+  }
+  validateSecondFormGroup(){
+    const category= this.secondFormGroup?.get('categoryCtrl');
+    const field= this.secondFormGroup?.get('fieldCtrl');
+    const typeReservation= this.secondFormGroup?.get('typeReservationCtrl');
+    const shift= this.secondFormGroup?.get('shiftCtrl');
+    const date= this.secondFormGroup?.get('dateCtrl');
+    const schedule= this.secondFormGroup?.get('scheduleCtrl');
+
+    return {category, field, typeReservation,shift,date, schedule};
+    
+  }
+  resetValidateSecondFormGroup(value:number){
+    const field= this.validateSecondFormGroup().field;
+    const typeReservation= this.validateSecondFormGroup().typeReservation;
+    const shift= this.validateSecondFormGroup().shift;
+    const date= this.validateSecondFormGroup().date;
+    const schedule= this.validateSecondFormGroup().schedule;
+    switch(value){
+      case 1: 
+            field?.enable();
+            field?.reset();
+            typeReservation?.disable();
+            typeReservation?.reset();
+            shift?.disable();
+            shift?.reset();
+            date?.reset();
+            date?.disable();
+            schedule?.reset();
+            schedule?.disable();
+            this.price='';
+            break;
+      case 2: 
+            typeReservation?.enable();
+            typeReservation?.reset();
+            shift?.reset();
+            shift?.disable();
+            date?.reset();
+            date?.disable();
+            schedule?.reset();
+            schedule?.disable();
+            this.price='';
+            break;
+      case 3:
+            shift?.enable();
+            shift?.reset();
+            date?.disable();
+            schedule?.reset();
+            schedule?.disable();
+            this.price='';
+            break;
+      case 4:
+            date?.enable();
+            date?.reset();
+            schedule?.disable();
+            schedule?.reset();
+            this.price='';
+            break;
+      case 5:
+            schedule?.enable();
+            schedule?.reset();
+            this.price='';
+            break;
+      default:
+            field?.reset();
+            typeReservation?.reset();
+            shift?.reset();
+            date?.reset();
+            schedule?.reset();
+            this.price='';
+    }
   }
   convertText(value: any): string {
     const firstString = value.substring(0, 3);
@@ -202,11 +282,13 @@ export class CamposDeportivosComponent implements OnInit {
     const fullName = this.validateFirstFormGroup().fullName;
     const name = this.validateFirstFormGroup().name;
     const lastName = this.validateFirstFormGroup().lastName;
+    const phone = this.validateFirstFormGroup().phone;
     let PIDE:string='';
     const document = {
       document: nro_document,
     };
     this.resetValidateFirstFormGroup();
+    this.resetValidateSecondFormGroup(1);
 
     switch (option_document){
       case 1: PIDE=PIDE_DNI; break
@@ -220,7 +302,9 @@ export class CamposDeportivosComponent implements OnInit {
           if(response.code === 200){
             this.person_id=response.data.id;
             email?.setValue(response.data.email);
+            phone?.setValue(response.data.phone);
             email?.disable();
+            phone?.disable();
             if(option_document !=3){
               name?.setValue(this.convertText(response.data.name));
               lastName?.setValue(this.convertText(response.data.lastName));
@@ -231,7 +315,6 @@ export class CamposDeportivosComponent implements OnInit {
           if(response.code !== 200){
             this.http.post<any>(PIDE,document).subscribe(
               (response) => {
-                console.log(response);
                 if(response.code !='ERROR' ){
                   if(option_document !=3){
                     name?.setValue(this.convertText(response.data.names));
@@ -288,80 +371,19 @@ export class CamposDeportivosComponent implements OnInit {
     }
   }
   setPerson(){
-    if(this.person_id == null){
-      this.person.typeDocument=this.validateFirstFormGroup().option_document?.value;
-      this.person.document=this.validateFirstFormGroup().document?.value;
-      this.person.name=this.validateFirstFormGroup().name?.value;
-      this.person.lastName=this.validateFirstFormGroup().lastName?.value;
-      console.log(this.person);
+    if(this.person_id == 0 || this.person_id==null){
+      this.person={
+        typeDocument:this.validateFirstFormGroup().option_document?.value,
+        document:this.validateFirstFormGroup().document?.value,
+        name:this.validateFirstFormGroup().name?.value,
+        lastName:this.validateFirstFormGroup().lastName?.value,
+        phone:this.validateFirstFormGroup().phone?.value
+      }
     }
   }
-  //SECOND GROUP
-  validateSecondFormGroup(){
-    const category= this.secondFormGroup?.get('categoryCtrl');
-    const field= this.secondFormGroup?.get('fieldCtrl');
-    const typeReservation= this.secondFormGroup?.get('typeReservationCtrl');
-    const shift= this.secondFormGroup?.get('shiftCtrl');
-    const date= this.secondFormGroup?.get('dateCtrl');
-    const schedule= this.secondFormGroup?.get('scheduleCtrl');
 
-    return {category, field, typeReservation,shift,date, schedule};
-    
-  }
-  resetValidateSecondFormGroup(value:number){
-    const field= this.validateSecondFormGroup().field;
-    const typeReservation= this.validateSecondFormGroup().typeReservation;
-    const shift= this.validateSecondFormGroup().shift;
-    const date= this.validateSecondFormGroup().date;
-    const schedule= this.validateSecondFormGroup().schedule;
-    switch(value){
-      case 1: 
-            field?.enable();
-            field?.reset();
-            typeReservation?.disable();
-            typeReservation?.reset();
-            shift?.disable();
-            shift?.reset();
-            date?.reset();
-            date?.disable();
-            schedule?.reset();
-            schedule?.disable();
-            break;
-      case 2: 
-            typeReservation?.enable();
-            typeReservation?.reset();
-            shift?.reset();
-            shift?.disable();
-            date?.reset();
-            date?.disable();
-            schedule?.reset();
-            schedule?.disable();
-            break;
-      case 3:
-            shift?.enable();
-            shift?.reset();
-            date?.disable();
-            schedule?.reset();
-            schedule?.disable();
-            break;
-      case 4:
-            date?.enable();
-            date?.reset();
-            schedule?.disable();
-            schedule?.reset();
-            break;
-      case 5:
-            schedule?.enable();
-            schedule?.reset();
-            break;
-      default:
-            field?.reset();
-            typeReservation?.reset();
-            shift?.reset();
-            date?.reset();
-            schedule?.reset();
-    }
-  }
+
+  //SECOND GROUP
   getSelectSecondFormGroup(route: string, data: any) {
     let list = this.http.get(`${RESERVATION}/${route}`);
     if (data) {
@@ -420,7 +442,7 @@ export class CamposDeportivosComponent implements OnInit {
     const field= this.validateSecondFormGroup().field;
     const shift= this.validateSecondFormGroup().shift;
     const date= this.validateSecondFormGroup().date;
-    if(category&&field&&shift&&date){
+    if(category?.value&&field?.value&&shift?.value&&date?.value){
       const dateFormat= this.formatDate(date.value);
       this.http.get<any>(`${RESERVATION}/schedules/${category.value}/${field.value}/${shift.value}/${dateFormat}`).subscribe((response) => {
         response.map(
@@ -439,7 +461,6 @@ export class CamposDeportivosComponent implements OnInit {
     }
     this.resetValidateSecondFormGroup(5);
   }
-  
   async getSchedule(){
     const shift= this.validateSecondFormGroup().shift;
     const schedule= this.validateSecondFormGroup().schedule;
@@ -452,5 +473,23 @@ export class CamposDeportivosComponent implements OnInit {
         console.log(schedule.value);
         console.log(this.dataSchedule);
     }
+  }
+  save(){
+    this.calendar={
+      category: this.validateSecondFormGroup().category?.value,
+      field: this.validateSecondFormGroup().field?.value,
+      typeReservation: this.validateSecondFormGroup().typeReservation?.value,
+      shift: this.validateSecondFormGroup().shift?.value,
+      date: this.validateSecondFormGroup().date?.value,
+      schedule: this.validateSecondFormGroup().schedule?.value
+    }
+    console.log(this.calendar);
+    
+    if(this.person_id>0){
+      console.log(this.person_id);
+    }else{
+      console.log(this.person);
+    }
+    
   }
 }
