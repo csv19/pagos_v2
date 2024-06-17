@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 
 const MERCHANT= environment.MERCHANT;
 const URLSESSION= environment.URLSESSION;
-const AUTHSECURITY= environment.AUTHSECURITY;
+const AUTHSECURITY= btoa(`${environment.USER}:${environment.PWD}`);
 const URLTOKEN= environment.URLTOKEN;
 const URLAUTORIZATE= environment.URLAUTORIZATE;
 
@@ -39,11 +39,11 @@ getMount(total:string){
     this.bodyToken={
       "amount": total,
       "antifraud": {
-          "clientIp": "10.0.0.11",
+          "clientIp": "24.252.107.29",
           "merchantDefineData": {
-              "MDD4": "mail@domain.com",
-              "MDD33": "DNI",
-              "MDD34": "87654321"
+              "MDD15": "Valor MDD 15",
+              "MDD20": "Valor MDD 20",
+              "MDD33": "Valor MDD 33"
           }
       },
       "channel": "web",
@@ -63,7 +63,6 @@ getToken(value:string):Observable<any>{
  return this.http.post(URLTOKEN+MERCHANT, this.bodyToken, { headers: this.headersToken });
 }
 getVisa(value:string,total:string,purchaseNumber:string,url:string){
-  console.log("VALUE "+value+" TOTAL "+total+"URL "+url)
   return `
     VisanetCheckout.configure({
       sessiontoken:'${value}',
