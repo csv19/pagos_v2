@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component,Renderer2,ElementRef, OnInit } from '@angular/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -13,6 +13,7 @@ import {MatButtonModule} from '@angular/material/button';
 import { environment } from 'src/environments/environment';
 import { NgFor, NgStyle } from '@angular/common';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
+import { PayService } from 'src/app/pay.service';
 
 const OPTION_DOCUMENT=environment.API_DOCUMENT;
 const DASHBOARD_DOCUMENT=environment.API_DASHBOARD_DOCUMENT;
@@ -52,22 +53,28 @@ export class CamposDeportivosComponent implements OnInit {
    styleBlockDocument:string='block'; styleBlockRuc:string='none'; sizeCharter!:number;
    dataHolidays: any[]=[]; currentDate:any; nextDate:any;
    dataDocument:any; dataCategory:any; dataField:any; dataTypeReservation:any; dataShift:any; dataSchedule:any[]=[]; selectSchedule:any;
-   isLinear = true; person_id!:number;
+   isLinear = true;
    person:any={
     typeDocument:'',
     document:'',
     name:'',
     lastName:'',
+    email:'',
+    phone:''
    };
    calendar:any={
+    purchasenumber:'',
+    people_id:'',
     category:'',
     field:'',
+    reservation_shift:'',
     typeReservation:'',
     shift:'',
     date:'',
-    schedule:[]
+    schedule:[],
+    price:''
    }
-   typeReservationShift:any;price:string='';
+   typeReservationShift:any;
    matcher = new MyErrorStateMatcher();
   // Validador de formularios
    firstFormGroup = this._formBuilder.group({
@@ -78,7 +85,7 @@ export class CamposDeportivosComponent implements OnInit {
     fullNameCtrl: [{ value:'', disabled: true }, Validators.required],
     emailCtrl: [{ value:'', disabled: true }, [Validators.required, Validators.email]],
     phoneCtrl: [{ value:'', disabled: true }],
-  },{ validators: this.checkFieldsNotEmpty });
+  },{ validators: this.checkFieldsNotEmptyFirstGroup });
 
   secondFormGroup = this._formBuilder.group({
     categoryCtrl: ['', Validators.required],
@@ -87,9 +94,11 @@ export class CamposDeportivosComponent implements OnInit {
     shiftCtrl: [{ value:'', disabled: true }, Validators.required],
     dateCtrl: [{ value:'', disabled: true }, Validators.required],
     scheduleCtrl: [{ value:'', disabled: true }, Validators.required],
-  });
+  },{ validators: this.checkFieldsNotEmptySecondGroup });
   
-  constructor(private route: ActivatedRoute, private _formBuilder: FormBuilder, private http: HttpClient,){
+  constructor(private route: ActivatedRoute, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService,     private renderer: Renderer2,    private el: ElementRef,
+
+  ){
     this.getCalendar();
     this.http.get(OPTION_DOCUMENT).subscribe(
       (response) => {
@@ -159,14 +168,23 @@ export class CamposDeportivosComponent implements OnInit {
      );
      return day !== 0 && day !== 7 && !restrinctDays;
   }; 
-  checkFieldsNotEmpty(group: FormGroup) {
+  checkFieldsNotEmptyFirstGroup(group: FormGroup) {
     const document = group.get('documentCtrl')?.value;
     const fullName = group.get('fullName')?.value;
     const name = group.get('nameCtrl')?.value;
     const lastName = group.get('lastName')?.value;
     const email = group.get('emailCtrl')?.value;
-
     return (document !== '' && fullName !=='' && name !== '' && lastName !== '' && email !== '') ? null : { fieldsEmpty: true };
+  }
+  checkFieldsNotEmptySecondGroup(group: FormGroup){
+    const category= group.get('categoryCtrl')?.value;
+    const field= group.get('fieldCtrl')?.value;
+    const typeReservation= group.get('typeReservationCtrl')?.value;
+    const shift= group.get('categoryCtrl')?.value;
+    const date= group.get('dateCtrl')?.value;
+    const schedule= group.get('scheduleCtrl')?.value;
+    return (category !== '' && field !=='' && typeReservation !== '' && shift !== '' && date !== '' && schedule !== '') ? null : { fieldsEmpty: true };
+
   }
   //FIRST GROUP
   validateFirstFormGroup(){
@@ -197,7 +215,7 @@ export class CamposDeportivosComponent implements OnInit {
     phone?.disable();
     email?.reset();
     phone?.reset();
-    this.person_id=0;
+    this.calendar.people_id=0;
 
     return{name,lastName,email,phone};
   }
@@ -208,9 +226,7 @@ export class CamposDeportivosComponent implements OnInit {
     const shift= this.secondFormGroup?.get('shiftCtrl');
     const date= this.secondFormGroup?.get('dateCtrl');
     const schedule= this.secondFormGroup?.get('scheduleCtrl');
-
     return {category, field, typeReservation,shift,date, schedule};
-    
   }
   resetValidateSecondFormGroup(value:number){
     const field= this.validateSecondFormGroup().field;
@@ -230,7 +246,7 @@ export class CamposDeportivosComponent implements OnInit {
             date?.disable();
             schedule?.reset();
             schedule?.disable();
-            this.price='';
+            this.calendar.price='';
             break;
       case 2: 
             typeReservation?.enable();
@@ -241,7 +257,7 @@ export class CamposDeportivosComponent implements OnInit {
             date?.disable();
             schedule?.reset();
             schedule?.disable();
-            this.price='';
+            this.calendar.price='';
             break;
       case 3:
             shift?.enable();
@@ -249,19 +265,19 @@ export class CamposDeportivosComponent implements OnInit {
             date?.disable();
             schedule?.reset();
             schedule?.disable();
-            this.price='';
+            this.calendar.price='';
             break;
       case 4:
             date?.enable();
             date?.reset();
             schedule?.disable();
             schedule?.reset();
-            this.price='';
+            this.calendar.price='';
             break;
       case 5:
             schedule?.enable();
             schedule?.reset();
-            this.price='';
+            this.calendar.price='';
             break;
       default:
             field?.reset();
@@ -269,7 +285,7 @@ export class CamposDeportivosComponent implements OnInit {
             shift?.reset();
             date?.reset();
             schedule?.reset();
-            this.price='';
+            this.calendar.price='';
     }
   }
   convertText(value: any): string {
@@ -300,7 +316,7 @@ export class CamposDeportivosComponent implements OnInit {
       this.http.post<any>(DASHBOARD_DOCUMENT,document).subscribe(
         (response) => {
           if(response.code === 200){
-            this.person_id=response.data.id;
+            this.calendar.people_id=response.data.id;
             email?.setValue(response.data.email);
             phone?.setValue(response.data.phone);
             email?.disable();
@@ -371,18 +387,17 @@ export class CamposDeportivosComponent implements OnInit {
     }
   }
   setPerson(){
-    if(this.person_id == 0 || this.person_id==null){
+    if(this.calendar.people_id == 0 || this.calendar.people_id==null){
       this.person={
         typeDocument:this.validateFirstFormGroup().option_document?.value,
         document:this.validateFirstFormGroup().document?.value,
         name:this.validateFirstFormGroup().name?.value,
         lastName:this.validateFirstFormGroup().lastName?.value,
+        email:this.validateFirstFormGroup().email?.value,
         phone:this.validateFirstFormGroup().phone?.value
       }
     }
   }
-
-
   //SECOND GROUP
   getSelectSecondFormGroup(route: string, data: any) {
     let list = this.http.get(`${RESERVATION}/${route}`);
@@ -398,6 +413,8 @@ export class CamposDeportivosComponent implements OnInit {
     if(category?.value){
       const data=[category.value];
       this.dataField = await this.getSelectSecondFormGroup(route,data).toPromise();
+      console.log(this.dataField);
+      
     }
     this.resetValidateSecondFormGroup(1);
   }
@@ -408,6 +425,8 @@ export class CamposDeportivosComponent implements OnInit {
     if(category?.value && field?.value){
       const data=[category.value,field.value];
       this.dataTypeReservation= await this.getSelectSecondFormGroup(route,data).toPromise();
+      console.log(this.dataTypeReservation);
+      
     }
     this.resetValidateSecondFormGroup(2);
   }
@@ -430,8 +449,10 @@ export class CamposDeportivosComponent implements OnInit {
     if(category?.value && field?.value && typeReservation?.value){
       const route='reservation';
       const data=[category.value,field.value,typeReservation.value];
-      this.typeReservationShift=await this.getSelectSecondFormGroup(route,data).toPromise();
-      this.typeReservationShift= this.typeReservationShift[0].id;
+      this.calendar.reservation_shift=await this.getSelectSecondFormGroup(route,data).toPromise();
+      console.log();
+      
+      this.calendar.reservation_shift= this.calendar.reservation_shift[0].id;
     }
     
     this.resetValidateSecondFormGroup(4);
@@ -464,32 +485,78 @@ export class CamposDeportivosComponent implements OnInit {
   async getSchedule(){
     const shift= this.validateSecondFormGroup().shift;
     const schedule= this.validateSecondFormGroup().schedule;
-    if(shift?.value && schedule?.value && this.typeReservationShift){
+    if(shift?.value && schedule?.value && this.calendar.reservation_shift){
       const route='shift';
-      const data=[this.typeReservationShift,shift.value];
+      const data=[this.calendar.reservation_shift,shift.value];
       const quantity= schedule.value.length;
       const total:any = await this.getSelectSecondFormGroup(route,data).toPromise();
-        this.price=  (total[0].price * quantity).toString();
+        this.calendar.price=  (total[0].price * quantity).toString();
         console.log(schedule.value);
         console.log(this.dataSchedule);
     }
   }
   save(){
+    const route='schedules';
+    if(this.calendar.people_id == 0 || this.calendar.people_id==null){      
+      const route='person';
+      this.http.post<any>(`${RESERVATION}/${route}`, this.person).subscribe(
+        (response) => {
+          if (response && response.message === 'success') {
+            this.calendar.people_id = response.data.id;
+            console.log(this.calendar.people_id);
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        }
+      );    
+    }
     this.calendar={
+      purchasenumber: 1,
+      people_id: this.calendar.people_id,
       category: this.validateSecondFormGroup().category?.value,
       field: this.validateSecondFormGroup().field?.value,
+      reservation_shift: this.calendar.reservation_shift,
       typeReservation: this.validateSecondFormGroup().typeReservation?.value,
       shift: this.validateSecondFormGroup().shift?.value,
-      date: this.validateSecondFormGroup().date?.value,
-      schedule: this.validateSecondFormGroup().schedule?.value
-    }
+      date: this.formatDate(this.validateSecondFormGroup().date?.value),
+      schedule: this.validateSecondFormGroup().schedule?.value,
+      price: this.calendar.price,
+    }  
     console.log(this.calendar);
-    
-    if(this.person_id>0){
-      console.log(this.person_id);
-    }else{
-      console.log(this.person);
-    }
-    
+      
+    this.http.post<any>(`${RESERVATION}/${route}`, this.calendar).subscribe(
+      (response) => {
+        if (response && response.message === 'success') {
+          this.pay(this.calendar.people_id,response.data.voucher_id, this.calendar.date)
+        }
+      }
+    );
+
   }
+  pay(person_id:number, voucher:string, date: string){
+    const module_id=3;
+    this.payService.getMount(this.calendar.price);
+    this.payService.getSessionToken().subscribe(
+      (response)=>{
+        console.log(response);
+      },
+      (error)=>{
+        const sessionToken=error.error.text;
+        this.payService.getToken(sessionToken).subscribe((data) => {          
+          const responseToken = data.sessionKey;
+          const script = this.renderer.createElement('script');
+          script.type = 'text/javascript';
+          script.text = this.payService.getVisa(
+            responseToken,
+            this.calendar.price,
+            this.calendar.purchaseNumber,
+            RESERVATION+'/voucher'+'/'+module_id+'/'+this.calendar.price+'/'+person_id+'/'+voucher+'/'+date
+          );
+          this.renderer.appendChild(this.el.nativeElement, script);
+        })        
+      }
+    )
+  }
+  
 }

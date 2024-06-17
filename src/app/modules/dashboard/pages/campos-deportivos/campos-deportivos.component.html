@@ -112,12 +112,12 @@
                 <div class="flex justify-end">
                   <mat-form-field floatLabel="always">
                     <mat-label>Importe a Pagar</mat-label>
-                    <input matInput type="number" [value]="price" disabled class="example-right-align font-semibold" placeholder="0">
+                    <input matInput type="number" [value]="calendar.price" disabled class="example-right-align font-semibold" placeholder="0">
                     <span class="font-medium" matTextPrefix>S/.&nbsp;</span>
                     <span class="font-medium" matTextSuffix>.00</span>
                   </mat-form-field>                </div>
                 <div>
-                  <button mat-raised-button color="primary" mat-raised-button color="primary" (click)="save()"
+                  <button mat-raised-button color="primary" mat-raised-button color="primary" (click)="save()" [disabled]="secondFormGroup.invalid"
                 >Pagar Aquí</button>
                 </div>
               </form>
