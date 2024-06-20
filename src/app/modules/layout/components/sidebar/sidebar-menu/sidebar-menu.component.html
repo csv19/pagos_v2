@@ -1,8 +1,6 @@
 <div class="pt-4" *ngFor="let menu of menuService.pagesMenu">
   <div class="mx-1 mb-2 flex items-center justify-between">
-    <small [ngClass]="{ hidden: !menuService.showSideBar }" class="text-xs font-semibold text-muted-foreground/50">
-      {{ menu.group }}
-    </small>
+    
   </div>
   <ul class="flex flex-col space-y-1">
     <!-- List items -->

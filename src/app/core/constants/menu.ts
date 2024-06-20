@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { MenuItem } from '../models/menu.model';
 
 export class Menu {
+  http= HttpClient;
   public static pages: MenuItem[] = [
     {
       group: 'Base',
@@ -9,9 +11,13 @@ export class Menu {
         {
           icon: 'assets/icons/heroicons/outline/chart-pie.svg',
           label: 'Dashboard',
-          route: '/dashboard',
+          route: '/admin',
           children: [
-            { label: 'Nfts', route: '/dashboard/nfts' },
+            { label: 'Tributos Municipales', route: '/admin/tributos-municipales' },
+            { label: 'Tramites y Servicios', route: '/admin/tramites-servicios' },
+            { label: 'Multas', route: '/admin/multas' },
+            { label: 'Campos Deportivos', route: '/admin/campos-deportivos' },
+            { label: 'Talleres Utiles', route: '/admin/talleres-utiles' },
             // { label: 'Podcast', route: '/dashboard/podcast' },
           ],
         },

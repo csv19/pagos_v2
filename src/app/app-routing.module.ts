@@ -3,15 +3,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { CamposDeportivosComponent } from './modules/dashboard/pages/campos-deportivos/campos-deportivos.component';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { HttpClientModule } from '@angular/common/http';
+import { authGuard, authGuardMatch } from './modules/auth/guard/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./modules/home/home.module').then((m) => m.HomeModule),
-
   },
   {
     path: 'admin',
+    canActivate: [authGuard],
+    canMatch:[authGuardMatch],
     loadChildren: () => import('./modules/layout/layout.module').then((m) => m.LayoutModule),
   },
   {

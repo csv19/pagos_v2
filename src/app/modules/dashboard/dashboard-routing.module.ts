@@ -7,6 +7,7 @@ import { TramitesServiciosComponent } from './pages/tramites-servicios/tramites-
 import { MultasComponent } from './pages/multas/multas.component';
 import { CamposDeportivosComponent } from './pages/campos-deportivos/campos-deportivos.component';
 import { TalleresUtilesComponent } from './pages/talleres-utiles/talleres-utiles.component';
+import { authGuard } from '../auth/guard/auth.guard';
 
 const routes: Routes = [
   {

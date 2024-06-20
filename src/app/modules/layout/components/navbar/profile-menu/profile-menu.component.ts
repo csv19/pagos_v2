@@ -5,7 +5,9 @@ import { ClickOutsideDirective } from '../../../../../shared/directives/click-ou
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { ThemeService } from '../../../../../core/services/theme.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+const URL= environment.SERVER2;
 @Component({
   selector: 'app-profile-menu',
   templateUrl: './profile-menu.component.html',
@@ -39,19 +41,20 @@ export class ProfileMenuComponent implements OnInit {
   public isOpen = false;
   public profileMenu = [
     {
-      title: 'Your Profile',
+      title: 'Perfil',
       icon: './assets/icons/heroicons/outline/user-circle.svg',
       link: '/profile',
     },
     {
-      title: 'Settings',
+      title: 'Configuración',
       icon: './assets/icons/heroicons/outline/cog-6-tooth.svg',
       link: '/settings',
     },
     {
-      title: 'Log out',
+      title: 'Cerrar Session',
       icon: './assets/icons/heroicons/outline/logout.svg',
       link: '/auth',
+      action: this.onLogout.bind(this), // Pasamos la función onLogout() como acción
     },
   ];
 
@@ -86,11 +89,20 @@ export class ProfileMenuComponent implements OnInit {
     },
   ];
 
-  public themeMode = ['light', 'dark'];
+  public themeMode = ['dark','light'];
+  public profileData:any={};
+  constructor(public themeService: ThemeService, private http: HttpClient) {
+    // console.log(localStorage.getItem('profileData'));
+  }
 
-  constructor(public themeService: ThemeService) {}
-
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const profileData=localStorage.getItem('profileData');
+    if(profileData){
+      this.profileData=JSON.parse(profileData);
+      console.log(profileData);
+    }
+    
+  }
 
   public toggleMenu(): void {
     this.isOpen = !this.isOpen;
@@ -103,9 +115,27 @@ export class ProfileMenuComponent implements OnInit {
     });
   }
 
-  toggleThemeColor(color: string) {
+  toggleThemeColor(color: string) {  
     this.themeService.theme.update((theme) => {
       return { ...theme, color: color };
     });
+  }
+  onLogout(){
+    console.log("CERRAR SESSION");
+    const token= localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + token
+    });
+    
+    this.http.get(`${URL}/logout`, { headers: headers }).subscribe(
+      response=>{
+        console.log(response);
+        localStorage.removeItem('token');
+      },error=>{
+        console.error(error)
+        localStorage.removeItem('token');
+      }
+    )
   }
 }
