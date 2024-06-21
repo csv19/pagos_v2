@@ -19,7 +19,7 @@ const routes: Routes = [
       { path: 'tributos-municipales', component: TributosMunicipalesComponent, data:{authenticate:true}},
       { path: 'tramites-servicios', component: TramitesServiciosComponent },
       { path: 'multas', component: MultasComponent },
-      { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:true} },
+      { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:false} },
       { path: 'talleres-utiles', component: TalleresUtilesComponent },
       { path: '**', redirectTo: 'errors/404' },
     ],

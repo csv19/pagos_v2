@@ -1,5 +1,5 @@
-<div class="w-[200px]">
-  <div class="bg-primary rounded-lg p-4 h-full">
+<div [class]="size">
+  <div class="cursor-pointer bg-primary hover:opacity-75 rounded-lg text-center p-4 h-full" (click)="goToPage(url)">
     <div class=" w-full relative mx-auto mb-4">
       <div class="relative pb-[150px]">
         <div>
@@ -10,10 +10,7 @@
         </div>
       </div>
     </div>
-    <button (click)="goToPage(url)" class="cursor-pointer">
-      <div class="truncate text-sm font-semibold text-white">{{ title }}</div>
-      <div class="truncate text-xs text-white">{{ subtitle }}</div>
-    </button>
+    <div class="truncate text-sm font-semibold text-white">{{ title }}</div>
   </div>  
 </div>
   

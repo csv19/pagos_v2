@@ -435,6 +435,7 @@ export class CamposDeportivosComponent implements OnInit {
     const typeReservation= this.validateSecondFormGroup().typeReservation;
     const route='shift';
     if(category?.value && field?.value && typeReservation?.value){
+      console.log(field.value);
       const data=false;
       this.dataShift= await this.getSelectSecondFormGroup(route,data).toPromise();
       this.dataShift=this.dataShift.shift;
@@ -462,7 +463,10 @@ export class CamposDeportivosComponent implements OnInit {
     const date= this.validateSecondFormGroup().date;
     if(category?.value&&field?.value&&shift?.value&&date?.value){
       const dateFormat= this.formatDate(date.value);
-      this.http.get<any>(`${RESERVATION}/schedules/${category.value}/${field.value}/${shift.value}/${dateFormat}`).subscribe((response) => {
+      if(!this.authenticate){
+        console.log("horarios");
+      }else{
+        this.http.get<any>(`${RESERVATION}/schedules/${category.value}/${field.value}/${shift.value}/${dateFormat}`).subscribe((response) => {
         response.map(
           (value:any)=>{    
             if(this.currentDate === date.value){
@@ -476,6 +480,8 @@ export class CamposDeportivosComponent implements OnInit {
         )
         this.dataSchedule=dataSchedules;
       });
+      }
+      
     }
     this.resetValidateSecondFormGroup(5);
   }

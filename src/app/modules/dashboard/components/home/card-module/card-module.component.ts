@@ -13,6 +13,7 @@ import { ButtonComponent } from 'src/app/shared/components/button/button.compone
 
 export class CardModuleComponent {
   constructor(private router: Router){}
+  @Input() size: string = '';
   @Input() title: string = '';
   @Input() subtitle: string = '';
   @Input() image: string = '';

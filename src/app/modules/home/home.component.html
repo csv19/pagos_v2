@@ -1,20 +1,21 @@
 <section>
-    <div class="h-auto bg-primary shadow-xl py-4 flex flex-col justify-center items-center">
-        <img width="100" src="./assets/icons/logo.png" alt="">
-    </div>
-</section>
-<section>
-  <div class="flex mt-8">
-      <!-- Módulos -->
-    <div class="row">
-        <div class="grid mt-4 gap-4 grid-rows-2 sm:grid-rows-3 md:grid-rows-4 lg:grid-rows-5">
-          <app-card-module  *ngFor="let module of modules" [url]="module.slug" [title]="module.name" [subtitle]="module.slug" [image]="'assets/'+module.url"/>
+    <div class="h-auto bg-primary shadow-xl p-4 flex flex-wrap justify-between items-center">
+        <div class="uppercase text-white text-2xl font-semibold">Pagos en linea</div>
+        <div>
+          <img width="100" src="./assets/icons/logo.png" alt="">
         </div>
     </div>
-    <div class="container">
-      <router-outlet></router-outlet>
+</section>
+<section class="container mx-auto">
+  <div class="my-8">
+      <!-- Módulos -->
+    <div class="grid mt-4 gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <app-card-module class="m-auto"  *ngFor="let module of modules" [url]="module.slug" [title]="module.name" [subtitle]="module.slug" [size]="'w-[180px] md:w-[200px]'" [image]="'assets/'+module.url"/>
     </div>
   </div>
+  <div class="">
+      <router-outlet></router-outlet>
+    </div>
 </section>
 
 
