@@ -17,6 +17,18 @@
     --destructive: 350 100% 40%;
     --destructive-foreground: 0 0% 98%;
     --border: 214 32% 91%;
+    --mat-stepper-header-selected-state-label-text-color: hsl(var(--primary));
+    --mat-stepper-header-label-text-color:hsl(var(--muted-foreground));
+    --mat-stepper-header-selected-state-icon-background-color:hsl(var(--primary));
+    --mat-stepper-header-icon-background-color:gray !important;
+    --mdc-outlined-text-field-label-text-color: hsl(var(--muted-foreground));
+    --mdc-outlined-text-field-outline-color:hsl(var(--primary));
+    --mdc-outlined-text-field-focus-label-text-color:hsl(var(--primary));
+    --mdc-outlined-text-field-disabled-outline-color:hsl(var(--primary));
+    --mdc-outlined-text-field-disabled-input-text-color:hsl(var(--muted-foreground));
+    --mdc-outlined-text-field-disabled-label-text-color:hsl(var(--muted-foreground));
+    --mat-select-enabled-trigger-text-color:hsl(var(--primary));
+    
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -167,6 +179,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 // Style to fix the weird border with angular material
 .mdc-text-field__input{
   padding: 0 !important;  
+}
+.my-outlined-dialog {
+  outline: 2px solid rgb(119, 128, 0);
 }
 .mat-mdc-select{
 border-color: transparent !important;
