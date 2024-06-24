@@ -1,7 +1,7 @@
 import { Component,Renderer2,ElementRef, OnInit } from '@angular/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {FormBuilder, Validators, FormsModule, ReactiveFormsModule, FormControl,FormGroupDirective, NgForm, FormGroup } from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
@@ -21,6 +21,7 @@ const PIDE_DNI=environment.API_DNI;
 const PIDE_CE=environment.API_CARNET;
 const PIDE_RUC=environment.API_RUC;
 const RESERVATION=environment.SERVER;
+const RESERVATION2= environment.SERVER2;
 const HOLIDAYS=environment.API_HOLIDAY;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -95,7 +96,7 @@ export class CamposDeportivosComponent implements OnInit {
     scheduleCtrl: [{ value:'', disabled: true }, Validators.required],
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   
-  constructor(private route: ActivatedRoute, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService,     private renderer: Renderer2,    private el: ElementRef,
+  constructor(private route: ActivatedRoute, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef,
 
   ){
     this.getCalendar();
@@ -107,9 +108,11 @@ export class CamposDeportivosComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
-    this.http.get(`${RESERVATION}/campus/1`).subscribe(
-      (response) => {
-        this.dataCategory= response;
+    this.http.get(`${RESERVATION2}/categories`).subscribe(
+      (response:any) => {
+        if(response.code===200){
+          this.dataCategory= response.data;
+        }
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -399,33 +402,36 @@ export class CamposDeportivosComponent implements OnInit {
   }
   //SECOND GROUP
   getSelectSecondFormGroup(route: string, data: any) {
-    let list = this.http.get(`${RESERVATION}/${route}`);
+    let list = this.http.get(`${RESERVATION2}/${route}`);
     if (data) {
         const values = data.join('/');
-        list = this.http.get(`${RESERVATION}/${route}/${values}`);
+        list = this.http.get(`${RESERVATION2}/${route}/${values}`);
     }
     return list;
   }
   async getCategory(){
     const category= this.validateSecondFormGroup().category;
-    const route='field';
+    const route='fields';
     if(category?.value){
       const data=[category.value];
-      this.dataField = await this.getSelectSecondFormGroup(route,data).toPromise();
-      console.log(this.dataField);
-      
+      const dataField:any = await this.getSelectSecondFormGroup(route,data).toPromise();
+      if(dataField.code ===200){
+        this.dataField=dataField.data;
+      }
     }
     this.resetValidateSecondFormGroup(1);
   }
   async getField(){
     const category= this.validateSecondFormGroup().category;
     const field= this.validateSecondFormGroup().field;
-    const route='fieldReservation';
+    const route='typeReservations';
     if(category?.value && field?.value){
-      const data=[category.value,field.value];
-      this.dataTypeReservation= await this.getSelectSecondFormGroup(route,data).toPromise();
-      console.log(this.dataTypeReservation);
-      
+      const admin= (this.authenticate)?2:1;
+      const data=[category.value,field.value, admin];
+      const dataTypeReservation:any= await this.getSelectSecondFormGroup(route,data).toPromise();
+      if(dataTypeReservation.code ===200){
+        this.dataTypeReservation=dataTypeReservation.data;
+      }
     }
     this.resetValidateSecondFormGroup(2);
   }
@@ -463,25 +469,32 @@ export class CamposDeportivosComponent implements OnInit {
     const date= this.validateSecondFormGroup().date;
     if(category?.value&&field?.value&&shift?.value&&date?.value){
       const dateFormat= this.formatDate(date.value);
-      if(!this.authenticate){
         console.log("horarios");
-      }else{
-        this.http.get<any>(`${RESERVATION}/schedules/${category.value}/${field.value}/${shift.value}/${dateFormat}`).subscribe((response) => {
-        response.map(
-          (value:any)=>{    
-            if(this.currentDate === date.value){
-              if(Number(value.hour_start) >=new Date().getHours() ){
-                dataSchedules.push(value)
+        console.log(field.value);
+        let params;
+        if(!this.authenticate){
+          params = field.value.map((value:any) => `${value}`).join(',');
+        }else{
+          params = field.value;
+        }
+        const url = `${RESERVATION2}/schedules?fields=${params}&category=${category.value}&shift=${shift.value}`;
+        console.log(url);
+        this.http.get<any>(`${url}`).subscribe(
+          (response)=>{
+            response.data.map(
+              (value:any)=>{    
+                if(this.currentDate === date.value){
+                  if(Number(value.hour_start) >=new Date().getHours() ){
+                    dataSchedules.push(value)
+                  }
+                }else{
+                  dataSchedules.push(value)
+                }            
               }
-            }else{
-              dataSchedules.push(value)
-            }            
+            )
+            this.dataSchedule=dataSchedules;
           }
         )
-        this.dataSchedule=dataSchedules;
-      });
-      }
-      
     }
     this.resetValidateSecondFormGroup(5);
   }
