@@ -439,12 +439,14 @@ export class CamposDeportivosComponent implements OnInit {
     const category= this.validateSecondFormGroup().category;
     const field= this.validateSecondFormGroup().field;
     const typeReservation= this.validateSecondFormGroup().typeReservation;
-    const route='shift';
+    const route='shifts';
     if(category?.value && field?.value && typeReservation?.value){
       console.log(field.value);
       const data=false;
-      this.dataShift= await this.getSelectSecondFormGroup(route,data).toPromise();
-      this.dataShift=this.dataShift.shift;
+      const dataShift:any= await this.getSelectSecondFormGroup(route,data).toPromise();
+      if(dataShift.code ===200){
+        this.dataShift=dataShift.data;
+      }
     }
     this.resetValidateSecondFormGroup(3);
   }
@@ -453,10 +455,14 @@ export class CamposDeportivosComponent implements OnInit {
     const field= this.validateSecondFormGroup().field;
     const typeReservation= this.validateSecondFormGroup().typeReservation;
     if(category?.value && field?.value && typeReservation?.value){
-      const route='reservation';
+      const route='reservations';
       const data=[category.value,field.value,typeReservation.value];
-      this.calendar.reservation_shift=await this.getSelectSecondFormGroup(route,data).toPromise();
-      this.calendar.reservation_shift= this.calendar.reservation_shift[0].id;
+      const calendar:any=await this.getSelectSecondFormGroup(route,data).toPromise();
+      if(calendar.code ===200){
+        this.calendar.reservation_shift= calendar.data[0].id;
+      }
+
+      
     }
     
     this.resetValidateSecondFormGroup(4);
@@ -477,7 +483,7 @@ export class CamposDeportivosComponent implements OnInit {
         }else{
           params = field.value;
         }
-        const url = `${RESERVATION2}/schedules?fields=${params}&category=${category.value}&shift=${shift.value}`;
+        const url = `${RESERVATION2}/schedules?fields=${params}&category=${category.value}&shift=${shift.value}&date=${dateFormat}`;
         console.log(url);
         this.http.get<any>(`${url}`).subscribe(
           (response)=>{
@@ -501,12 +507,17 @@ export class CamposDeportivosComponent implements OnInit {
   async getSchedule(){
     const shift= this.validateSecondFormGroup().shift;
     const schedule= this.validateSecondFormGroup().schedule;
-    if(shift?.value && schedule?.value && this.calendar.reservation_shift){
-      const route='shift';
+    const field= this.validateSecondFormGroup().field;
+    if( shift?.value && schedule?.value && this.calendar.reservation_shift){
+      const route='detailShifts';
       const data=[this.calendar.reservation_shift,shift.value];
       const quantity= schedule.value.length;
+      const fields= (!this.authenticate)?field?.value.length:1;
       const total:any = await this.getSelectSecondFormGroup(route,data).toPromise();
-        this.calendar.price=  (total[0].price * quantity).toString();
+      if(total.code ===200){
+        this.calendar.price=  (total.data[0].price * quantity * fields).toString();
+        console.log(this.calendar.price);
+      }
     }
   }
   save(){
