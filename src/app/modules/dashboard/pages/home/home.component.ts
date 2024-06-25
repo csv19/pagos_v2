@@ -22,8 +22,8 @@ export class HomeComponent {
     private http: HttpClient,
   ){
     this.http.get(MODULE_URL).subscribe(
-      (response)=>{
-        this.modules=response;
+      (response:any)=>{
+        this.modules=response.data;
       }
     )
   }

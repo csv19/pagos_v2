@@ -4,19 +4,16 @@ export const environment = {
   SERVER: 'https://dashboard.test:4435/v1',
   SERVER2: 'https://api_v2.test:4435/api',
   //MODULE
-  API_MODULE: 'https://dashboard.test:4435/v1/module',
-  API_DOCUMENT: 'https://dashboard.test:4435/v1/document',
-  API_DASHBOARD_DOCUMENT: 'https://dashboard.test:4435/v1/search/person',
+  API_MODULE: 'https://api_v2.test:4435/api/modules',
+  API_DOCUMENT: 'https://api_v2.test:4435/api/documents',
+  API_DASHBOARD_DOCUMENT: 'https://api_v2.test:4435/api/search/person',
 
   //TRIBUTOS MUNICIPALES
   API_USER:'https://dashboard.test:4435/v1/verify/user',
   API_MENU:'https://dashboard.test:4435/v1/menu',
   API_SERVICES:'https://dashboard.test:4435/v1/menu/services',
   API_ARBITRAGE:'https://dashboard.test:4435/v1/arbitrage/user',
-  //TRÁMITES Y SERVICIOS
-  API_DNI: 'https://dashboard.test:4435/v1/reniec',
-  API_CARNET: 'https://dashboard.test:4435/v1/carnet',
-  API_RUC:'https://dashboard.test:4435/v1/ruc',
+  
 
   //HELPDESK
   API_HOLIDAY:'https://helpdesk.munimagdalena.gob.pe/v1/coworking/holidays',

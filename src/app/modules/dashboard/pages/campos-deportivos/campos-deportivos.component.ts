@@ -17,9 +17,6 @@ import { PayService } from 'src/app/pay.service';
 
 const OPTION_DOCUMENT=environment.API_DOCUMENT;
 const DASHBOARD_DOCUMENT=environment.API_DASHBOARD_DOCUMENT;
-const PIDE_DNI=environment.API_DNI;
-const PIDE_CE=environment.API_CARNET;
-const PIDE_RUC=environment.API_RUC;
 const RESERVATION=environment.SERVER;
 const RESERVATION2= environment.SERVER2;
 const HOLIDAYS=environment.API_HOLIDAY;
@@ -101,8 +98,8 @@ export class CamposDeportivosComponent implements OnInit {
   ){
     this.getCalendar();
     this.http.get(OPTION_DOCUMENT).subscribe(
-      (response) => {
-        this.dataDocument = response;
+      (response:any) => {
+        this.dataDocument = response.data;
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -301,63 +298,39 @@ export class CamposDeportivosComponent implements OnInit {
     const name = this.validateFirstFormGroup().name;
     const lastName = this.validateFirstFormGroup().lastName;
     const phone = this.validateFirstFormGroup().phone;
-    let PIDE:string='';
-    const document = {
-      document: nro_document,
-    };
     this.resetValidateFirstFormGroup();
     this.resetValidateSecondFormGroup(1);
 
-    switch (option_document){
-      case 1: PIDE=PIDE_DNI; break
-        case 2: PIDE=PIDE_CE; break
-        case 3: PIDE=PIDE_RUC; break
-        default: PIDE=PIDE_DNI;
-    }
     if(nro_document.length === this.sizeCharter){
-      this.http.post<any>(DASHBOARD_DOCUMENT,document).subscribe(
-        (response) => {
+      this.http.get<any>(`${DASHBOARD_DOCUMENT}/${nro_document}/${option_document}`).subscribe(
+        (response:any) => {
           if(response.code === 200){
-            this.calendar.people_id=response.data.id;
-            email?.setValue(response.data.email);
-            phone?.setValue(response.data.phone);
-            email?.disable();
-            phone?.disable();
+            const data = (response.data[0])?response.data[0]:response.data;
+            if(data.id && data.email && data.phone){
+              this.calendar.people_id=data.id;
+              email?.setValue(data.email);
+              phone?.setValue(data.phone);
+              email?.disable();
+              phone?.disable();
+            }
             if(option_document !=3){
-              name?.setValue(this.convertText(response.data.name));
-              lastName?.setValue(this.convertText(response.data.lastName));
+              name?.setValue(this.convertText(data.name));
+              lastName?.setValue(this.convertText(data.lastName));
             }else{
               fullName?.setValue(response.data.name);
             }
           }
-          if(response.code !== 200){
-            this.http.post<any>(PIDE,document).subscribe(
-              (response) => {
-                if(response.code !='ERROR' ){
-                  if(option_document !=3){
-                    name?.setValue(this.convertText(response.data.names));
-                    lastName?.setValue(this.convertText(`${response.data?.fathers_last_name ?? ''} ${response.data?.mothers_last_name ?? ''}`.trim())
-                  );
-                  }else{
-                    fullName?.setValue(response.data.name);
-                  }
-                }else{
-                  if(option_document !=3){
-                  name?.enable();
-                  lastName?.enable();
-                  }else{
-                    fullName?.enable();
-                  }
-                }
-              },
-              (error) => {
-                console.error('Error en la solicitud:', error);
-              }
-            );
-          }
         },
         (error) => {
           console.error('Error en la solicitud:', error);
+          if(error.error.code === 404){
+            if(option_document !=3){
+              name?.enable();
+              lastName?.enable();
+            }else{
+              fullName?.enable();
+            }
+          }
         }
       );
     }
