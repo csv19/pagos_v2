@@ -1,18 +1,18 @@
 export const environment = {
   production: true,
   HOME:'https://localhost:4200',
-  SERVER: 'https://dashboard.test:4435/v1',
-  SERVER2: 'https://api_v2.test:4435/api',
+  SERVER: 'https://dashboard.test/v1',
+  SERVER2: 'https://api_v2.test/api',
   //MODULE
-  API_MODULE: 'https://api_v2.test:4435/api/modules',
-  API_DOCUMENT: 'https://api_v2.test:4435/api/documents',
-  API_DASHBOARD_DOCUMENT: 'https://api_v2.test:4435/api/search/person',
+  API_MODULE: 'https://api_v2.test/api/modules',
+  API_DOCUMENT: 'https://api_v2.test/api/documents',
+  API_DASHBOARD_DOCUMENT: 'https://api_v2.test/api/search/person',
 
   //TRIBUTOS MUNICIPALES
-  API_USER:'https://dashboard.test:4435/v1/verify/user',
-  API_MENU:'https://dashboard.test:4435/v1/menu',
-  API_SERVICES:'https://dashboard.test:4435/v1/menu/services',
-  API_ARBITRAGE:'https://dashboard.test:4435/v1/arbitrage/user',
+  API_USER:'https://dashboard.test/v1/verify/user',
+  API_MENU:'https://dashboard.test/v1/menu',
+  API_SERVICES:'https://dashboard.test/v1/menu/services',
+  API_ARBITRAGE:'https://dashboard.test/v1/arbitrage/user',
   
 
   //HELPDESK

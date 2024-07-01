@@ -14,7 +14,7 @@
           </mat-form-field>
           <mat-form-field>
             <mat-label>Documento</mat-label>
-            <input onlyNumber matInput placeholder="Ingrese N° Documento" (change)="getDocument()" name="document"
+            <input autocomplete="off" onlyNumber matInput placeholder="Ingrese N° Documento" (change)="getDocument()" name="document"
               formControlName="documentCtrl" [minlength]="sizeCharter" [maxlength]="sizeCharter" name="document">
             @if (firstFormGroup.get('documentCtrl')?.hasError('required')) {
             <mat-error>Documento <strong>requerido</strong></mat-error>
@@ -25,19 +25,19 @@
           </mat-form-field>
           <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
             <mat-label>Nombres</mat-label>
-            <input matInput placeholder="Ingrese Nombres" formControlName="nameCtrl">
+            <input autocomplete="off" matInput placeholder="Ingrese Nombres" formControlName="nameCtrl">
           </mat-form-field>
           <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
             <mat-label>Apellidos</mat-label>
-            <input matInput placeholder="Ingrese Apellidos" formControlName="lastNameCtrl">
+            <input autocomplete="off" matInput placeholder="Ingrese Apellidos" formControlName="lastNameCtrl">
           </mat-form-field>
           <mat-form-field class="col-span-2" [ngStyle]="{'display':styleBlockRuc}">
             <mat-label>Nombres y Apellidos</mat-label>
-            <input matInput placeholder="Ingrese Nombres y Apellidos" formControlName="fullNameCtrl">
+            <input autocomplete="off" matInput placeholder="Ingrese Nombres y Apellidos" formControlName="fullNameCtrl">
           </mat-form-field>
           <mat-form-field>
             <mat-label>Correo electrónico</mat-label>
-            <input type="email" [errorStateMatcher]="matcher" matInput placeholder="Ingrese Correo"
+            <input autocomplete="off" type="email" [errorStateMatcher]="matcher" matInput placeholder="Ingrese Correo"
               formControlName="emailCtrl">
             @if (firstFormGroup.get('emailCtrl')?.hasError('email') &&
             !firstFormGroup.get('emailCtrl')?.hasError('required')) {
@@ -50,7 +50,7 @@
           <mat-form-field>
             <mat-label>Celular</mat-label>
             <span class="font-medium text-primary" matTextPrefix>+51 &nbsp;</span>
-            <input type="tel" maxlength="9" matInput placeholder="Ingrese Celular" onlyNumber
+            <input autocomplete="off" type="tel" maxlength="9" matInput placeholder="Ingrese Celular" onlyNumber
               formControlName="phoneCtrl">
           </mat-form-field>
         </div>
@@ -72,14 +72,14 @@
           @if(authenticate){
             <mat-form-field>
               <mat-label>Campos</mat-label>
-              <mat-select (ngModelChange)="getField()" name="field" formControlName="fieldCtrl">
+              <mat-select style="background-color: transparent;" (ngModelChange)="getField()" name="field" formControlName="fieldCtrl">
                 <mat-option *ngFor="let value of dataField" [value]="value.id">{{value.name}}</mat-option>
               </mat-select>
             </mat-form-field>
           }@else {
             <mat-form-field>
               <mat-label>Campos</mat-label>
-              <mat-select (ngModelChange)="getField()" name="field" multiple formControlName="fieldCtrl">
+              <mat-select style="background-color: transparent;" (ngModelChange)="getField()" name="field" multiple formControlName="fieldCtrl">
                 <mat-option *ngFor="let value of dataField" [value]="value.id">{{value.name}}</mat-option>
               </mat-select>
             </mat-form-field>
@@ -99,7 +99,7 @@
           </mat-form-field>
           <mat-form-field>
             <mat-label>Fecha de Reserva</mat-label>
-            <input (ngModelChange)="getDateReservation()" formControlName="dateCtrl" matInput
+            <input autocomplete="off" (ngModelChange)="getDateReservation()" formControlName="dateCtrl" matInput
               [matDatepickerFilter]="myFilter" [min]="currentDate" [max]="nextDate" [matDatepicker]="picker">
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -127,43 +127,41 @@
             </mat-select>
           </mat-form-field>
         </div>
-        @if(authenticate){  
-        <div class="flex justify-end">
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        @if(!authenticate){  
+          <mat-form-field>
+            <mat-label>Tipo de Pago</mat-label>
+            <mat-select class="bg-transparent" (ngModelChange)="getTypePayments()" name="typePayment"
+              formControlName="typePaymentCtrl">
+              <mat-option *ngFor="let value of dataTypePayments" [value]="value.id">{{value.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field [ngStyle]="{'display':styleBlockOption}">
+            <mat-label>Opciones</mat-label>
+              <mat-select class="bg-transparent" name="optionPayment"
+              formControlName="optionPaymentCtrl">
+              <mat-option *ngFor="let value of dataOptionPayments" [value]="value.id">{{value.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Observación</mat-label>
+            <input autocomplete="off" matInput placeholder="Ingrese Observación" formControlName="observationCtrl">
+          </mat-form-field>
+        }
+        <div class="col-span-4">
           <mat-form-field floatLabel="always">
             <mat-label>Importe a Pagar</mat-label>
-            <input matInput type="number" [value]="calendar.price" disabled class="example-right-align font-semibold"
+            <input autocomplete="off" matInput type="number" [value]="calendar.price" disabled class="example-right-align font-semibold"
               placeholder="0">
             <span class="font-medium text-primary" matTextPrefix>S/.&nbsp;</span>
             <span class="font-medium text-primary" matTextSuffix>.00</span>
           </mat-form-field>
         </div>
+        </div>
         <div>
           <button mat-raised-button color="primary" mat-raised-button color="primary" (click)="save()"
             [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
         </div>
-        }@else{
-          <mat-form-field>
-            <mat-label>Tipo de Pago</mat-label>
-            <mat-select class="bg-transparent" (ngModelChange)="getSchedule()" name="schedule" multiple
-              formControlName="scheduleCtrl">
-              <mat-select-trigger>
-                {{1 || ''}}
-                @if((secondFormGroup.get('scheduleCtrl')?.value?.length || 0)>1){
-                <span>
-                  (+{{(secondFormGroup.get('scheduleCtrl')?.value?.length || 0) - 1}}
-                  {{secondFormGroup.get('scheduleCtrl')?.value?.length === 2 ? 'horario' : 'horarios'}})
-                </span>
-                }
-              </mat-select-trigger>
-              @if(dataSchedule && dataSchedule.length>0){
-              <ng-container>
-                <mat-option *ngFor="let value of dataSchedule" [value]="value.id">
-                  {{formatHour(value.hour_start)}}-{{formatHour(value.hour_end)}}</mat-option>
-              </ng-container>
-              }
-            </mat-select>
-          </mat-form-field>
-        }
       </form>
     </mat-step>
     <mat-step>
