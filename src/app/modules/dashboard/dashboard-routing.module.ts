@@ -16,10 +16,12 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
+      //REVISAR STEPPER PARA EL RECIBO
       { path: 'tributos-municipales', component: TributosMunicipalesComponent, data:{authenticate:true}},
       { path: 'tramites-servicios', component: TramitesServiciosComponent },
       { path: 'multas', component: MultasComponent },
-      { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:false} },
+      { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:true} },
+      { path: 'campos-deportivos/recibo/:stepp/:voucher/:payment', component: CamposDeportivosComponent, data:{authenticate:true} },
       { path: 'talleres-utiles', component: TalleresUtilesComponent },
       { path: '**', redirectTo: 'errors/404' },
     ],

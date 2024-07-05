@@ -13,10 +13,11 @@ const routes: Routes = [
     component: HomeComponent,
     children: [
         { path: '', redirectTo: 'campos-deportivos', pathMatch: 'full' },
-        { path: 'tributos-municipales', component: TributosMunicipalesComponent, data:{authenticate:true}},
+        { path: 'tributos-municipales', component: TributosMunicipalesComponent, data:{authenticate:false}},
         { path: 'tramites-servicios', component: TramitesServiciosComponent },
         { path: 'multas', component: MultasComponent },
-        { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:true} },
+        { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:false} },
+        { path: 'campos-deportivos/recibo/:stepp/:voucher/:payment', component: CamposDeportivosComponent, data:{authenticate:false} },
         { path: 'talleres-utiles', component: TalleresUtilesComponent },
         { path: '**', redirectTo: 'errors/404' },
     ],

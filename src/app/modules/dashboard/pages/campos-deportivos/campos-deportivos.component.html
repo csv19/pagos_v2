@@ -1,7 +1,7 @@
 <section class="w-full p-4">
   <h2 class="font-bold text-gray-500 uppercase">Reserva de Campos Deportivos</h2>
-  <mat-stepper [linear]="isLinear" #stepper>
-    <mat-step [stepControl]="firstFormGroup">
+  <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="firstFormGroup" [editable]="isEditable">
       <form [formGroup]="firstFormGroup">
         <ng-template matStepLabel>Información Personal</ng-template>
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -32,8 +32,8 @@
             <input autocomplete="off" matInput placeholder="Ingrese Apellidos" formControlName="lastNameCtrl">
           </mat-form-field>
           <mat-form-field class="col-span-2" [ngStyle]="{'display':styleBlockRuc}">
-            <mat-label>Nombres y Apellidos</mat-label>
-            <input autocomplete="off" matInput placeholder="Ingrese Nombres y Apellidos" formControlName="fullNameCtrl">
+            <mat-label>Razón Social</mat-label>
+            <input autocomplete="off" matInput placeholder="Ingrese Razon Social" formControlName="fullNameCtrl">
           </mat-form-field>
           <mat-form-field>
             <mat-label>Correo electrónico</mat-label>
@@ -60,7 +60,7 @@
         </div>
       </form>
     </mat-step>
-    <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos">
+    <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos" [editable]="isEditable">
       <form [formGroup]="secondFormGroup">
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <mat-form-field>
@@ -69,7 +69,7 @@
               <mat-option *ngFor="let value of dataCategory" [value]="value.id">{{value.name}}</mat-option>
             </mat-select>
           </mat-form-field>
-          @if(authenticate){
+          @if(!authenticate){
             <mat-form-field>
               <mat-label>Campos</mat-label>
               <mat-select style="background-color: transparent;" (ngModelChange)="getField()" name="field" formControlName="fieldCtrl">
@@ -97,7 +97,7 @@
               <mat-option *ngFor="let value of dataShift" [value]="value.id">{{value.name}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field>
+          <mat-form-field class="col-span-2">
             <mat-label>Fecha de Reserva</mat-label>
             <input autocomplete="off" (ngModelChange)="getDateReservation()" formControlName="dateCtrl" matInput
               [matDatepickerFilter]="myFilter" [min]="currentDate" [max]="nextDate" [matDatepicker]="picker">
@@ -105,8 +105,8 @@
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
-          <mat-form-field>
-            <mat-label>Horarios Disponibles</mat-label>
+          <mat-form-field class="col-span-2">
+            <mat-label>{{textScheduleLabel}}</mat-label>
             <mat-select class="bg-transparent" (ngModelChange)="getSchedule()" name="schedule" multiple
               formControlName="scheduleCtrl">
               <mat-select-trigger>
@@ -128,7 +128,7 @@
           </mat-form-field>
         </div>
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        @if(!authenticate){  
+        @if(authenticate){  
           <mat-form-field>
             <mat-label>Tipo de Pago</mat-label>
             <mat-select class="bg-transparent" (ngModelChange)="getTypePayments()" name="typePayment"
@@ -151,7 +151,7 @@
         <div class="col-span-4">
           <mat-form-field floatLabel="always">
             <mat-label>Importe a Pagar</mat-label>
-            <input autocomplete="off" matInput type="number" [value]="calendar.price" disabled class="example-right-align font-semibold"
+            <input autocomplete="off" matInput type="number" [value]="totalPrice" disabled class="example-right-align font-semibold"
               placeholder="0">
             <span class="font-medium text-primary" matTextPrefix>S/.&nbsp;</span>
             <span class="font-medium text-primary" matTextSuffix>.00</span>
@@ -166,7 +166,7 @@
     </mat-step>
     <mat-step>
       <ng-template matStepLabel>Recibo de Pago</ng-template>
-      <p>You are now done.</p>
+      <p>{{dataVoucher }}</p>
       <!-- <div>
                 <button mat-button matStepperPrevious>Back</button>
                 <button mat-button (click)="stepper.reset()">Reset</button>
