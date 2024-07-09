@@ -26,7 +26,7 @@
         </label>
       </div>
       <div *ngIf="submitted && f['email'].errors" class="is__invalid-error">
-        <div *ngIf="f['email'].errors['required']">Required field</div>
+        <div *ngIf="f['email'].errors['required']">Dato Requerido</div>
         <div *ngIf="f['email'].errors['email']">Email must be an email address valid</div>
       </div>
     </div>
@@ -57,7 +57,7 @@
         </span>
       </div>
       <div *ngIf="submitted && f['password'].errors" class="is__invalid-error">
-        <div *ngIf="f['password'].errors['required']">Required field</div>
+        <div *ngIf="f['password'].errors['required']">Dato Requerido</div>
       </div>
     </div>
   </div>

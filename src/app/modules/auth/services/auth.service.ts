@@ -35,11 +35,43 @@ export class AuthService {
     this.http.get(`${URL}/profile`, { headers: headers }).subscribe(
       (response:any)=>{
         localStorage.setItem('profileData', JSON.stringify(response));
-        this._router.navigateByUrl('/admin');
+        this.redirectHome();
       },error=>{
         console.error(error.error.message)
       }
     )   
   }
-  
+  logout(){
+    const token= localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + token
+    });
+    
+    this.http.get(`${URL}/logout`, { headers: headers }).subscribe(
+      response=>{
+        localStorage.removeItem('profileData');
+        localStorage.removeItem('token');
+        this.redirectLogin();
+        
+      },error=>{
+        localStorage.removeItem('profileData');
+        localStorage.removeItem('token');
+        this.redirectLogin();
+        
+      }
+    )
+  }
+  redirectLogin() {
+    this._router.navigateByUrl('admin/login');
+  }
+
+  redirectHome() {
+    this._router.navigateByUrl('admin');
+  }
+  isLoggedIn():boolean{
+    const token= localStorage.getItem('token');
+    return !!token;        
+  }
+ 
 }

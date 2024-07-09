@@ -7,6 +7,7 @@ import { ThemeService } from '../../../../../core/services/theme.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { AuthService } from 'src/app/modules/auth/services/auth.service';
 const URL= environment.SERVER2;
 @Component({
   selector: 'app-profile-menu',
@@ -43,17 +44,14 @@ export class ProfileMenuComponent implements OnInit {
     {
       title: 'Perfil',
       icon: './assets/icons/heroicons/outline/user-circle.svg',
-      link: '/profile',
     },
     {
       title: 'Configuración',
       icon: './assets/icons/heroicons/outline/cog-6-tooth.svg',
-      link: '/settings',
     },
     {
       title: 'Cerrar Session',
       icon: './assets/icons/heroicons/outline/logout.svg',
-      link: '/auth',
       action: this.onLogout.bind(this), // Pasamos la función onLogout() como acción
     },
   ];
@@ -91,7 +89,7 @@ export class ProfileMenuComponent implements OnInit {
 
   public themeMode = ['dark','light'];
   public profileData:any={};
-  constructor(public themeService: ThemeService, private http: HttpClient) {
+  constructor(public themeService: ThemeService, private http: HttpClient, private authService: AuthService) {
     // console.log(localStorage.getItem('profileData'));
   }
 
@@ -122,20 +120,6 @@ export class ProfileMenuComponent implements OnInit {
   }
   onLogout(){
     console.log("CERRAR SESSION");
-    const token= localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Accept': 'application/json',
-      'Authorization': 'Bearer ' + token
-    });
-    
-    this.http.get(`${URL}/logout`, { headers: headers }).subscribe(
-      response=>{
-        console.log(response);
-        localStorage.removeItem('token');
-      },error=>{
-        console.error(error)
-        localStorage.removeItem('token');
-      }
-    )
+    this.authService.logout();
   }
 }

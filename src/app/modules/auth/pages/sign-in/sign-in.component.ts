@@ -19,16 +19,13 @@ export class SignInComponent implements OnInit {
   login:any;
   submitted = false;
   passwordTextType!: boolean;
-  
 
-  constructor(private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient, private authService: AuthService) {
+  constructor(private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient, private authService: AuthService) { 
+    if(this.authService.isLoggedIn()){
+      this.authService.redirectHome();
+    }
   }
-
-  onClick() {
-    console.log('Button clicked');
-  }
-
-  ngOnInit(): void {
+  ngOnInit(): void {  
     this.form = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -42,19 +39,14 @@ export class SignInComponent implements OnInit {
   togglePasswordTextType() {
     this.passwordTextType = !this.passwordTextType;
   }
-  onLogin(){
-    const { email, password } = this.form.value;
-    this.authService.login(email, password);
-    
-  }
+ 
   onSubmit() {
     this.submitted = true;
     if (this.form.invalid) {
       return;
     }
-    this.onLogin();
-    
-    
+    const { email, password } = this.form.value;
+    this.authService.login(email, password);
   }
 }
 

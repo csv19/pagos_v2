@@ -161,7 +161,13 @@ export class CamposDeportivosComponent implements OnInit {
           this.isEditable=false;
           this.http.get(`${RESERVATION2}/payment/voucher/${this.voucher}/${this.payment}`).subscribe(
             (response:any)=>{
-              this.dataVoucher=response;
+              console.log(response);
+              this.dataVoucher=response.data;
+              let total=0;
+              response.data.map((value:any)=>
+                total +=value.price_reservation)
+              this.totalPrice=total;
+              
             },error=>{console.error(error)}
           )
         }
@@ -650,5 +656,6 @@ export class CamposDeportivosComponent implements OnInit {
       this.renderer.appendChild(this.el.nativeElement, script);
     })
   }
+  //THIRD GROUP
   
 }
