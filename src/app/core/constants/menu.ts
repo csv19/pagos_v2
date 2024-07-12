@@ -5,7 +5,7 @@ export class Menu {
   http= HttpClient;
   public static pages: MenuItem[] = [
     {
-      group: 'Base',
+      group: 'Incio',
       separator: false,
       items: [
         {
@@ -45,7 +45,7 @@ export class Menu {
       ],
     },
     {
-      group: 'Collaboration',
+      group: 'Reporte',
       separator: true,
       items: [
         {
@@ -66,7 +66,7 @@ export class Menu {
       ],
     },
     {
-      group: 'Config',
+      group: 'Configuración',
       separator: false,
       items: [
         {

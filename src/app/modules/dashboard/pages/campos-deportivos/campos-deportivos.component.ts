@@ -1,4 +1,4 @@
-import { Component,Renderer2,ElementRef, OnInit } from '@angular/core';
+import { Component,Renderer2,ElementRef, OnInit, ViewChild } from '@angular/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -8,8 +8,9 @@ import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatStepperModule} from '@angular/material/stepper';
+import {MatStepperModule,MatStepper} from '@angular/material/stepper';
 import {MatButtonModule} from '@angular/material/button';
+import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import { environment } from 'src/environments/environment';
 import { NgFor, NgStyle } from '@angular/common';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
@@ -26,6 +27,7 @@ const HOLIDAYS=environment.API_HOLIDAY;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
+    // console.log(control && control.invalid && (control.dirty || control.touched || isSubmitted));
     return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
   }
 }
@@ -44,12 +46,14 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
-    NumberOnlyDirective
+    NumberOnlyDirective,
+    MatTooltipModule,
   ],
   templateUrl: './campos-deportivos.component.html',
   styleUrl: './campos-deportivos.component.scss'
 })
 export class CamposDeportivosComponent implements OnInit {   
+  positionOption: TooltipPosition='above';
    authenticate!:boolean;
    stepp!:number;
    voucher!:number;
@@ -95,20 +99,23 @@ export class CamposDeportivosComponent implements OnInit {
   },{ validators: this.checkFieldsNotEmptyFirstGroup });
 
   secondFormGroup = this._formBuilder.group({
-    categoryCtrl: ['', Validators.required],
-    fieldCtrl: [{ value:'', disabled: true }, Validators.required],
-    typeReservationCtrl: [{ value:'', disabled: true }, Validators.required],
-    shiftCtrl: [{ value:'', disabled: true }, Validators.required],
-    dateCtrl: [{ value:'', disabled: true }, Validators.required],
-    scheduleCtrl: [{ value:'', disabled: true }, Validators.required],
-    typePaymentCtrl: [{value:''}, Validators.required],
-    optionPaymentCtrl: '',
-    observationCtrl: '',
+    categoryCtrl: [null, Validators.required],
+    fieldCtrl: [{ value:null, disabled: true }, Validators.required],
+    typeReservationCtrl: [{ value:null, disabled: true }, Validators.required],
+    shiftCtrl: [{ value:null, disabled: true }, Validators.required],
+    dateCtrl: [{ value:null, disabled: true }, Validators.required],
+    scheduleCtrl: [{ value:null, disabled: true }, Validators.required],
+    typePaymentCtrl: [null, localStorage.getItem('token')?Validators.required:null],
+    optionPaymentCtrl: null,
+    observationPaymentCtrl: null,
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef,
 
   ){
+    this.route.data.subscribe(data => {
+      this.authenticate = data['authenticate'];
+    });
     this.textScheduleLabel='Horarios Disponibles';
     this.getCalendar();
     this.http.get(OPTION_DOCUMENT).subscribe(
@@ -141,12 +148,9 @@ export class CamposDeportivosComponent implements OnInit {
     );
     this.route.data.subscribe();
   }
+  @ViewChild('stepper') stepper!: MatStepper;
+  public atm:any={};
   ngOnInit(): void {
-    
-    this.route.data.subscribe(data => {
-      this.authenticate = data['authenticate'];
-    });
-
     this.route.url.subscribe(url=>{
         const data:any=[];
         url.map((value:any)=>{data.push(value.path)})
@@ -154,22 +158,11 @@ export class CamposDeportivosComponent implements OnInit {
         this.stepp=data[2];
         this.voucher=data[3];
         this.payment=data[4];
-        console.log(this.stepp);
         if(this.stepp !=2){
           this.router.navigate([`${route}/campos-deportivos`]);  
         }else{
           this.isEditable=false;
-          this.http.get(`${RESERVATION2}/payment/voucher/${this.voucher}/${this.payment}`).subscribe(
-            (response:any)=>{
-              console.log(response);
-              this.dataVoucher=response.data;
-              let total=0;
-              response.data.map((value:any)=>
-                total +=value.price_reservation)
-              this.totalPrice=total;
-              
-            },error=>{console.error(error)}
-          )
+          this.getVoucher(this.voucher, this.payment);
         }
     })
   }
@@ -223,7 +216,7 @@ export class CamposDeportivosComponent implements OnInit {
     const name = group.get('nameCtrl')?.value;
     const lastName = group.get('lastName')?.value;
     const email = group.get('emailCtrl')?.value;
-    return (document !== '' && fullName !=='' && name !== '' && lastName !== '' && email !== '') ? null : { fieldsEmpty: true };
+    return (document !== null && fullName !==null && name !== null && lastName !== null && email !== null) ? null : { fieldsEmpty: true };
   }
   checkFieldsNotEmptySecondGroup(group: FormGroup){
     const category= group.get('categoryCtrl')?.value;
@@ -233,7 +226,12 @@ export class CamposDeportivosComponent implements OnInit {
     const date= group.get('dateCtrl')?.value;
     const schedule= group.get('scheduleCtrl')?.value;
     const typePayment= group.get('typePaymentCtrl')?.value;
-    return (category !== '' && field !=='' && typeReservation !== '' && shift !== '' && date !== '' && schedule !== '' && typePayment !== '') ? null : { fieldsEmpty: true };
+    if(localStorage.getItem('token')){
+      return (category !== null && field !==null && typeReservation !== null && shift !== null && date !== null && schedule !== null && typePayment !== null ) ? null : { fieldsEmpty: true };
+    }else{
+      return (category !== null && field !==null && typeReservation !== null && shift !== null && date !== null && schedule !== null ) ? null : { fieldsEmpty: true };
+    }
+    
 
   }
   //FIRST GROUP
@@ -266,7 +264,6 @@ export class CamposDeportivosComponent implements OnInit {
     email?.reset();
     phone?.reset();
     this.calendar.people_id=0;
-
     return{name,lastName,email,phone};
   }
   savePerson(route: string, data: any) {
@@ -281,7 +278,9 @@ export class CamposDeportivosComponent implements OnInit {
     const date= this.secondFormGroup?.get('dateCtrl');
     const schedule= this.secondFormGroup?.get('scheduleCtrl');
     const typePayment= this.secondFormGroup?.get('typePaymentCtrl');
-    return {category, field, typeReservation,shift,date, schedule, typePayment};
+    const optionPayment= this.secondFormGroup?.get('optionPaymentCtrl');
+    const observationPayment= this.secondFormGroup?.get('observationPaymentCtrl');
+    return {category, field, typeReservation,shift,date, schedule, typePayment, optionPayment, observationPayment};
   }
   resetValidateSecondFormGroup(value:number){
     const field= this.validateSecondFormGroup().field;
@@ -303,6 +302,7 @@ export class CamposDeportivosComponent implements OnInit {
             schedule?.reset();
             schedule?.disable();
             this.calendar.price='';
+            this.totalPrice='';
             break;
       case 2: 
             typeReservation?.enable();
@@ -314,6 +314,7 @@ export class CamposDeportivosComponent implements OnInit {
             schedule?.reset();
             schedule?.disable();
             this.calendar.price='';
+            this.totalPrice='';
             break;
       case 3:
             shift?.enable();
@@ -322,6 +323,7 @@ export class CamposDeportivosComponent implements OnInit {
             schedule?.reset();
             schedule?.disable();
             this.calendar.price='';
+            this.totalPrice='';
             break;
       case 4:
             date?.enable();
@@ -329,11 +331,13 @@ export class CamposDeportivosComponent implements OnInit {
             schedule?.disable();
             schedule?.reset();
             this.calendar.price='';
+            this.totalPrice='';
             break;
       case 5:
             schedule?.enable();
             schedule?.reset();
             this.calendar.price='';
+            this.totalPrice='';
             break;
       case 6:
             optionPayment?.reset();
@@ -345,6 +349,7 @@ export class CamposDeportivosComponent implements OnInit {
             date?.reset();
             schedule?.reset();
             this.calendar.price='';
+            this.totalPrice='';
     }
   }
   convertText(value: any, type: number): string {
@@ -473,7 +478,7 @@ export class CamposDeportivosComponent implements OnInit {
     const field= this.validateSecondFormGroup().field;
     const route='typeReservations';
     if(category?.value && field?.value){
-      const admin= (this.authenticate)?2:1;
+      const admin= (this.authenticate)?1:2;
       const data=[category.value,field.value, admin];
       const dataTypeReservation:any= await this.getSelectSecondFormGroup(route,data).toPromise();
       if(dataTypeReservation.code ===200){
@@ -509,7 +514,6 @@ export class CamposDeportivosComponent implements OnInit {
         this.calendar.reservation_shift= calendar.data[0].id;
       } 
     }
-    
     this.resetValidateSecondFormGroup(4);
   }
   getDateReservation(){
@@ -570,7 +574,6 @@ export class CamposDeportivosComponent implements OnInit {
   }
   async getTypePayments(){
     const typePayment= this.validateSecondFormGroup().typePayment;
-    
     if(typePayment){
       this.resetValidateSecondFormGroup(6);
       const data= [typePayment.value];
@@ -587,6 +590,8 @@ export class CamposDeportivosComponent implements OnInit {
     }
   }
   async save(){
+    const atm:any=localStorage.getItem('profileData');
+    this.atm=JSON.parse(atm);
     this.setPerson()
     if(this.authenticate){
       this.calendar={
@@ -597,9 +602,30 @@ export class CamposDeportivosComponent implements OnInit {
         date: this.formatDate(this.validateSecondFormGroup().date?.value),
         schedule: this.validateSecondFormGroup().schedule?.value,
         price: this.calendar.price,
+        total: this.totalPrice,
+        userId: this.atm.data.id,
+        module: this.validateSecondFormGroup().typePayment?.value,
+        option: this.validateSecondFormGroup().optionPayment?.value,
+        observation: this.validateSecondFormGroup().observationPayment?.value,
       } 
-      console.log("Se intento pagar por admin");
-      console.log(this.calendar);
+      console.log("Pago por Admin");
+      const route='calendars/atm';
+      this.http.post<any>(`${RESERVATION2}/${route}`, this.calendar).subscribe(
+        (response) => {
+          if (response && response.code === 200) {   
+            console.log(response);
+            this.isEditable=false;
+            const voucher=response.data.voucher_id;
+            const payment=response.data.payment_id;
+            this.stepper.next();
+            this.getVoucher(voucher,payment);
+            this.print(voucher,payment);
+          }
+        },(error)=>{
+          console.error(error.error.message)
+          alert(error.error.message)
+        }
+      );
       
       
     }else{
@@ -633,7 +659,10 @@ export class CamposDeportivosComponent implements OnInit {
                 const total=response.data.total;
                 this.pay(calendarId,voucherId,paymentId,total,sessionToken);
               }
-            },(error)=>{console.error(error)}
+            },(error)=>{
+              console.error(error.error.message)
+              alert(error.error.message)
+            }
           );
         }
       )
@@ -657,5 +686,20 @@ export class CamposDeportivosComponent implements OnInit {
     })
   }
   //THIRD GROUP
-  
+  getVoucher(voucherId:number,paymentId:number){
+    this.http.get(`${RESERVATION2}/payment/voucher/${voucherId}/${paymentId}`).subscribe(
+      (response:any)=>{
+        console.log(response);
+        this.dataVoucher=response.data;
+        let total=0;
+        response.data.map((value:any)=>
+          total +=value.price_reservation)
+        this.totalPrice=total;
+      },error=>{console.error(error)}
+    )
+  }
+  print(voucherId:number,paymentId:number) {
+    const url = `${RESERVATION2}/fields/voucher/${voucherId}/${paymentId}/2`; 
+    window.open(url, '_blank');
+  }
 }

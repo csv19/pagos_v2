@@ -64,43 +64,33 @@
     <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos" [editable]="isEditable">
       <form [formGroup]="secondFormGroup">
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <mat-form-field>
+          <mat-form-field class="col-span-4 sm:col-span-1">
             <mat-label>Categorias</mat-label>
             <mat-select (ngModelChange)="getCategory()" name="category" formControlName="categoryCtrl">
               <mat-option *ngFor="let value of dataCategory" [value]="value.id">{{value.name}}</mat-option>
             </mat-select>
           </mat-form-field>
-          @if(!authenticate){
-          <mat-form-field>
+          <mat-form-field class="col-span-4 sm:col-span-1">
             <mat-label>Campos</mat-label>
-            <mat-select style="background-color: transparent;" (ngModelChange)="getField()" name="field"
+            <mat-select style="background-color: transparent;" (ngModelChange)="getField()" [multiple]="authenticate" name="field"
               formControlName="fieldCtrl">
               <mat-option *ngFor="let value of dataField" [value]="value.id">{{value.name}}</mat-option>
             </mat-select>
           </mat-form-field>
-          }@else {
-          <mat-form-field>
-            <mat-label>Campos</mat-label>
-            <mat-select style="background-color: transparent;" (ngModelChange)="getField()" name="field" multiple
-              formControlName="fieldCtrl">
-              <mat-option *ngFor="let value of dataField" [value]="value.id">{{value.name}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          }
-          <mat-form-field>
+          <mat-form-field class="col-span-4 sm:col-span-1">
             <mat-label>Tipo de Reserva</mat-label>
             <mat-select (ngModelChange)="getTypeReservation()" name="type_reservation"
               formControlName="typeReservationCtrl">
               <mat-option *ngFor="let value of dataTypeReservation" [value]="value.id">{{value.name}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field>
+          <mat-form-field class="col-span-4 sm:col-span-1">
             <mat-label>Turno</mat-label>
             <mat-select (ngModelChange)="getShift()" name="shift" formControlName="shiftCtrl">
               <mat-option *ngFor="let value of dataShift" [value]="value.id">{{value.name}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field class="col-span-2">
+          <mat-form-field class="col-span-4 sm:col-span-2">
             <mat-label>Fecha de Reserva</mat-label>
             <input autocomplete="off" (ngModelChange)="getDateReservation()" formControlName="dateCtrl" matInput
               [matDatepickerFilter]="myFilter" [min]="currentDate" [max]="nextDate" [matDatepicker]="picker">
@@ -108,7 +98,7 @@
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
-          <mat-form-field class="col-span-2">
+          <mat-form-field class="col-span-4 sm:col-span-2">
             <mat-label>{{textScheduleLabel}}</mat-label>
             <mat-select class="bg-transparent" (ngModelChange)="getSchedule()" name="schedule" multiple
               formControlName="scheduleCtrl">
@@ -132,22 +122,22 @@
         </div>
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           @if(authenticate){
-          <mat-form-field>
+          <mat-form-field class="col-span-4 sm:col-span-1">
             <mat-label>Tipo de Pago</mat-label>
             <mat-select class="bg-transparent" (ngModelChange)="getTypePayments()" name="typePayment"
               formControlName="typePaymentCtrl">
               <mat-option *ngFor="let value of dataTypePayments" [value]="value.id">{{value.name}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field [ngStyle]="{'display':styleBlockOption}">
+          <mat-form-field class="col-span-4 sm:col-span-1" [ngStyle]="{'display':styleBlockOption}">
             <mat-label>Opciones</mat-label>
             <mat-select class="bg-transparent" name="optionPayment" formControlName="optionPaymentCtrl">
               <mat-option *ngFor="let value of dataOptionPayments" [value]="value.id">{{value.name}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field>
+          <mat-form-field class="col-span-4 sm:col-span-2">
             <mat-label>Observación</mat-label>
-            <input autocomplete="off" matInput placeholder="Ingrese Observación" formControlName="observationCtrl">
+            <input autocomplete="off" matInput placeholder="Ingrese Observación" formControlName="observationPaymentCtrl">
           </mat-form-field>
           }
           <div class="col-span-4">
@@ -161,7 +151,7 @@
           </div>
         </div>
         <div>
-          <button mat-raised-button color="primary" mat-raised-button color="primary" (click)="save()"
+          <button mat-raised-button color="primary" (click)="save()"
             [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
         </div>
       </form>
@@ -169,9 +159,13 @@
     <mat-step>
       <ng-template matStepLabel>Recibo de Pago</ng-template>
       @if(dataVoucher.length>0){
-      <div class="text-center">
-        <a href="https://api_v2.test:4435/api/fields/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}">
-          <img src="./assets/icons/descargar.png" title="Descargar" alt="descargar" class="cursor-pointer mx-auto w-8" />
+      <div class="w-fit mx-auto">
+        <a target="_blank" href="https://api_v2.test:4435/api/fields/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
+          <img mat-raised-button #tooltip="matTooltip"
+          matTooltip="Descargar"
+          [matTooltipPosition]="positionOption"
+          matTooltipHideDelay="100000"
+          src="./assets/icons/descargar.png" title="Descargar" alt="descargar" class="cursor-pointer mx-auto w-8" />
         </a>
       </div>
       <div class="my-5 flex h-auto items-start justify-center">
@@ -204,7 +198,8 @@
               </div>
               <div class="flex justify-between">
                 <span class="font-semibold">Generado:</span>
-                <span class="">ONLINE-{{ this.dataVoucher[0].created_at }}</span>
+                <span>{{ dataVoucher[0].payment_type == 5 ? 'ONLINE' : atm.data.user }} - {{ dataVoucher[0].created_at }}</span>
+
               </div>
             </div>
           </div>
@@ -219,7 +214,7 @@
                     <span>
                       {{voucher.category}}<br>
                       {{voucher.field_name}}-{{voucher.campus}}<br>
-                      {{voucher.hour_start}} a {{voucher.hour_end}}<br>
+                      {{formatHour(voucher.hour_start)}} a {{formatHour(voucher.hour_end)}}<br>
                       {{voucher.date_reservation}}
                     </span>
                   </td>
