@@ -160,7 +160,7 @@
       <ng-template matStepLabel>Recibo de Pago</ng-template>
       @if(dataVoucher.length>0){
       <div class="w-fit mx-auto">
-        <a target="_blank" href="https://api_v2.test:4435/api/fields/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
+        <a target="_blank" href="{{url}}/fields/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
           <img mat-raised-button #tooltip="matTooltip"
           matTooltip="Descargar"
           [matTooltipPosition]="positionOption"

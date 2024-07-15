@@ -52,7 +52,8 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   templateUrl: './campos-deportivos.component.html',
   styleUrl: './campos-deportivos.component.scss'
 })
-export class CamposDeportivosComponent implements OnInit {   
+export class CamposDeportivosComponent implements OnInit { 
+  url:string=RESERVATION2; 
   positionOption: TooltipPosition='above';
    authenticate!:boolean;
    stepp!:number;
