@@ -1,0 +1,57 @@
+    <form [formGroup]="firstFormGroup">
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <mat-form-field>
+            <mat-label>Tipo de Documento</mat-label>
+            <mat-select (ngModelChange)="getDocumentOption()" name="option_document"
+                formControlName="documentOptionCtrl">
+                <mat-option *ngFor="let value of dataDocument" [value]="value.id">{{value.type_doc}}</mat-option>
+            </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+            <mat-label>Documento</mat-label>
+            <input autocomplete="off" onlyNumber matInput placeholder="Ingrese N° Documento" (change)="getDocument()"
+                name="document" formControlName="documentCtrl" [minlength]="sizeCharter" [maxlength]="sizeCharter"
+                name="document">
+            @if (firstFormGroup.get('documentCtrl')?.hasError('required')) {
+            <mat-error>Documento <strong>requerido</strong></mat-error>
+            }
+            @if (firstFormGroup.get('documentCtrl')?.hasError('minlength')){
+            <mat-error>Documento erróneo</mat-error>
+            }
+            </mat-form-field>
+            <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
+            <mat-label>Nombres</mat-label>
+            <input autocomplete="off" matInput placeholder="Ingrese Nombres" formControlName="nameCtrl">
+            </mat-form-field>
+            <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
+            <mat-label>Apellidos</mat-label>
+            <input autocomplete="off" matInput placeholder="Ingrese Apellidos" formControlName="lastNameCtrl">
+            </mat-form-field>
+            <mat-form-field class="col-span-2" [ngStyle]="{'display':styleBlockRuc}">
+            <mat-label>Razón Social</mat-label>
+            <input autocomplete="off" matInput placeholder="Ingrese Razon Social" formControlName="fullNameCtrl">
+            </mat-form-field>
+            <mat-form-field>
+            <mat-label>Correo electrónico</mat-label>
+            <input autocomplete="off" type="email" [errorStateMatcher]="matcher" matInput placeholder="Ingrese Correo"
+                formControlName="emailCtrl">
+            @if (firstFormGroup.get('emailCtrl')?.hasError('email') &&
+            !firstFormGroup.get('emailCtrl')?.hasError('required')) {
+            <mat-error>Porfavor revise el correo</mat-error>
+            }
+            @if (firstFormGroup.get('emailCtrl')?.hasError('required')) {
+            <mat-error>Correo <strong>requerido</strong></mat-error>
+            }
+            </mat-form-field>
+            <mat-form-field>
+            <mat-label>Celular</mat-label>
+            <span class="font-medium text-primary" matTextPrefix>+51 &nbsp;</span>
+            <input autocomplete="off" type="tel" maxlength="9" matInput placeholder="Ingrese Celular" onlyNumber
+                formControlName="phoneCtrl">
+            </mat-form-field>
+        </div>
+        <div>
+            <button mat-raised-button color="primary" (click)="setPerson()" matStepperNext
+              [disabled]="firstFormGroup.invalid">Siguiente</button>
+          </div>
+    </form>

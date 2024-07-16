@@ -26,13 +26,14 @@ export class PayService {
   responseToken:any=[];
   constructor(private http: HttpClient) { 
     this.headersSecurity = new HttpHeaders({
-      'Authorization': AUTHSECURITY
+      'Authorization': 'Basic'+' '+AUTHSECURITY
     });
     this.headersToken=new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': this.sessionToken
     })
-    // console.log(AUTHSECURITY);
+    console.log(this.headersSecurity);
+    
     // console.log(this.sessionToken);
   }
 getMount(total:string){
