@@ -7,6 +7,8 @@ export const environment = {
   API_MODULE: 'https://api_v2.test:4435/api/modules',
   API_DOCUMENT: 'https://api_v2.test:4435/api/documents',
   API_DASHBOARD_DOCUMENT: 'https://api_v2.test:4435/api/search/person',
+  API_DASHBOARD_DOCUMENT_STUDENT: 'https://api_v2.test:4435/api/search/client',
+  API_WORKSHORP: 'https://api_v2.test:4435/api/workshorps',
 
   //TRIBUTOS MUNICIPALES
   API_USER:'https://api_v2.test:4435/v1/verify/user',

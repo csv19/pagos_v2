@@ -111,9 +111,7 @@ export class CamposDeportivosComponent implements OnInit {
     observationPaymentCtrl: null,
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   
-  constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef,
-
-  ){
+  constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef){
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
     });
@@ -212,12 +210,17 @@ export class CamposDeportivosComponent implements OnInit {
      return day !== 0 && day !== 7 && !restrinctDays;
   }; 
   checkFieldsNotEmptyFirstGroup(group: FormGroup) {
+    const option_document = group.get('documentOptionCtrl')?.value;
     const document = group.get('documentCtrl')?.value;
     const fullName = group.get('fullName')?.value;
     const name = group.get('nameCtrl')?.value;
     const lastName = group.get('lastName')?.value;
     const email = group.get('emailCtrl')?.value;
-    return (document !== null && fullName !==null && name !== null && lastName !== null && email !== null) ? null : { fieldsEmpty: true };
+    if(option_document !==3){
+      return (document !== null && name !== null && lastName !== null && email !== null) ? null : { fieldsEmpty: true };
+    }else{
+      return (document !== null && fullName !==null && email !== null) ? null : { fieldsEmpty: true };
+    }
   }
   checkFieldsNotEmptySecondGroup(group: FormGroup){
     const category= group.get('categoryCtrl')?.value;
@@ -392,10 +395,14 @@ export class CamposDeportivosComponent implements OnInit {
               setNameAndLastName(data.name, data.lastName);
             } else {
               fullName?.setValue(data.name);
+              email?.setValue(data.email);
+              email?.disable();
+              const dataPhone = data.phone ?? null;
+              phone?.setValue(dataPhone);
+              phone?.disable();
             }
           }
           console.log(this.calendar);
-          
         },
         (error) => {
           console.error('Error en la solicitud:', error);
@@ -437,18 +444,31 @@ export class CamposDeportivosComponent implements OnInit {
       phone?.enable();
     }
   }
- async setPerson(){
+  async setPerson(){
+    const option_document=this.validateFirstFormGroup().option_document?.value;
     if(this.calendar.people_id == 0 || this.calendar.people_id==null){
-      this.person={
-        typeDocument:this.validateFirstFormGroup().option_document?.value,
-        document:this.validateFirstFormGroup().document?.value,
-        name:this.validateFirstFormGroup().name?.value,
-        lastName:this.validateFirstFormGroup().lastName?.value,
-        email:this.validateFirstFormGroup().email?.value,
-        phone:this.validateFirstFormGroup().phone?.value
+      if(option_document !==3){
+        this.person={
+          typeDocument:option_document,
+          document:this.validateFirstFormGroup().document?.value,
+          name:this.person.name?this.person.name:this.validateFirstFormGroup().name?.value,
+          lastName:this.person.lastName?this.person.lastName:this.validateFirstFormGroup().lastName?.value,
+          email:this.validateFirstFormGroup().email?.value,
+          phone:this.validateFirstFormGroup().phone?.value
+        }
+      }else{
+        this.person={
+          typeDocument:option_document,
+          document:this.validateFirstFormGroup().document?.value,
+          name:this.person.name?this.person.name:this.validateFirstFormGroup().fullName?.value,
+          lastName:'',
+          email:this.validateFirstFormGroup().email?.value,
+          phone:this.validateFirstFormGroup().phone?.value
+        }
       }
       const route='person';
       const data=this.person;
+      console.log(data);
       const person:any=await this.savePerson(route,data).toPromise();
       this.calendar.people_id=person.data[0].inserted_id;
     }

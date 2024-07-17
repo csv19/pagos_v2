@@ -1,9 +1,8 @@
 <section class="w-full p-4">
   <h2 class="font-bold text-gray-500 uppercase">Reserva de Campos Deportivos</h2>
   <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
-    <mat-step [stepControl]="firstFormGroup" [editable]="isEditable">
+    <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
       <form [formGroup]="firstFormGroup">
-        <ng-template matStepLabel>Información Personal</ng-template>
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <mat-form-field>
             <mat-label>Tipo de Documento</mat-label>
@@ -156,8 +155,7 @@
         </div>
       </form>
     </mat-step>
-    <mat-step>
-      <ng-template matStepLabel>Recibo de Pago</ng-template>
+    <mat-step label="Recibo de Pago">
       @if(dataVoucher.length>0){
       <div class="w-fit mx-auto">
         <a target="_blank" href="{{url}}/fields/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
@@ -243,10 +241,9 @@
         </div>
       </div>
       }
-      <!-- <div>
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button (click)="stepper.reset()">Reset</button>
-              </div> -->
+      <div>
+        <button mat-button (click)="stepper.reset()">Reset</button>
+      </div>
     </mat-step>
   </mat-stepper>
 </section>
