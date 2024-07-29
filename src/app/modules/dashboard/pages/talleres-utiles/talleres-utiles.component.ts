@@ -384,7 +384,9 @@ export class TalleresUtilesComponent implements OnInit{
   }
   //SECOND GROUP
   getWorkshop(){
-    console.log(this.secondFormGroup.get('workshopCtrl')?.value);
-    
+    const workshop=this.secondFormGroup.get('workshopCtrl')?.value;
+    if(workshop){
+      
+    }
   }
 }
