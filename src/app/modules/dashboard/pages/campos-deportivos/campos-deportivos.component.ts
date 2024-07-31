@@ -570,7 +570,6 @@ export class CamposDeportivosComponent implements OnInit {
             this.dataSchedule=dataSchedules;
             this.textScheduleLabel=(this.dataSchedule.length>0)?'Horarios Disponibles':'No hay horarios disponibles';
             console.log(this.dataSchedule);
-            
           }
         )
     }

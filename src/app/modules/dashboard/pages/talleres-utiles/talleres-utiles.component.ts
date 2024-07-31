@@ -61,8 +61,12 @@ export class TalleresUtilesComponent implements OnInit{
   
   isLinear = true;isEditable=true;
   authenticate!:boolean;stepp!:number;
-  dataDocument:any; dataWorkshorp:Workshop[] = [];
+  vacationDay!:number; vacationHour!:number; workshop!:number;
+  dataDocument:any; dataWorkshorp:Workshop[] = []; dataWorkshorpDate:any; dataWorkshorpHour:any;
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;sizeCharterStudent!:number;
+  dataTypePayments:any=[]; dataOptionPayments:any=[];
+  totalPrice:any; season:string='';
+  dataVoucher:any=[];
   person:any={
     id:'',
     typeDocument:'',
@@ -79,6 +83,17 @@ export class TalleresUtilesComponent implements OnInit{
     name:'',
     lastName:'',
    };
+   reservation:any={
+    purchaseNumber:'',
+    sessionToken:'',
+    people_id:'',
+    client_id:'',
+    season:'',
+    workshop:'',
+    date:'',
+    schedule:'',
+    price:'',
+   }
   matcher = new MyErrorStateMatcher();
   firstFormGroup = this._formBuilder.group({
     documentOptionCtrl:[ '', Validators.required],
@@ -95,7 +110,12 @@ export class TalleresUtilesComponent implements OnInit{
   },{ validators: this.checkFieldsNotEmptyFirstGroup });
   secondFormGroup = this._formBuilder.group({
     workshopCtrl: ['', Validators.required],
-  });
+    workshopDateCtrl: [{ value:null, disabled: true }, Validators.required],
+    workshopHourCtrl: [{ value:null, disabled: true }, Validators.required],
+    typePaymentCtrl: [null, localStorage.getItem('token')?Validators.required:null],
+    optionPaymentCtrl: null,
+    observationPaymentCtrl: null,
+  },{ validators: this.checkFieldsNotEmptySecondGroup });
   filteredOptions: Observable<Workshop[]> | undefined;
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef) {
     this.route.data.subscribe(data => {
@@ -112,6 +132,8 @@ export class TalleresUtilesComponent implements OnInit{
     this.http.get(WORKSHORP).subscribe(
       (response:any) => {
         this.dataWorkshorp = response.data;
+        console.log(this.dataWorkshorp);
+        
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -128,6 +150,8 @@ export class TalleresUtilesComponent implements OnInit{
     );
   }
   @ViewChild(PersonComponent) personComponent!: PersonComponent;
+  @ViewChild('stepper') stepper!: MatStepper;
+  public atm:any={};
   displayFn(workshop: Workshop): string {
     return workshop && workshop.name ? workshop.name : '';
   }
@@ -146,6 +170,17 @@ export class TalleresUtilesComponent implements OnInit{
     const email = group.get('emailCtrl')?.value;
     const studentDocument = group.get('studentDocumentCtrl')?.value;
     return (document !== null && fullName !==null && name !== null && lastName !== null && email !== null && studentDocument !==null) ? null : { fieldsEmpty: true };
+  }
+  checkFieldsNotEmptySecondGroup(group: FormGroup){
+    const workshop= group.get('workshopCtrl')?.value;
+    const workshopDate= group.get('workshopDateCtrl')?.value;
+    const workshopHour= group.get('workshopHourCtrl')?.value;
+    const typePayment= group.get('typePaymentCtrl')?.value;
+    if(localStorage.getItem('token')){
+      return (workshop !== null && workshopDate !== null && workshopHour !== null &&  typePayment !== null ) ? null : { fieldsEmpty: true };
+    }else{
+      return (workshop !== null && workshopDate !== null && workshopHour !== null ) ? null : { fieldsEmpty: true };
+    }
   }
   validateFirstFormGroup(){
     const option_document= this.firstFormGroup?.get('documentOptionCtrl');
@@ -192,8 +227,30 @@ export class TalleresUtilesComponent implements OnInit{
     this.student.id=0;
     return{studentName,studentLastName};
   }
+  validateSecondFormGroup(){
+    const workshop= this.secondFormGroup?.get('workshopCtrl');
+    const workshopDate= this.secondFormGroup?.get('workshopDateCtrl');
+    const workshopHour= this.secondFormGroup?.get('workshopHourCtrl');
+    const typePayment= this.secondFormGroup?.get('typePaymentCtrl');
+    const optionPayment= this.secondFormGroup?.get('optionPaymentCtrl');
+    const observationPayment= this.secondFormGroup?.get('observationPaymentCtrl');
+    return {
+      workshop,workshopDate,workshopHour,typePayment, optionPayment, observationPayment
+    };
+  }
+  resetValidateSecondFormGroup(){
+    const workshopDate = this.validateSecondFormGroup().workshopDate;
+    const workshopHour = this.validateSecondFormGroup().workshopHour;
+    workshopHour?.disable();
+    workshopDate?.disable();
+    workshopHour?.reset();
+    workshopDate?.reset();
+    this.totalPrice='';
+    return{workshopDate,workshopHour};
+  }
+
   savePerson(route: string, data: any) {
-    const  list = this.http.post<any>(`${RESERVATION2}/${route}`, this.person);
+    const  list = this.http.post<any>(`${RESERVATION2}/${route}`, data);
     return list;
   }
   convertText(value: any, type: number): string {
@@ -383,10 +440,198 @@ export class TalleresUtilesComponent implements OnInit{
     this.setStudent();
   }
   //SECOND GROUP
-  getWorkshop(){
-    const workshop=this.secondFormGroup.get('workshopCtrl')?.value;
-    if(workshop){
+  getSelectSecondFormGroup(route: string, data: any) {
+    let list = this.http.get(`${RESERVATION2}/${route}`);
+    if (data) {
+        const values = data.join('/');
+        list = this.http.get(`${RESERVATION2}/${route}/${values}`);
+    }
+    return list;
+  }
+  async getWorkshop(){
+    const workshop:any=this.validateSecondFormGroup().workshop?.value;
+    const workshopDate:any=this.validateSecondFormGroup().workshopDate;
+    this.resetValidateSecondFormGroup();
+    this.season='';
+    if(workshop.id){
+      this.workshop=workshop.id;
+      this.dataWorkshorp.map(
+        (value:any)=>{
+          if(value.id == workshop.id){
+            this.totalPrice=value.price;
+            this.season=value.seasonId;
+          }
+        }
+      );
+      console.log(this.totalPrice);
       
+      workshopDate?.enable();
+      const data=[workshop.id];
+      const route='workshorps/dates';
+      const dataWorkshorpDate:any = await this.getSelectSecondFormGroup(route,data).toPromise();
+      this.dataWorkshorpDate=dataWorkshorpDate.data;
     }
   }
+  async getWorkshopDate(){
+    const workshopDate:any=this.validateSecondFormGroup().workshopDate?.value;
+    const workshopHour:any=this.validateSecondFormGroup().workshopHour;
+    if(workshopDate){
+      this.dataWorkshorpDate.map(
+        (value:any)=>{
+          if(value.id==workshopDate){
+            this.vacationDay=value.vacation_day_id;
+          }
+        }
+      )
+      console.log(this.vacationDay);
+      workshopHour?.enable();
+      const data=[workshopDate];
+      const route='workshorps/hours';
+      const dataWorkshorpHour:any = await this.getSelectSecondFormGroup(route,data).toPromise();
+      this.dataWorkshorpHour=dataWorkshorpHour.data;
+    }
+  }
+  getWorkshopHour(){
+    const workshopHour:any=this.validateSecondFormGroup().workshopHour?.value;
+    if(workshopHour){
+      const vacationHour:any=[];
+      this.dataWorkshorpHour.map(
+        (value:any)=>{
+          if(value.id==workshopHour){
+            vacationHour.push(value);
+          }
+        }
+      )
+      this.vacationHour =vacationHour[0].vacation_hour_id;
+    }
+  }
+  async getTypePayments(){
+    const typePayment= this.validateSecondFormGroup().typePayment;
+    if(typePayment){
+      this.resetValidateSecondFormGroup();
+      const data= [typePayment.value];
+      const route='options-payments';
+      const dataOptionPayments:any= await this.getSelectSecondFormGroup(route,data).toPromise();
+        if(dataOptionPayments.code ===200){
+          if(typePayment.value==2 || typePayment.value==3 || typePayment.value==4){
+            this.styleBlockOption='block';
+            this.dataOptionPayments=dataOptionPayments.data;
+          }else{
+            this.styleBlockOption='none';
+          }
+        }      
+    }
+  }
+
+  async save(){
+    const atm:any=localStorage.getItem('profileData');
+    this.atm=JSON.parse(atm);
+    this.setPerson();
+    this.setStudent()
+    if(this.authenticate){
+      this.reservation={
+        people_id: this.person.id,
+        client_id: this.student.id,
+        season: this.season,
+        workshop: this.workshop,
+        date: this.vacationDay,
+        schedule: this.vacationHour,
+        total: this.totalPrice,
+        userId: this.atm.data.id,
+        module: this.validateSecondFormGroup().typePayment?.value,
+        option: this.validateSecondFormGroup().optionPayment?.value,
+        observation: this.validateSecondFormGroup().observationPayment?.value,
+      } 
+      console.log("Pago por Admin");
+      const route='reservation/atm';
+      this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
+        (response) => {
+          if (response && response.code === 200) {   
+            console.log(response);
+            this.isEditable=false;
+            const voucher=response.data.voucher_id;
+            const payment=response.data.payment_id;
+            this.stepper.next();
+            this.getVoucher(voucher,payment);
+            this.print(voucher,payment);
+          }
+        },(error)=>{
+          console.error(error.error.message)
+          alert(error.error.message)
+        }
+      );
+    }else{
+      this.payService.getMount(this.totalPrice);
+      this.payService.getSessionToken().subscribe(
+        (response)=>{
+          console.log(response);
+        },
+        (error)=>{
+          const sessionToken=error.error.text;
+          this.reservation={
+            purchaseNumber: 1001000,
+            sessionToken: sessionToken,
+            people_id: this.person.id,
+            client_id: this.student.id,
+            season: this.season,
+            workshop: this.workshop,
+            date: this.vacationDay,
+            schedule: this.vacationHour,
+            total: this.totalPrice,
+          } 
+          console.log(this.reservation);
+          const route='workshorps/niubiz';
+          this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
+            (response) => {
+              if (response && response.code === 200) {   
+                const reservationId=response.data.reservation_id;
+                const voucherId=response.data.voucher_id;
+                const paymentId=response.data.payment_id;
+                const total=response.data.total;
+                this.pay(reservationId,voucherId,paymentId,total,sessionToken);
+              }
+            },(error)=>{
+              console.error(error.error.message)
+              alert(error.error.message)
+            }
+          );
+        }
+      )
+    }
+  }
+  pay(reservation_id:number, voucher_id:number,payment_id:number,total:string,sessionToken:string){
+    const module_id=4;  
+    this.payService.getToken(sessionToken).subscribe((data) => {
+      const responseToken = data.sessionKey;
+      const script = this.renderer.createElement('script');
+      const url=`${RESERVATION2}/voucher/${module_id}/${reservation_id}/${voucher_id}/${payment_id}/${total}`;
+      script.type = 'text/javascript';
+      script.text = this.payService.getVisa(
+        responseToken,
+        total,
+        this.reservation.purchaseNumber,
+        url
+      );
+      this.renderer.appendChild(this.el.nativeElement, script);
+    })
+  }
+  //THIRD GROUP
+  getVoucher(voucherId:number,paymentId:number){
+    this.http.get(`${RESERVATION2}/payment/voucher/${voucherId}/${paymentId}`).subscribe(
+      (response:any)=>{
+        console.log(response);
+        this.dataVoucher=response.data;
+        let total=0;
+        response.data.map((value:any)=>
+          total +=value.price_reservation)
+        this.totalPrice=total;
+      },error=>{console.error(error)}
+    )
+  }
+  print(voucherId:number,paymentId:number) {
+    const url = `${RESERVATION2}/fields/voucher/${voucherId}/${paymentId}/2`; 
+    window.open(url, '_blank');
+  }
+
 }
+

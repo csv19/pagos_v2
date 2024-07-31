@@ -1,6 +1,6 @@
 <section class="w-full p-4">
       <mat-stepper [linear]="isLinear" #stepper>
-        <!-- <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
+        <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
           <form [formGroup]="firstFormGroup">
             <h3>Datos del Apoderado</h3>
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -88,23 +88,65 @@
                 [disabled]="firstFormGroup.invalid">Siguiente</button>
             </div>
           </form>
-        </mat-step> -->
-        <mat-step [stepControl]="secondFormGroup" label="Inscripción del Taller">
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup" label="Inscripción del Taller" [editable]="isEditable">
           <form [formGroup]="secondFormGroup">
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <mat-form-field class="col-span-4 sm:col-span-2">
                 <mat-label>Talleres</mat-label>
-                <input type="text" (ngModelChange)="getWorkshop()" matInput formControlName="workshopCtrl" [matAutocomplete]="auto">
+                <input type="text" placeholder="Ingrese taller" (ngModelChange)="getWorkshop()" matInput formControlName="workshopCtrl" [matAutocomplete]="auto">
                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
                   @for (option of filteredOptions | async; track option) {
-                    <mat-option [value]="option">{{option.name}}-cerrado</mat-option>
+                    <mat-option [value]="option">{{option.name}}</mat-option>
                   }
                 </mat-autocomplete>
               </mat-form-field>
+              <mat-form-field class="col-span-4 sm:col-span-1">
+                <mat-label>Categorias</mat-label>
+                <mat-select (ngModelChange)="getWorkshopDate()" formControlName="workshopDateCtrl">
+                  <mat-option *ngFor="let value of dataWorkshorpDate" [value]="value.id">{{value.description}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="col-span-4 sm:col-span-1">
+                <mat-label>Horarios</mat-label>
+                <mat-select (ngModelChange)="getWorkshopHour()" formControlName="workshopHourCtrl">
+                  <mat-option *ngFor="let value of dataWorkshorpHour" [value]="value.id">{{value.description}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                @if(authenticate){
+                <mat-form-field class="col-span-4 sm:col-span-1">
+                  <mat-label>Tipo de Pago</mat-label>
+                  <mat-select class="bg-transparent" (ngModelChange)="getTypePayments()" name="typePayment"
+                    formControlName="typePaymentCtrl">
+                    <mat-option *ngFor="let value of dataTypePayments" [value]="value.id">{{value.name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-span-4 sm:col-span-1" [ngStyle]="{'display':styleBlockOption}">
+                  <mat-label>Opciones</mat-label>
+                  <mat-select class="bg-transparent" name="optionPayment" formControlName="optionPaymentCtrl">
+                    <mat-option *ngFor="let value of dataOptionPayments" [value]="value.id">{{value.name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-span-4 sm:col-span-2">
+                  <mat-label>Observación</mat-label>
+                  <input autocomplete="off" matInput placeholder="Ingrese Observación" formControlName="observationPaymentCtrl">
+                </mat-form-field>
+                }
+                <div class="col-span-4">
+                  <mat-form-field floatLabel="always">
+                    <mat-label>Importe a Pagar</mat-label>
+                    <input autocomplete="off" matInput type="number" [value]="totalPrice" disabled
+                      class="example-right-align font-semibold" placeholder="0">
+                    <span class="font-medium text-primary" matTextPrefix>S/.&nbsp;</span>
+                    <span class="font-medium text-primary" matTextSuffix>.00</span>
+                  </mat-form-field>
+                </div>
+              </div>
             </div>
             <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
+              <button mat-raised-button color="primary" (click)="save()"
+                [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
             </div>
           </form>
         </mat-step>
