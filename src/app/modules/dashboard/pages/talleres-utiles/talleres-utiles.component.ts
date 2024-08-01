@@ -58,9 +58,11 @@ export interface Workshop {
   styleUrl: './talleres-utiles.component.scss'
 })
 export class TalleresUtilesComponent implements OnInit{
-  
+  url:string=RESERVATION2; 
+  positionOption: TooltipPosition='above';
   isLinear = true;isEditable=true;
-  authenticate!:boolean;stepp!:number;
+  authenticate!:boolean;stepp!:number;voucher!:number;
+  payment!:number;
   vacationDay!:number; vacationHour!:number; workshop!:number;
   dataDocument:any; dataWorkshorp:Workshop[] = []; dataWorkshorpDate:any; dataWorkshorpHour:any;
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;sizeCharterStudent!:number;
@@ -107,7 +109,7 @@ export class TalleresUtilesComponent implements OnInit{
     studentDocumentCtrl:[{ value:'', disabled: true }, [Validators.required , Validators.minLength(this.sizeCharterStudent), Validators.maxLength(this.sizeCharterStudent)]],
     studentNameCtrl: [{ value:'', disabled: true }, Validators.required],
     studentLastNameCtrl: [{ value:'', disabled: true }, Validators.required],
-  },{ validators: this.checkFieldsNotEmptyFirstGroup });
+    },{ validators: this.checkFieldsNotEmptyFirstGroup });
   secondFormGroup = this._formBuilder.group({
     workshopCtrl: ['', Validators.required],
     workshopDateCtrl: [{ value:null, disabled: true }, Validators.required],
@@ -139,6 +141,16 @@ export class TalleresUtilesComponent implements OnInit{
         console.error('Error en la solicitud:', error);
       }
     );
+    this.http.get(`${RESERVATION2}/type-payments`).subscribe(
+      (response:any) => {
+        if(response.code===200){
+          this.dataTypePayments= response.data;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
   }
   ngOnInit() {
     this.filteredOptions = this.secondFormGroup.get('workshopCtrl')?.valueChanges.pipe(
@@ -148,6 +160,22 @@ export class TalleresUtilesComponent implements OnInit{
         return name ? this._filter(name as string) : this.dataWorkshorp.slice();
       }),
     );
+    this.route.url.subscribe(url=>{
+      const data:any=[];
+      url.map((value:any)=>{data.push(value.path)})
+      const route:string=(this.authenticate)?'admin':'';
+      this.stepp=data[2];
+      this.voucher=data[3];
+      this.payment=data[4];
+      console.log(this.stepp);
+      
+      if(this.stepp !=2){
+        this.router.navigate([`${route}/talleres-utiles`]);  
+      }else{
+        this.isEditable=false;
+        this.getVoucher(this.voucher, this.payment);
+      }
+    })
   }
   @ViewChild(PersonComponent) personComponent!: PersonComponent;
   @ViewChild('stepper') stepper!: MatStepper;
@@ -508,7 +536,6 @@ export class TalleresUtilesComponent implements OnInit{
   async getTypePayments(){
     const typePayment= this.validateSecondFormGroup().typePayment;
     if(typePayment){
-      this.resetValidateSecondFormGroup();
       const data= [typePayment.value];
       const route='options-payments';
       const dataOptionPayments:any= await this.getSelectSecondFormGroup(route,data).toPromise();
@@ -534,6 +561,7 @@ export class TalleresUtilesComponent implements OnInit{
         client_id: this.student.id,
         season: this.season,
         workshop: this.workshop,
+        workshopHour:this.validateSecondFormGroup().workshopHour?.value,
         date: this.vacationDay,
         schedule: this.vacationHour,
         total: this.totalPrice,
@@ -543,7 +571,7 @@ export class TalleresUtilesComponent implements OnInit{
         observation: this.validateSecondFormGroup().observationPayment?.value,
       } 
       console.log("Pago por Admin");
-      const route='reservation/atm';
+      const route='workshorps/atm';
       this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
         (response) => {
           if (response && response.code === 200) {   
@@ -575,6 +603,7 @@ export class TalleresUtilesComponent implements OnInit{
             client_id: this.student.id,
             season: this.season,
             workshop: this.workshop,
+            workshopHour:this.validateSecondFormGroup().workshopHour?.value,
             date: this.vacationDay,
             schedule: this.vacationHour,
             total: this.totalPrice,
@@ -617,19 +646,17 @@ export class TalleresUtilesComponent implements OnInit{
   }
   //THIRD GROUP
   getVoucher(voucherId:number,paymentId:number){
-    this.http.get(`${RESERVATION2}/payment/voucher/${voucherId}/${paymentId}`).subscribe(
+    const module=4;
+    this.http.get(`${RESERVATION2}/payment/voucher/${module}/${voucherId}/${paymentId}`).subscribe(
       (response:any)=>{
         console.log(response);
         this.dataVoucher=response.data;
-        let total=0;
-        response.data.map((value:any)=>
-          total +=value.price_reservation)
-        this.totalPrice=total;
+        
       },error=>{console.error(error)}
     )
   }
   print(voucherId:number,paymentId:number) {
-    const url = `${RESERVATION2}/fields/voucher/${voucherId}/${paymentId}/2`; 
+    const url = `${RESERVATION2}/workshops/voucher/${voucherId}/${paymentId}/2`; 
     window.open(url, '_blank');
   }
 

@@ -1,5 +1,5 @@
 <section class="w-full p-4">
-      <mat-stepper [linear]="isLinear" #stepper>
+      <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
         <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
           <form [formGroup]="firstFormGroup">
             <h3>Datos del Apoderado</h3>
@@ -102,7 +102,7 @@
                 </mat-autocomplete>
               </mat-form-field>
               <mat-form-field class="col-span-4 sm:col-span-1">
-                <mat-label>Categorias</mat-label>
+                <mat-label>Fechas</mat-label>
                 <mat-select (ngModelChange)="getWorkshopDate()" formControlName="workshopDateCtrl">
                   <mat-option *ngFor="let value of dataWorkshorpDate" [value]="value.id">{{value.description}}</mat-option>
                 </mat-select>
@@ -113,7 +113,6 @@
                   <mat-option *ngFor="let value of dataWorkshorpHour" [value]="value.id">{{value.description}}</mat-option>
                 </mat-select>
               </mat-form-field>
-              <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 @if(authenticate){
                 <mat-form-field class="col-span-4 sm:col-span-1">
                   <mat-label>Tipo de Pago</mat-label>
@@ -143,20 +142,103 @@
                   </mat-form-field>
                 </div>
               </div>
-            </div>
             <div>
               <button mat-raised-button color="primary" (click)="save()"
                 [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
             </div>
           </form>
         </mat-step>
-        <mat-step>
-          <ng-template matStepLabel>Recibo de Pago</ng-template>
-          <p>You are now done.</p>
+        <mat-step label="Recibo de Pago">
+          @if(dataVoucher.length>0){
+            <div class="w-fit mx-auto">
+              <a target="_blank" href="{{url}}/workshops/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
+                <img mat-raised-button #tooltip="matTooltip"
+                matTooltip="Descargar"
+                [matTooltipPosition]="positionOption"
+                matTooltipHideDelay="100000"
+                src="./assets/icons/descargar.png" title="Descargar" alt="descargar" class="cursor-pointer mx-auto w-8" />
+              </a>
+            </div>
+          <div class="my-5 flex h-auto items-start justify-center">
+            <div class="w-[350px] rounded border bg-gray-50 p-4 shadow-lg">
+              <img src="./assets/icons/logo.png" alt="logo-magdalena" class="mx-auto w-16 pb-4" />
+              <div class="flex flex-col justify-center items-center gap-2">
+                <p class="font-semibold text-center text-sm">Municipalidad de Magdalena del Mar
+                  <br>
+                  Oficina de Tesorería
+                </p>
+                <p class="text-sm">RUC 20131376848</p>
+              </div>
+              <div class="flex flex-col gap-3 py-6 text-xs">
+                <div class="flex flex-col uppercase">
+                  <div class="flex justify-between">
+                    <span class="font-semibold">Operación:</span>
+                    <span>{{this.dataVoucher[0].nro_operation }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="font-semibold">Recibo:</span>
+                    <span>{{this.dataVoucher[0].nro_voucher }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="font-semibold">Código:</span>
+                    <span>{{this.dataVoucher[0].nro_document}}-{{this.dataVoucher[0].payment_id}}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="font-semibold">Nombre:</span>
+                    <span class="">{{ this.dataVoucher[0].people_name }} {{ this.dataVoucher[0].people_lastname }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="font-semibold">Generado:</span>
+                    <span>{{ this.dataVoucher[0].user ?this.dataVoucher[0].user:'ONLINE' }} - {{ this.dataVoucher[0].created_at }}</span>
+                  </div>
+                </div>
+              </div>
+              <table class="w-full">
+                  <thead>
+                    <th class="text-left text-sm">Decripción</th>
+                    <th class="text-right text-sm">Monto</th>
+                  </thead>
+                  <tbody>
+                    <tr class="border-black	border-y" *ngFor="let voucher of dataVoucher">
+                      <td class="text-left text-xs">
+                        <span>
+                          {{voucher.campus}}<br>
+                          {{voucher.adress}}<br>
+                          {{voucher.season}}<br>
+                          {{voucher.client_name}} {{voucher.client_lastname}}<br>
+                          {{voucher.workshop}}<br>
+                          {{voucher.day}}<br>
+                          {{voucher.hour}}<br>
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-left uppercase font-semibold"><span>Total</span></td>
+                      <td class="text-right text-xs"><span>S./{{dataVoucher[0].price_reservation}}.00</span></td>
+                    </tr>
+                    <tr>
+                      <td align="center" class="text-xs italic" colspan="2">
+                        <p>Consideraciones:</p>
+                        <span>
+                          El usuario es responsable de la fecha y horario separado.</span>
+                        <span>
+                          El usuario deberá estar 10 minutos antes de la hora separada.</span>
+                        <span>
+                          El usuario deberá dejar las instalaciones limpias y en las mismas condiciones en las que fueron
+                          entregadas.</span>
+                        <span>
+                          No habrá lugar a cambios.</span>
+                      </td>
+                    </tr>
+                  </tbody>
+              </table>
+            </div>
+          </div>
+          }
           <div>
-            <button mat-button matStepperPrevious>Back</button>
             <button mat-button (click)="stepper.reset()">Reset</button>
           </div>
         </mat-step>
+  
       </mat-stepper>
 </section>

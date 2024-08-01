@@ -196,7 +196,7 @@
               </div>
               <div class="flex justify-between">
                 <span class="font-semibold">Generado:</span>
-                <span>{{ dataVoucher[0].payment_type == 5 ? 'ONLINE' : atm.data.user }} - {{ dataVoucher[0].created_at }}</span>
+                <span>{{ this.dataVoucher[0].user ?this.dataVoucher[0].user:'ONLINE' }} - {{ this.dataVoucher[0].created_at }}</span>
 
               </div>
             </div>

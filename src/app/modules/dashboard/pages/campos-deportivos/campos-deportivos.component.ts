@@ -707,7 +707,8 @@ export class CamposDeportivosComponent implements OnInit {
   }
   //THIRD GROUP
   getVoucher(voucherId:number,paymentId:number){
-    this.http.get(`${RESERVATION2}/payment/voucher/${voucherId}/${paymentId}`).subscribe(
+    const module=3;
+    this.http.get(`${RESERVATION2}/payment/voucher/${module}/${voucherId}/${paymentId}`).subscribe(
       (response:any)=>{
         console.log(response);
         this.dataVoucher=response.data;
