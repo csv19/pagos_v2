@@ -20,6 +20,7 @@ import { NgFor, NgStyle } from '@angular/common';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
 import { PayService } from 'src/app/pay.service';
 import { PersonComponent } from '../../components/home/person/person.component';
+import { ToastrService } from 'ngx-toastr';
 
 const RESERVATION2= environment.SERVER2;
 const OPTION_DOCUMENT=environment.API_DOCUMENT;
@@ -119,7 +120,7 @@ export class TalleresUtilesComponent implements OnInit{
     observationPaymentCtrl: null,
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   filteredOptions: Observable<Workshop[]> | undefined;
-  constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef) {
+  constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef, private toastr: ToastrService) {
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
     });
@@ -135,7 +136,6 @@ export class TalleresUtilesComponent implements OnInit{
       (response:any) => {
         this.dataWorkshorp = response.data;
         console.log(this.dataWorkshorp);
-        
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -585,7 +585,8 @@ export class TalleresUtilesComponent implements OnInit{
           }
         },(error)=>{
           console.error(error.error.message)
-          alert(error.error.message)
+          // alert(error.error.message)
+          this.showError();
         }
       );
     }else{
@@ -621,7 +622,8 @@ export class TalleresUtilesComponent implements OnInit{
               }
             },(error)=>{
               console.error(error.error.message)
-              alert(error.error.message)
+              // alert(error.error.message)
+              this.showError();
             }
           );
         }
@@ -659,6 +661,8 @@ export class TalleresUtilesComponent implements OnInit{
     const url = `${RESERVATION2}/workshops/voucher/${voucherId}/${paymentId}/2`; 
     window.open(url, '_blank');
   }
-
+  showError() {
+    this.toastr.error('El alumno ya se encuentra registrado para este taller!','ERROR!',{closeButton:true, positionClass:'toast-top-right'});
+  }
 }
 
