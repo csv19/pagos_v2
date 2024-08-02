@@ -1,0 +1,141 @@
+<div class="container mx-auto">
+  <form class="my-10 space-y-6" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="text-center">
+      <h2 class="mb-1 text-3xl font-semibold text-foreground">Registro <span class="text-primary">!</span></h2>
+      <p class="text-sm text-muted-foreground">Sistema de Tasas Online de la Municipalidad de Magdalena del Mar</p>
+    </div>
+    <div
+      class="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-muted after:mt-0.5 after:flex-1 after:border-t after:border-muted">
+      <p class="mx-4 mb-0 text-center text-sm text-muted-foreground">or</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="relative">
+        <input
+        type="text"
+        id="name"
+        [ngClass]="{ 'is__invalid-input': submitted && f['name'].errors }"
+        class="peer block"
+        placeholder=" "
+        formControlName="name"
+         />
+      <label
+        for="name"
+        class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/4 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+        Nombres y Apellidos
+      </label>
+      </div>
+      <div class="relative">
+        <input
+        type="text"
+        id="area"
+        [ngClass]="{ 'is__invalid-input': submitted && f['area'].errors }"
+        class="peer block"
+        placeholder=" "
+        formControlName="area"
+        [matAutocomplete]="auto"
+         />
+         <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          @for (option of filteredOptions | async; track option) {
+            <mat-option [value]="option">{{option.name}}</mat-option>
+          }
+        </mat-autocomplete>
+      <label
+        for="area"
+        class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/4 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+        Área
+      </label>
+      </div>
+      <div class="relative">
+        <input
+        type="text"
+        id="code"
+        [ngClass]="{ 'is__invalid-input': submitted && f['code'].errors }"
+        class="peer block"
+        placeholder=" "
+        formControlName="code" />
+      <label
+        for="code"
+        class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/4 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+        Código
+      </label>
+      </div>
+      <div class="relative">
+        <input
+        type="text"
+        id="user"
+        [ngClass]="{ 'is__invalid-input': submitted && f['user'].errors }"
+        class="peer block"
+        placeholder=" "
+        formControlName="user" />
+      <label
+        for="user"
+        class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/4 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+        Usuario
+      </label>
+      </div>
+      <div class="relative">
+        <input
+          type="text"
+          id="email"
+          [ngClass]="{ 'is__invalid-input': submitted && f['email'].errors }"
+          class="peer block"
+          placeholder=" "
+          formControlName="email" />
+        <label
+          for="email"
+          class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/4 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+          Correo electrónico
+        </label>
+      </div>
+      <div class="relative">
+        <input
+          [type]="passwordTextType ? 'text' : 'password'"
+          id="password"
+          [ngClass]="{ 'is__invalid-input': submitted && f['email'].errors }"
+          class="peer block"
+          placeholder=" "
+          (ngModelChange)="sizePassword()"
+          formControlName="password" />
+        <label
+          for="password"
+          class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/4 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+          Password
+        </label>
+        <span class="absolute top-2.5 right-5 cursor-pointer text-muted-foreground" (click)="togglePasswordTextType()">
+          <svg-icon
+            [src]="
+              !passwordTextType
+                ? 'assets/icons/heroicons/outline/eye-off.svg'
+                : 'assets/icons/heroicons/outline/eye.svg'
+            "
+            [svgClass]="'h-5 w-5'">
+          </svg-icon>
+        </span>
+        <div class="mt-1">
+          <div class="grid grid-cols-4 gap-2">
+            <div [ngClass]="colorPassword" class="h-1 rounded-sm"></div>
+            <div [ngClass]="colorPassword" class="h-1 rounded-sm"></div>
+            <div [ngClass]="colorPassword" class="h-1 rounded-sm"></div>
+            <div [ngClass]="colorPassword" class="h-1 rounded-sm"></div>
+          </div>
+          <span class="text-xs text-muted-foreground">
+            La contraseña debe ser mayor a 8 dígitos
+          </span>
+         </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-between space-x-3">
+      <div class="flex items-center gap-1">
+        <input id="accept-term" name="accept-term" type="checkbox" />
+        <label for="accept-term" class="ml-2 block text-sm text-muted-foreground"> I Accept the </label>
+        <app-button impact="none" tone="primary" shape="rounded" size="small"> Terms </app-button>
+      </div>
+    </div>
+  
+    <!-- Submit Button -->
+    <div>
+      <app-button full impact="bold" tone="primary" shape="rounded" size="medium">Confirmar Registro</app-button>
+    </div>
+  </form>
+</div>
+

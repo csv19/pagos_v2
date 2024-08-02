@@ -8,6 +8,7 @@ import { MultasComponent } from './pages/multas/multas.component';
 import { CamposDeportivosComponent } from './pages/campos-deportivos/campos-deportivos.component';
 import { TalleresUtilesComponent } from './pages/talleres-utiles/talleres-utiles.component';
 import { authGuard } from '../auth/guard/auth.guard';
+import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,8 @@ const routes: Routes = [
       { path: 'campos-deportivos/recibo/:stepp/:voucher/:payment', component: CamposDeportivosComponent, data:{authenticate:true} },
       { path: 'talleres-utiles', component: TalleresUtilesComponent, data:{authenticate:true} },
       { path: 'talleres-utiles/recibo/:stepp/:voucher/:payment', component: TalleresUtilesComponent, data:{authenticate:true} },
+      //USER
+      { path: 'registro-usuario', component: SignUpComponent },
       { path: '**', redirectTo: 'errors/404' },
     ],
   },

@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { MenuItem } from '../models/menu.model';
-
+import { environment } from 'src/environments/environment';
+const RESERVATION2= environment.SERVER2;
 export class Menu {
-  http= HttpClient;
+
   public static pages: MenuItem[] = [
     {
       group: 'Incio',
@@ -10,7 +11,7 @@ export class Menu {
       items: [
         {
           icon: 'assets/icons/heroicons/outline/chart-pie.svg',
-          label: 'Dashboard',
+          label: 'Módulos',
           route: '/admin',
           children: [
             { label: 'Tributos Municipales', route: '/admin/tributos-municipales' },
@@ -18,20 +19,33 @@ export class Menu {
             { label: 'Multas', route: '/admin/multas' },
             { label: 'Campos Deportivos', route: '/admin/campos-deportivos' },
             { label: 'Talleres Utiles', route: '/admin/talleres-utiles' },
-            // { label: 'Podcast', route: '/dashboard/podcast' },
+            { label: 'Podcast', route: '/dashboard/podcast' },
           ],
         },
         {
-          icon: 'assets/icons/heroicons/outline/lock-closed.svg',
-          label: 'Auth',
-          route: '/auth',
+          icon: 'assets/icons/heroicons/outline/users.svg',
+          label: 'Usuarios',
+          route: '/admin',
           children: [
-            { label: 'Sign up', route: '/auth/sign-up' },
-            { label: 'Sign in', route: '/auth/sign-in' },
-            { label: 'Forgot Password', route: '/auth/forgot-password' },
-            { label: 'New Password', route: '/auth/new-password' },
-            { label: 'Two Steps', route: '/auth/two-steps' },
+            { label: 'Sign up', route: '/admin/registro-usuario' },
+            { label: 'Sign in', route: '/admin/sign-in' },
+            { label: 'Forgot Password', route: '/admin/forgot-password' },
+            { label: 'New Password', route: '/admin/new-password' },
+            { label: 'Two Steps', route: '/admin/two-steps' },
           ],
+        },
+        {
+          icon: 'assets/icons/heroicons/outline/folder.svg',
+          label: 'Reportes',
+          route: '/admin',
+          children:[
+            { label: 'Tributos Municipales', route: '/admin/tributos-municipales' },
+            { label: 'Tramites y Servicios', route: '/admin/tramites-servicios' },
+            { label: 'Multas', route: '/admin/multas' },
+            { label: 'Campos Deportivos', route: '/admin/campos-deportivos' },
+            { label: 'Talleres Utiles', route: '/admin/talleres-utiles' },
+            { label: 'Podcast', route: '/dashboard/podcast' },
+          ]
         },
         {
           icon: 'assets/icons/heroicons/outline/shield-exclamation.svg',
@@ -45,13 +59,20 @@ export class Menu {
       ],
     },
     {
-      group: 'Reporte',
+      group: 'Reportes',
       separator: true,
       items: [
         {
-          icon: 'assets/icons/heroicons/outline/download.svg',
-          label: 'Download',
-          route: '/download',
+          icon: 'assets/icons/heroicons/outline/chart-pie.svg',
+          label: 'Módules',
+          children:[
+            { label: 'Tributos Municipales', route: '/admin/tributos-municipales' },
+            { label: 'Tramites y Servicios', route: '/admin/tramites-servicios' },
+            { label: 'Multas', route: '/admin/multas' },
+            { label: 'Campos Deportivos', route: '/admin/campos-deportivos' },
+            { label: 'Talleres Utiles', route: '/admin/talleres-utiles' },
+            { label: 'Podcast', route: '/dashboard/podcast' },
+          ]
         },
         {
           icon: 'assets/icons/heroicons/outline/gift.svg',

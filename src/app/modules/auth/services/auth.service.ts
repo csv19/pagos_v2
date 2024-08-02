@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -11,7 +12,7 @@ const URL=environment.SERVER2;
 
 export class AuthService {  
   
-  constructor(private http: HttpClient, private readonly _router: Router) { }
+  constructor(private http: HttpClient, private readonly _router: Router,private toastr: ToastrService) { }
   login(email:string, password:string){
     const data={
       email: email,
@@ -24,6 +25,7 @@ export class AuthService {
         this.validateToken(response.token);
       },error=>{
         console.error(error);
+        this.showError();
       }
     );
   }
@@ -37,7 +39,8 @@ export class AuthService {
         localStorage.setItem('profileData', JSON.stringify(response));
         this.redirectHome();
       },error=>{
-        console.error(error.error.message)
+        console.log(error);
+        this.showError();
       }
     )   
   }
@@ -62,6 +65,19 @@ export class AuthService {
       }
     )
   }
+  register(data:any){
+    console.log(data);
+    
+    this.http.post<any>(`${URL}/register`,data).subscribe(
+      response=>{
+        console.log(response);
+        this.showSuccess();
+      },error=>{
+        console.error(error);
+        this.showError();
+      }
+    );
+  }
   redirectLogin() {
     this._router.navigateByUrl('admin/login');
   }
@@ -72,6 +88,15 @@ export class AuthService {
   isLoggedIn():boolean{
     const token= localStorage.getItem('token');
     return !!token;        
+  }
+  showSuccess(){
+    this.toastr.error('Usuario Registrado','CORRECTO!');
+  }
+  showError(){
+    this.toastr.error('Usuario Incorrecto','ERROR!');
+  }
+  showErrorPassword(){
+    this.toastr.error('Contraseña Incorrecta','ERROR!');
   }
  
 }
