@@ -9,6 +9,7 @@ import { CamposDeportivosComponent } from './pages/campos-deportivos/campos-depo
 import { TalleresUtilesComponent } from './pages/talleres-utiles/talleres-utiles.component';
 import { authGuard } from '../auth/guard/auth.guard';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
+import { ListaUsuariosComponent } from './pages/lista-usuarios/lista-usuarios.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,7 @@ const routes: Routes = [
       { path: 'talleres-utiles/recibo/:stepp/:voucher/:payment', component: TalleresUtilesComponent, data:{authenticate:true} },
       //USER
       { path: 'registro-usuario', component: SignUpComponent },
+      { path: 'lista-usuario', component: ListaUsuariosComponent },
       { path: '**', redirectTo: 'errors/404' },
     ],
   },

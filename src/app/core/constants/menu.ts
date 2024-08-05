@@ -19,7 +19,6 @@ export class Menu {
             { label: 'Multas', route: '/admin/multas' },
             { label: 'Campos Deportivos', route: '/admin/campos-deportivos' },
             { label: 'Talleres Utiles', route: '/admin/talleres-utiles' },
-            { label: 'Podcast', route: '/dashboard/podcast' },
           ],
         },
         {
@@ -27,11 +26,12 @@ export class Menu {
           label: 'Usuarios',
           route: '/admin',
           children: [
-            { label: 'Sign up', route: '/admin/registro-usuario' },
-            { label: 'Sign in', route: '/admin/sign-in' },
-            { label: 'Forgot Password', route: '/admin/forgot-password' },
-            { label: 'New Password', route: '/admin/new-password' },
-            { label: 'Two Steps', route: '/admin/two-steps' },
+            { label: 'Registro de Usuarios', route: '/admin/registro-usuario' },
+            { label: 'Lista de Usuarios', route: '/admin/lista-usuario' },
+            // { label: 'Sign in', route: '/admin/sign-in' },
+            // { label: 'Forgot Password', route: '/admin/forgot-password' },
+            // { label: 'New Password', route: '/admin/new-password' },
+            // { label: 'Two Steps', route: '/admin/two-steps' },
           ],
         },
         {
@@ -44,7 +44,6 @@ export class Menu {
             { label: 'Multas', route: '/admin/multas' },
             { label: 'Campos Deportivos', route: '/admin/campos-deportivos' },
             { label: 'Talleres Utiles', route: '/admin/talleres-utiles' },
-            { label: 'Podcast', route: '/dashboard/podcast' },
           ]
         },
         {

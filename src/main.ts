@@ -8,6 +8,7 @@ import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideToastr } from 'ngx-toastr';
+import { provideHttpClient } from '@angular/common/http';
 
 if (environment.production) {
   enableProdMode();
@@ -18,7 +19,7 @@ if (environment.production) {
 }
 
 bootstrapApplication(AppComponent, {
-  providers: [importProvidersFrom(BrowserModule, AppRoutingModule), provideAnimations(), provideAnimationsAsync(), provideToastr()],
+  providers: [importProvidersFrom(BrowserModule, AppRoutingModule), provideAnimations(), provideAnimationsAsync(), provideToastr(), provideHttpClient()],
 }).catch((err) => console.error(err));
 
 function selfXSSWarning() {
