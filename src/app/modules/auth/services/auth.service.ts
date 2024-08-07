@@ -90,7 +90,7 @@ export class AuthService {
     return !!token;        
   }
   showSuccess(){
-    this.toastr.error('Usuario Registrado','CORRECTO!');
+    this.toastr.success('Usuario Registrado','CORRECTO!');
   }
   showError(){
     this.toastr.error('Usuario Incorrecto','ERROR!');

@@ -28,8 +28,8 @@ const routes: Routes = [
       { path: 'talleres-utiles', component: TalleresUtilesComponent, data:{authenticate:true} },
       { path: 'talleres-utiles/recibo/:stepp/:voucher/:payment', component: TalleresUtilesComponent, data:{authenticate:true} },
       //USER
-      { path: 'registro-usuario', component: SignUpComponent },
-      { path: 'lista-usuario', component: ListaUsuariosComponent },
+      { path: 'usuario/registro-usuario', component: SignUpComponent },
+      { path: 'usuario/lista-usuario', component: ListaUsuariosComponent },
       //REPORTES
       { path: 'reporte/campos-deportivos', component: ReportesCamposDeportivosComponent },
       { path: 'reporte/campos-deportivos/atm', component: ReportesCamposDeportivosComponent },

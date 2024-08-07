@@ -49,10 +49,10 @@ export class Menu {
         {
           icon: 'assets/icons/heroicons/outline/users.svg',
           label: 'Usuarios',
-          route: '/admin',
+          route: '/admin/usuario',
           children: [
-            { label: 'Registro de Usuarios', route: '/admin/registro-usuario' },
-            { label: 'Lista de Usuarios', route: '/admin/lista-usuario' },
+            { label: 'Registro de Usuarios', route: '/admin/usuario/registro-usuario' },
+            { label: 'Lista de Usuarios', route: '/admin/usuario/lista-usuario' },
             // { label: 'Sign in', route: '/admin/sign-in' },
             // { label: 'Forgot Password', route: '/admin/forgot-password' },
             // { label: 'New Password', route: '/admin/new-password' },
