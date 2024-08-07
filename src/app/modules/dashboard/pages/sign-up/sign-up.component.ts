@@ -10,6 +10,7 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { environment } from 'src/environments/environment';
+import { NumberOnlyDirective } from 'src/app/number-only.directive';
 const RESERVATION2= environment.SERVER2;
 export interface Area {
   name: string;
@@ -19,7 +20,7 @@ export interface Area {
   templateUrl: './sign-up.component.html',
   styleUrls: ['./sign-up.component.scss'],
   standalone: true,
-  imports: [FormsModule,ReactiveFormsModule, RouterLink, AngularSvgIconModule,MatAutocompleteModule, ButtonComponent,NgClass,NgIf,AsyncPipe],
+  imports: [FormsModule,ReactiveFormsModule, RouterLink, AngularSvgIconModule,MatAutocompleteModule, ButtonComponent,NgClass,NgIf,AsyncPipe,NumberOnlyDirective],
 })
 export class SignUpComponent implements OnInit {
   form!: FormGroup;

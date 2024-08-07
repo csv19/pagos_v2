@@ -1,5 +1,5 @@
 <div class="container my-4 mx-auto">
-    <table  class="row-border hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+    <table class="row-border hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
         <thead>
             <tr>
                 <th>Usuario</th>
@@ -13,17 +13,23 @@
         <tbody>
             @if (usersList) {
                 @for (item of usersList; track item) {
-                    <tr>
-                        <td>{{item.user}}</td>
-                        <td>{{item.code}}</td>
-                        <td>{{item.area}}</td>
-                        <td>{{item.name}}</td>
-                        <td>{{item.email}}</td>
-                        <td>  
-                            <button class="btn bg-teal-200 " (click)="update()">Action 1</button>
-                        </td>
-                    </tr>
+                    @if(item.id !== user){
+                        <tr>
+                            <td>{{item.user}}</td>
+                            <td>{{item.code}}</td>
+                            <td>{{item.area}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.email}}</td>
+                            <td>
+                                <div class="w-20 flex justify-between items-center">
+                                    <button class="" (click)="update(item.id)"><img width="20" [src]="iconoPencil" alt="" srcset=""></button>
+                                    <button class="" (click)="delete(item.id)"><img width="20" [src]="iconoTrash" alt="" srcset=""></button>
+                                </div> 
+                                
+                            </td>
+                        </tr>
                     }
+                }
             }
         </tbody>
     </table>

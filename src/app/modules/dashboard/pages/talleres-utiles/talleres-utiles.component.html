@@ -2,7 +2,7 @@
       <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
         <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
           <form [formGroup]="firstFormGroup">
-            <h3>Datos del Apoderado</h3>
+            <label class="mat-step-label">Datos del Apoderado</label>
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <mat-form-field>
                 <mat-label>Tipo de Documento</mat-label>
@@ -54,7 +54,7 @@
                   formControlName="phoneCtrl">
               </mat-form-field>
             </div>
-            <h3>Datos del Alumno</h3>
+            <label class="mat-step-label">Datos del Alumno</label>
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <mat-form-field>
                 <mat-label>Tipo de Documento</mat-label>

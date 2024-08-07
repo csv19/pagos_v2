@@ -10,6 +10,7 @@ import { TalleresUtilesComponent } from './pages/talleres-utiles/talleres-utiles
 import { authGuard } from '../auth/guard/auth.guard';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 import { ListaUsuariosComponent } from './pages/lista-usuarios/lista-usuarios.component';
+import { ReportesCamposDeportivosComponent } from './reports/reportes-campos-deportivos/reportes-campos-deportivos.component';
 
 const routes: Routes = [
   {
@@ -29,6 +30,11 @@ const routes: Routes = [
       //USER
       { path: 'registro-usuario', component: SignUpComponent },
       { path: 'lista-usuario', component: ListaUsuariosComponent },
+      //REPORTES
+      { path: 'reporte/campos-deportivos', component: ReportesCamposDeportivosComponent },
+      { path: 'reporte/campos-deportivos/atm', component: ReportesCamposDeportivosComponent },
+      { path: 'reporte/talleres-utiles', component: ReportesCamposDeportivosComponent },
+      { path: 'reporte/talleres-utiles/atm', component: ReportesCamposDeportivosComponent },
       { path: '**', redirectTo: 'errors/404' },
     ],
   },
