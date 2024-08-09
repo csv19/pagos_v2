@@ -1,0 +1,73 @@
+<div class="container mx-auto">
+  <form class="my-10 space-y-6" [formGroup]="secondFormGroup" (ngSubmit)="onSubmit()">
+    <div class="text-center">
+      <h2 class="mb-1 text-3xl font-semibold text-foreground">Editar Reserva<span class="text-primary">!</span>
+      </h2>
+    </div>
+    <div
+      class="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-muted after:mt-0.5 after:flex-1 after:border-t after:border-muted">
+      <p class="mx-4 mb-0 text-center text-sm text-muted-foreground">or</p>
+    </div>
+    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <mat-form-field class="col-span-4 sm:col-span-1">
+          <mat-label>Categorias</mat-label>
+          <mat-select (ngModelChange)="getCategory()" name="category" formControlName="categoryCtrl">
+            <mat-option *ngFor="let value of dataCategory" [value]="value.id">{{value.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-span-4 sm:col-span-1">
+          <mat-label>Campos</mat-label>
+          <mat-select style="background-color: transparent;" (ngModelChange)="getField()" [multiple]="authenticate" name="field"
+            formControlName="fieldCtrl">
+            <mat-option *ngFor="let value of dataField" [value]="value.id">{{value.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-span-4 sm:col-span-1">
+          <mat-label>Tipo de Reserva</mat-label>
+          <mat-select (ngModelChange)="getTypeReservation()" name="type_reservation"
+            formControlName="typeReservationCtrl">
+            <mat-option *ngFor="let value of dataTypeReservation" [value]="value.id">{{value.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-span-4 sm:col-span-1">
+          <mat-label>Turno</mat-label>
+          <mat-select (ngModelChange)="getShift()" name="shift" formControlName="shiftCtrl">
+            <mat-option *ngFor="let value of dataShift" [value]="value.id">{{value.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="col-span-4 sm:col-span-2">
+          <mat-label>Fecha de Reserva</mat-label>
+          <input autocomplete="off" (ngModelChange)="getDateReservation()" formControlName="dateCtrl" matInput
+            [matDatepickerFilter]="myFilter" [min]="currentDate" [max]="nextDate" [matDatepicker]="picker">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field class="col-span-4 sm:col-span-2">
+          <mat-label>{{textScheduleLabel}}</mat-label>
+          <mat-select class="bg-transparent" (ngModelChange)="getSchedule()" name="schedule" multiple
+            formControlName="scheduleCtrl">
+            <mat-select-trigger>
+              {{1 || ''}}
+              @if((secondFormGroup.get('scheduleCtrl')?.value?.length || 0)>1){
+              <span>
+                (+{{(secondFormGroup.get('scheduleCtrl')?.value?.length || 0) - 1}}
+                {{secondFormGroup.get('scheduleCtrl')?.value?.length === 2 ? 'horario' : 'horarios'}})
+              </span>
+              }
+            </mat-select-trigger>
+            @if(dataSchedule && dataSchedule.length>0){
+            <ng-container>
+              <mat-option *ngFor="let value of dataSchedule" [value]="value.id">
+                {{formatHour(value.hour_start)}}-{{formatHour(value.hour_end)}}</mat-option>
+            </ng-container>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+<!-- Submit Button -->
+<div>
+  <app-button full impact="bold" tone="primary" shape="rounded" size="medium">Actualizar Registro</app-button>
+</div>
+</form>
+</div>

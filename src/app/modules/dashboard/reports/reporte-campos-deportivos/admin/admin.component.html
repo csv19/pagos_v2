@@ -9,11 +9,12 @@
                 <th>N° Documento</th>
                 <th>Nombres</th>
                 <th>Apellidos</th>
-                <th>N° Voucher</th>
                 <th>Reserva</th>
                 <th>Campo</th>
                 <th>Cajero</th>
+                <th>N° Voucher</th>
                 <th>Método de Pago</th>
+                <th>Total</th>
                 <th>Fecha de Pago</th>
                 <th>Accciones</th>
             </tr>
@@ -26,13 +27,17 @@
                 <td>{{item.people_name}}</td>
                 <td>{{item.people_lastName}}</td>
                 <td>{{item.category}}</td>
-                <td>{{item.nro_voucher}}</td>
                 <td>{{item.field_name}}</td>
                 <td>{{item.user?item.user:'Online'}}</td>
+                <td>{{item.nro_voucher}}</td>
                 <td>{{item.payment_method}}</td>
+                <td>S/.{{item.price_reservation}}</td>
                 <td>{{item.created_at}}</td>
                 <td>
                 <div class="w-[50px] flex justify-between items-center">
+                    <button class="" (click)="update(item.voucher_id)">
+                        <img width="20" [src]="iconoPencil" alt="" srcset="">
+                    </button>
                     <a target="_blank" href="{{url}}/fields/voucher/{{item.voucher_id}}/{{item.payment_id}}/2">
                     <img width="20" [src]="iconoVoucher" alt="" srcset="">
                     </a>

@@ -126,7 +126,7 @@ export interface Area {
   selector: 'editar-usuario.component',
   standalone: true,
   imports: [EditarUsuarioComponent, FormsModule, ReactiveFormsModule,RouterLink,AngularSvgIconModule,MatAutocompleteModule,ButtonComponent,NgClass,NgIf,AsyncPipe,NumberOnlyDirective],
-  templateUrl: '../editar-usuario/editar-usuario.component.html',
+  templateUrl: '../../components/editar-usuario/editar-usuario.component.html',
 })
 
 export class EditarUsuarioComponent implements OnInit{
