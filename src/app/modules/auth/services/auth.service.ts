@@ -78,6 +78,17 @@ export class AuthService {
       }
     );
   }
+  update(data:any){
+    this.http.post<any>(`${URL}/update`,data).subscribe(
+      response=>{
+        console.log(response);
+        this.showSuccess();
+      },error=>{
+        console.error(error);
+        this.showError();
+      }
+    );
+  }
   redirectLogin() {
     this._router.navigateByUrl('admin/login');
   }

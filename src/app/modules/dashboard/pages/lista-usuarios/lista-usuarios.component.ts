@@ -137,28 +137,21 @@ export class EditarUsuarioComponent implements OnInit{
   submitted = false;
   areas:Area[] = [];
   filteredOptions: Observable<Area[]> | undefined;
-  user:any={
-    id:'',
-    user:'',
-    name:'',
-    code:'',
-    email:'',
-    area:'',
-    password:''
-  }
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient, private authService: AuthService) {
+  userId!:number;
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient, private authService: AuthService,public dialog: MatDialog) {
     this.http.get(`${RESERVATION2}/areas`).subscribe(
       (value:any) => {
         this.areas = value.data;
         this.http.get(`${RESERVATION2}/edit/${data.id}`).subscribe(
           (response:any)=>{
               const area_id:number=response.data[0].area_id;
-              this.user.id=data.id;
-              this.user.name=response.data[0].name;
-              this.user.user=response.data[0].user;
-              this.user.code=response.data[0].code;
-              this.user.email=response.data[0].email;
-              this.user.area=this.areas[area_id -1].name;
+              this.userId=data.id;
+              this.form.get('name')?.setValue(response.data[0].name);
+              this.form.get('user')?.setValue(response.data[0].user);
+              this.form.get('code')?.setValue(response.data[0].code);
+              this.form.get('email')?.setValue(response.data[0].email);
+              this.form.get('area')?.setValue(this.areas[area_id -1]);
+              // this.user.area=this.areas[area_id -1].name;
           },error=>{console.log(error);
           }
         )
@@ -215,8 +208,19 @@ export class EditarUsuarioComponent implements OnInit{
     const email=this.form.get('email');
     const area=this.form.get('area');
     const password=this.form.get('password');
+    
     if(user && code && name && email && area && password && this.passwordColor){
-    console.log(this.user);
+      const people={
+        id: this.userId,
+        user:user.value,
+        code: code.value,
+        name: name.value,
+        email: email.value,
+        area_id: area.value.id,
+        password: password.value
+      } 
+      this.authService.update(people);
+      this.dialog.closeAll()
     }
     
   }

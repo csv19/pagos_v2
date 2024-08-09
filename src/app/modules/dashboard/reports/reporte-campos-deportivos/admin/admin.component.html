@@ -1,0 +1,47 @@
+<div class="container bg-transparent py-4 my-4 mx-auto h-full">
+    <div [ngClass]="isLoading?'block':'hidden'" class="w-full h-4/5 flex justify-center items-center">
+        <mat-spinner [diameter]="50"></mat-spinner>
+    </div>
+    <div [ngClass]="!isLoading?'block':'hidden'">
+        <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+            <thead class="">
+            <tr class="text-primary">
+                <th>N° Documento</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>N° Voucher</th>
+                <th>Reserva</th>
+                <th>Campo</th>
+                <th>Cajero</th>
+                <th>Método de Pago</th>
+                <th>Fecha de Pago</th>
+                <th>Accciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if(reserva){
+            @for(item of reserva; track item){
+            <tr class="text-muted-foreground uppercase">
+                <td>{{item.nro_document}}</td>
+                <td>{{item.people_name}}</td>
+                <td>{{item.people_lastName}}</td>
+                <td>{{item.category}}</td>
+                <td>{{item.nro_voucher}}</td>
+                <td>{{item.field_name}}</td>
+                <td>{{item.user?item.user:'Online'}}</td>
+                <td>{{item.payment_method}}</td>
+                <td>{{item.created_at}}</td>
+                <td>
+                <div class="w-[50px] flex justify-between items-center">
+                    <a target="_blank" href="{{url}}/fields/voucher/{{item.voucher_id}}/{{item.payment_id}}/2">
+                    <img width="20" [src]="iconoVoucher" alt="" srcset="">
+                    </a>
+                </div>
+                </td>
+            </tr>
+            }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

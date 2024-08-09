@@ -114,6 +114,8 @@ export class CamposDeportivosComponent implements OnInit {
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef){
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
+      console.log(this.authenticate);
+      
     });
     this.textScheduleLabel='Horarios Disponibles';
     this.getCalendar();

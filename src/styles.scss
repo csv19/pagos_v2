@@ -188,6 +188,18 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 // Style to fix the weird border with angular material
+.dataTables_length{
+  color: hsl(var(--muted-foreground)) !important;
+}
+.dataTables_filter{
+  color: hsl(var(--muted-foreground)) !important;
+}
+.dataTables_paginate{
+  color: hsl(var(--muted-foreground)) !important;
+}
+.dataTables_info{
+  color: hsl(var(--muted-foreground)) !important;
+}
 .dataTables_length label{
   display: flex;
   align-items: center;

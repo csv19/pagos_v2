@@ -10,7 +10,12 @@ import { TalleresUtilesComponent } from './pages/talleres-utiles/talleres-utiles
 import { authGuard } from '../auth/guard/auth.guard';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 import { ListaUsuariosComponent } from './pages/lista-usuarios/lista-usuarios.component';
-import { ReportesCamposDeportivosComponent } from './reports/reportes-campos-deportivos/reportes-campos-deportivos.component';
+import { ReportesCamposDeportivosAdminComponent } from './reports/reporte-campos-deportivos/admin/admin.component';
+import { ReportesCamposDeportivosAtmComponent } from './reports/reporte-campos-deportivos/atm/atm.component';
+import { ReportesTalleresUtilesAdminComponent } from './reports/reporte-talleres-utiles/admin/admin.component';
+import { ReportesTalleresUtilesAtmComponent } from './reports/reporte-talleres-utiles/atm/atm.component';
+
+
 
 const routes: Routes = [
   {
@@ -31,10 +36,10 @@ const routes: Routes = [
       { path: 'usuario/registro-usuario', component: SignUpComponent },
       { path: 'usuario/lista-usuario', component: ListaUsuariosComponent },
       //REPORTES
-      { path: 'reporte/campos-deportivos', component: ReportesCamposDeportivosComponent },
-      { path: 'reporte/campos-deportivos/atm', component: ReportesCamposDeportivosComponent },
-      { path: 'reporte/talleres-utiles', component: ReportesCamposDeportivosComponent },
-      { path: 'reporte/talleres-utiles/atm', component: ReportesCamposDeportivosComponent },
+      { path: 'reporte/campos-deportivos', component:  ReportesCamposDeportivosAdminComponent},
+      { path: 'reporte/campos-deportivos/atm', component:  ReportesCamposDeportivosAtmComponent},
+      { path: 'reporte/talleres-utiles', component:  ReportesTalleresUtilesAdminComponent},
+      { path: 'reporte/talleres-utiles/atm', component: ReportesTalleresUtilesAtmComponent },
       { path: '**', redirectTo: 'errors/404' },
     ],
   },

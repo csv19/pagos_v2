@@ -15,7 +15,6 @@
           [ngClass]="{ 'is__invalid-input': submitted && f['name'].errors }"
           class="peer block"
           placeholder=" "
-          [value]="user.name"
           formControlName="name"
            />
         <label
@@ -31,7 +30,6 @@
           [ngClass]="{ 'is__invalid-input': submitted && f['area'].errors }"
           class="peer block"
           formControlName="area"
-          [value]="user.area"
           [matAutocomplete]="auto"
            />
            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
@@ -50,7 +48,6 @@
           onlyNumber
           type="text"
           id="code"
-          [value]="user.code"
           [ngClass]="{ 'is__invalid-input': submitted && f['code'].errors }"
           class="peer block"
           placeholder=" "
@@ -65,7 +62,6 @@
           <input
           type="text"
           id="user"
-          [value]="user.user"
           [ngClass]="{ 'is__invalid-input': submitted && f['user'].errors }"
           class="peer block"
           placeholder=" "
@@ -80,7 +76,6 @@
           <input
             type="text"
             id="email"
-            [value]="user.email"
             [ngClass]="{ 'is__invalid-input': submitted && f['email'].errors }"
             class="peer block"
             placeholder=" "
