@@ -104,13 +104,13 @@
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Fechas</mat-label>
                 <mat-select (ngModelChange)="getWorkshopDate()" formControlName="workshopDateCtrl">
-                  <mat-option *ngFor="let value of dataWorkshorpDate" [value]="value.id">{{value.description}}</mat-option>
+                  <mat-option *ngFor="let value of dataWorkshopDate" [value]="value.id">{{value.description}}</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Horarios</mat-label>
                 <mat-select (ngModelChange)="getWorkshopHour()" formControlName="workshopHourCtrl">
-                  <mat-option *ngFor="let value of dataWorkshorpHour" [value]="value.id">{{value.description}}</mat-option>
+                  <mat-option *ngFor="let value of dataWorkshopHour" [value]="value.id">{{value.description}}</mat-option>
                 </mat-select>
               </mat-form-field>
                 @if(authenticate){

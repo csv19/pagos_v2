@@ -65,7 +65,7 @@ export class TalleresUtilesComponent implements OnInit{
   authenticate!:boolean;stepp!:number;voucher!:number;
   payment!:number;
   vacationDay!:number; vacationHour!:number; workshop!:number;
-  dataDocument:any; dataWorkshorp:Workshop[] = []; dataWorkshorpDate:any; dataWorkshorpHour:any;
+  dataDocument:any; dataWorkshop:Workshop[] = []; dataWorkshopDate:any; dataWorkshopHour:any;
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;sizeCharterStudent!:number;
   dataTypePayments:any=[]; dataOptionPayments:any=[];
   totalPrice:any; season:string='';
@@ -134,8 +134,8 @@ export class TalleresUtilesComponent implements OnInit{
     );
     this.http.get(WORKSHORP).subscribe(
       (response:any) => {
-        this.dataWorkshorp = response.data;
-        console.log(this.dataWorkshorp);
+        this.dataWorkshop = response.data;
+        console.log(this.dataWorkshop);
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -157,7 +157,7 @@ export class TalleresUtilesComponent implements OnInit{
       startWith(''),
       map((value:any) => {
         const name = typeof value === 'string' ? value : value?.name;
-        return name ? this._filter(name as string) : this.dataWorkshorp.slice();
+        return name ? this._filter(name as string) : this.dataWorkshop.slice();
       }),
     );
     this.route.url.subscribe(url=>{
@@ -187,7 +187,7 @@ export class TalleresUtilesComponent implements OnInit{
   private _filter(name: string): Workshop[] {
     const filterValue = name.toLowerCase();
 
-    return this.dataWorkshorp.filter(option => option.name.toLowerCase().includes(filterValue));
+    return this.dataWorkshop.filter(option => option.name.toLowerCase().includes(filterValue));
   }
   //FIRST GROUP
   checkFieldsNotEmptyFirstGroup(group: FormGroup) {
@@ -483,7 +483,7 @@ export class TalleresUtilesComponent implements OnInit{
     this.season='';
     if(workshop.id){
       this.workshop=workshop.id;
-      this.dataWorkshorp.map(
+      this.dataWorkshop.map(
         (value:any)=>{
           if(value.id == workshop.id){
             this.totalPrice=value.price;
@@ -495,16 +495,16 @@ export class TalleresUtilesComponent implements OnInit{
       
       workshopDate?.enable();
       const data=[workshop.id];
-      const route='workshorps/dates';
-      const dataWorkshorpDate:any = await this.getSelectSecondFormGroup(route,data).toPromise();
-      this.dataWorkshorpDate=dataWorkshorpDate.data;
+      const route='workshops/dates';
+      const dataWorkshopDate:any = await this.getSelectSecondFormGroup(route,data).toPromise();
+      this.dataWorkshopDate=dataWorkshopDate.data;
     }
   }
   async getWorkshopDate(){
     const workshopDate:any=this.validateSecondFormGroup().workshopDate?.value;
     const workshopHour:any=this.validateSecondFormGroup().workshopHour;
     if(workshopDate){
-      this.dataWorkshorpDate.map(
+      this.dataWorkshopDate.map(
         (value:any)=>{
           if(value.id==workshopDate){
             this.vacationDay=value.vacation_day_id;
@@ -514,16 +514,16 @@ export class TalleresUtilesComponent implements OnInit{
       console.log(this.vacationDay);
       workshopHour?.enable();
       const data=[workshopDate];
-      const route='workshorps/hours';
-      const dataWorkshorpHour:any = await this.getSelectSecondFormGroup(route,data).toPromise();
-      this.dataWorkshorpHour=dataWorkshorpHour.data;
+      const route='workshops/hours';
+      const dataWorkshopHour:any = await this.getSelectSecondFormGroup(route,data).toPromise();
+      this.dataWorkshopHour=dataWorkshopHour.data;
     }
   }
   getWorkshopHour(){
     const workshopHour:any=this.validateSecondFormGroup().workshopHour?.value;
     if(workshopHour){
       const vacationHour:any=[];
-      this.dataWorkshorpHour.map(
+      this.dataWorkshopHour.map(
         (value:any)=>{
           if(value.id==workshopHour){
             vacationHour.push(value);
@@ -571,7 +571,7 @@ export class TalleresUtilesComponent implements OnInit{
         observation: this.validateSecondFormGroup().observationPayment?.value,
       } 
       console.log("Pago por Admin");
-      const route='workshorps/atm';
+      const route='workshops/atm';
       this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
         (response) => {
           if (response && response.code === 200) {   
@@ -610,7 +610,7 @@ export class TalleresUtilesComponent implements OnInit{
             total: this.totalPrice,
           } 
           console.log(this.reservation);
-          const route='workshorps/niubiz';
+          const route='workshops/niubiz';
           this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
             (response) => {
               if (response && response.code === 200) {   
