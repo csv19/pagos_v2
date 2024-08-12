@@ -1,16 +1,9 @@
-<div [class]="size">
-  <div class="cursor-pointer bg-primary hover:opacity-75 rounded-lg text-center p-4 h-full" (click)="goToPage(url)">
-    <div class=" w-full relative mx-auto mb-4">
-      <div class="relative pb-[150px]">
-        <div>
-          <img
-            [src]="image"
-            alt="module cover image"
-            class="absolute w-fit h-full" />
-        </div>
-      </div>
-    </div>
-    <div class="truncate text-sm font-semibold text-white">{{ title }}</div>
-  </div>  
+<div class="flex flex-col justify-center items-center text-center h-30 bg-blue-600 p-2 text-white font-semibold rounded-lg cursor-pointer hover:bg-blue-400" (click)="goToPage(url)">
+  <img
+    [src]="image"
+    alt="module cover image"
+    class="w-20 h-20 mx-auto" />
+    <p class="text-xs sm:text-base h-4 sm:h-auto">{{ title }}</p>
 </div>
+
   

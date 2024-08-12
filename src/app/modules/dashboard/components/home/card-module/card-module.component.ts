@@ -12,13 +12,15 @@ import { ButtonComponent } from 'src/app/shared/components/button/button.compone
 })
 
 export class CardModuleComponent {
-  constructor(private router: Router){}
+  constructor(private router: Router){
+  }
   @Input() size: string = '';
   @Input() title: string = '';
   @Input() subtitle: string = '';
   @Input() image: string = '';
   @Input() url: string = '';
-
+  @Input() link: string = '';
+  
   goToPage(value :string){
     console.log(value);
     

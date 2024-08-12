@@ -12,7 +12,7 @@ const routes: Routes = [
     path: '',
     component: HomeComponent,
     children: [
-        { path: '', redirectTo: 'campos-deportivos', pathMatch: 'full' },
+        { path: '', redirectTo: '/', pathMatch: 'full' },
         { path: 'tributos-municipales', component: TributosMunicipalesComponent, data:{authenticate:false}},
         { path: 'tramites-servicios', component: TramitesServiciosComponent },
         { path: 'multas', component: MultasComponent },
