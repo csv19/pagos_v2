@@ -98,20 +98,20 @@
                 <input type="text" placeholder="Ingrese taller" (ngModelChange)="getWorkshop()" matInput formControlName="workshopCtrl" [matAutocomplete]="auto">
                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
                   @for (option of filteredOptions | async; track option) {
-                    <mat-option [value]="option">{{option.name}}</mat-option>
+                    <mat-option [value]="option">{{option.DESCRIPCION}}</mat-option>
                   }
                 </mat-autocomplete>
               </mat-form-field>
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Fechas</mat-label>
                 <mat-select (ngModelChange)="getWorkshopDate()" formControlName="workshopDateCtrl">
-                  <mat-option *ngFor="let value of dataWorkshopDate" [value]="value.id">{{value.description}}</mat-option>
+                  <mat-option *ngFor="let value of dataWorkshopDate" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Horarios</mat-label>
                 <mat-select (ngModelChange)="getWorkshopHour()" formControlName="workshopHourCtrl">
-                  <mat-option *ngFor="let value of dataWorkshopHour" [value]="value.id">{{value.description}}</mat-option>
+                  <mat-option *ngFor="let value of dataWorkshopHour" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
                 </mat-select>
               </mat-form-field>
                 @if(authenticate){

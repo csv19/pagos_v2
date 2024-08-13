@@ -34,7 +34,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   }
 }
 export interface Workshop {
-  name: string;
+  DESCRIPCION: string;
 }
 @Component({
   selector: 'app-talleres-utiles',
@@ -65,7 +65,7 @@ export class TalleresUtilesComponent implements OnInit{
   authenticate!:boolean;stepp!:number;voucher!:number;
   payment!:number;
   vacationDay!:number; vacationHour!:number; workshop!:number;
-  dataDocument:any; dataWorkshop:Workshop[] = []; dataWorkshopDate:any; dataWorkshopHour:any;
+  dataDocument:any; dataWorkshop:Workshop[] = []; dataWorkshopDate:any=[]; dataWorkshopHour:any=[];
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;sizeCharterStudent!:number;
   dataTypePayments:any=[]; dataOptionPayments:any=[];
   totalPrice:any; season:string='';
@@ -133,9 +133,15 @@ export class TalleresUtilesComponent implements OnInit{
       }
     );
     this.http.get(WORKSHORP).subscribe(
-      (response:any) => {
-        this.dataWorkshop = response.data;
-        console.log(this.dataWorkshop);
+      (response:any) => {  
+        console.log(response);
+      response.data.map(
+          (value:any)=>{
+            if(value.tbl == "taller"){
+              this.dataWorkshop.push(value)
+            }
+          }
+        )
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -156,8 +162,8 @@ export class TalleresUtilesComponent implements OnInit{
     this.filteredOptions = this.secondFormGroup.get('workshopCtrl')?.valueChanges.pipe(
       startWith(''),
       map((value:any) => {
-        const name = typeof value === 'string' ? value : value?.name;
-        return name ? this._filter(name as string) : this.dataWorkshop.slice();
+        const descripcion = typeof value === 'string' ? value : value?.descripcion;
+        return descripcion ? this._filter(descripcion as string) : this.dataWorkshop.slice();
       }),
     );
     this.route.url.subscribe(url=>{
@@ -167,8 +173,6 @@ export class TalleresUtilesComponent implements OnInit{
       this.stepp=data[2];
       this.voucher=data[3];
       this.payment=data[4];
-      console.log(this.stepp);
-      
       if(this.stepp !=2){
         this.router.navigate([`${route}/talleres-utiles`]);  
       }else{
@@ -181,13 +185,13 @@ export class TalleresUtilesComponent implements OnInit{
   @ViewChild('stepper') stepper!: MatStepper;
   public atm:any={};
   displayFn(workshop: Workshop): string {
-    return workshop && workshop.name ? workshop.name : '';
+    return workshop && workshop.DESCRIPCION ? workshop.DESCRIPCION : '';
   }
 
-  private _filter(name: string): Workshop[] {
-    const filterValue = name.toLowerCase();
+  private _filter(DESCRIPCION: string): Workshop[] {
+    const filterValue = DESCRIPCION.toLowerCase();
 
-    return this.dataWorkshop.filter(option => option.name.toLowerCase().includes(filterValue));
+    return this.dataWorkshop.filter(option => option.DESCRIPCION.toLowerCase().includes(filterValue));
   }
   //FIRST GROUP
   checkFieldsNotEmptyFirstGroup(group: FormGroup) {
@@ -481,42 +485,64 @@ export class TalleresUtilesComponent implements OnInit{
     const workshopDate:any=this.validateSecondFormGroup().workshopDate;
     this.resetValidateSecondFormGroup();
     this.season='';
-    if(workshop.id){
-      this.workshop=workshop.id;
-      this.dataWorkshop.map(
-        (value:any)=>{
-          if(value.id == workshop.id){
-            this.totalPrice=value.price;
-            this.season=value.seasonId;
-          }
-        }
-      );
-      console.log(this.totalPrice);
+    this.dataWorkshopDate=[];
+    if(workshop.ID){
+      this.workshop=workshop.ID;
+      console.log(this.workshop);
+      
+      // this.dataWorkshop.map(
+      //   (value:any)=>{
+      //     if(value.id == workshop.id){
+      //       this.totalPrice=value.price;
+      //       this.season=value.seasonId;
+      //     }
+      //   }
+      // );
+      // console.log(this.totalPrice);
       
       workshopDate?.enable();
-      const data=[workshop.id];
+      const data=[workshop.ID];
       const route='workshops/dates';
       const dataWorkshopDate:any = await this.getSelectSecondFormGroup(route,data).toPromise();
-      this.dataWorkshopDate=dataWorkshopDate.data;
-    }
-  }
-  async getWorkshopDate(){
-    const workshopDate:any=this.validateSecondFormGroup().workshopDate?.value;
-    const workshopHour:any=this.validateSecondFormGroup().workshopHour;
-    if(workshopDate){
-      this.dataWorkshopDate.map(
+      dataWorkshopDate.data.map(
         (value:any)=>{
-          if(value.id==workshopDate){
-            this.vacationDay=value.vacation_day_id;
+          if(value.tbl == "Dia"){
+            console.log(value);
+            this.dataWorkshopDate.push(value)
           }
         }
       )
-      console.log(this.vacationDay);
+      
+      // this.dataWorkshopDate=dataWorkshopDate.data;
+    }
+  }
+  async getWorkshopDate(){
+    const workshop:any=this.validateSecondFormGroup().workshop?.value;
+    const workshopDate:any=this.validateSecondFormGroup().workshopDate?.value;
+    const workshopHour:any=this.validateSecondFormGroup().workshopHour;
+    workshopHour?.reset();
+    this.dataWorkshopHour=[];
+    if(workshop && workshopDate){
       workshopHour?.enable();
-      const data=[workshopDate];
+      const data=[workshop.ID,workshopDate];
+      console.log(data);
       const route='workshops/hours';
       const dataWorkshopHour:any = await this.getSelectSecondFormGroup(route,data).toPromise();
-      this.dataWorkshopHour=dataWorkshopHour.data;
+      dataWorkshopHour.data.map(
+        (value:any)=>{
+          if(value.tbl == "Hora"){
+            console.log(value);
+            this.dataWorkshopHour.push(value)
+          }
+          if(value.tbl=="tasa"){
+            this.totalPrice=value.DESCRIPCION;
+            this.totalPrice=50;
+            console.log(this.totalPrice);
+          }
+        }
+      )
+
+
     }
   }
   getWorkshopHour(){
@@ -530,7 +556,7 @@ export class TalleresUtilesComponent implements OnInit{
           }
         }
       )
-      this.vacationHour =vacationHour[0].vacation_hour_id;
+      // this.vacationHour =vacationHour[0].vacation_hour_id;
     }
   }
   async getTypePayments(){
