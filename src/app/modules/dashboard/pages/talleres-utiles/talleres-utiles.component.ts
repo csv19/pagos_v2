@@ -65,7 +65,7 @@ export class TalleresUtilesComponent implements OnInit{
   authenticate!:boolean;stepp!:number;voucher!:number;
   payment!:number;
   vacationDay!:number; vacationHour!:number; workshop!:number;
-  dataDocument:any; dataWorkshop:Workshop[] = []; dataWorkshopDate:any=[]; dataWorkshopHour:any=[];
+  dataDocument:any=[]; dataWorkshop:Workshop[] = []; dataWorkshopDate:any=[]; dataWorkshopHour:any=[];
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;sizeCharterStudent!:number;
   dataTypePayments:any=[]; dataOptionPayments:any=[];
   totalPrice:any; season:string='';
@@ -126,7 +126,13 @@ export class TalleresUtilesComponent implements OnInit{
     });
     this.http.get(OPTION_DOCUMENT).subscribe(
       (response:any) => {
-        this.dataDocument = response.data;
+        // this.dataDocument = response.data;
+        response.data.map((value:any)=>{
+          console.log(value.type_doc);
+          if(value.type_doc !== 'RUC'){
+            this.dataDocument.push(value);
+          }
+        })
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -142,16 +148,6 @@ export class TalleresUtilesComponent implements OnInit{
             }
           }
         )
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
-    this.http.get(`${RESERVATION2}/type-payments`).subscribe(
-      (response:any) => {
-        if(response.code===200){
-          this.dataTypePayments= response.data;
-        }
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -588,8 +584,7 @@ export class TalleresUtilesComponent implements OnInit{
         season: this.season,
         workshop: this.workshop,
         workshopHour:this.validateSecondFormGroup().workshopHour?.value,
-        date: this.vacationDay,
-        schedule: this.vacationHour,
+        date: this.validateSecondFormGroup().workshopDate?.value,
         total: this.totalPrice,
         userId: this.atm.data.id,
         module: this.validateSecondFormGroup().typePayment?.value,
@@ -631,7 +626,7 @@ export class TalleresUtilesComponent implements OnInit{
             season: this.season,
             workshop: this.workshop,
             workshopHour:this.validateSecondFormGroup().workshopHour?.value,
-            date: this.vacationDay,
+            date: this.validateSecondFormGroup().workshopDate?.value,
             schedule: this.vacationHour,
             total: this.totalPrice,
           } 
