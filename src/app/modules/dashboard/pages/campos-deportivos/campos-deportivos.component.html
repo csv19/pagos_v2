@@ -149,12 +149,65 @@
             </mat-form-field>
           </div>
         </div>
+        @if(!authenticate){
         <div>
-          <button mat-raised-button color="primary" (click)="save()"
-            [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
+          <button mat-raised-button color="primary" matStepperNext (click)="reservation()"
+            [disabled]="secondFormGroup.invalid">Reservar</button>
         </div>
+      }@else{
+        <div>
+          <button mat-raised-button color="primary" matStepperNext (click)="save()"
+            [disabled]="secondFormGroup.invalid">Reservar</button>
+        </div>
+      }
       </form>
     </mat-step>
+    @if(!authenticate){
+    <mat-step label="Ficha de Reserva">
+      <div>
+        @if(dataVoucher.length>0){
+            <div class="my-5 flex h-auto items-start justify-center">
+              <div class="w-[350px] rounded border bg-gray-50 p-4 shadow-lg">
+                <img src="./assets/icons/logo.png" alt="logo-magdalena" class="mx-auto w-16 pb-4" />
+                <div class="flex flex-col justify-center items-center gap-2">
+                  <p class="font-semibold text-center text-sm">Municipalidad de Magdalena del Mar
+                    <br>
+                    Oficina de Tesorería
+                  </p>
+                  <p class="text-sm font-semibold">Ficha de Reserva</p>
+                </div>
+                <table class="w-full">
+                    <thead>
+                      <th class="text-left text-sm">Decripción</th>
+                      <th class="text-right text-sm">Monto</th>
+                    </thead>
+                    <tbody>
+                      <tr class="border-black	border-y" *ngFor="let voucher of dataVoucher">
+                        <td class="text-left text-xs">
+                          <span>
+                            {{voucher.category}}<br>
+                            {{voucher.field_name}}-{{voucher.campus}}<br>
+                            {{formatHour(voucher.hour_start)}} a {{formatHour(voucher.hour_end)}}<br>
+                            {{voucher.date_reservation}}
+                          </span>
+                        </td>
+                        <td class="text-right text-xs"><span>S./{{voucher.price_reservation}}.00</span></td>
+                      </tr>
+                      <tr>
+                        <td class="text-left uppercase font-semibold"><span>Total</span></td>
+                        <td class="text-right text-xs"><span>S./{{totalPrice}}.00</span></td>
+                      </tr>
+                    </tbody>
+                </table>
+              </div>
+            </div>
+            <button style="display: flex;" class="mx-auto" mat-raised-button color="primary" (click)="save()"
+            >Pagar Aquí</button>
+        }
+        
+      </div>
+    </mat-step>
+  }
     <mat-step label="Recibo de Pago">
       @if(dataVoucher.length>0){
       <div class="w-fit mx-auto">
