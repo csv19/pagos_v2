@@ -2,14 +2,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Observable } from 'rxjs';
+import { BehaviorSubject,Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 const URL=environment.SERVER2;
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService {  
   
   constructor(private http: HttpClient, private readonly _router: Router,private toastr: ToastrService) { }
@@ -20,7 +19,6 @@ export class AuthService {
     };
     this.http.post<any>(`${URL}/login`,data).subscribe(
       response=>{
-        console.log(response);
         localStorage.setItem('token',response.token);
         this.validateToken(response.token);
       },error=>{
@@ -37,9 +35,9 @@ export class AuthService {
     this.http.get(`${URL}/profile`, { headers: headers }).subscribe(
       (response:any)=>{
         localStorage.setItem('profileData', JSON.stringify(response));
+        localStorage.setItem('role',response.data.role);        
         this.redirectHome();
       },error=>{
-        console.log(error);
         this.showError();
       }
     )   
@@ -55,22 +53,21 @@ export class AuthService {
       response=>{
         localStorage.removeItem('profileData');
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
         this.redirectLogin();
         
       },error=>{
         localStorage.removeItem('profileData');
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
         this.redirectLogin();
         
       }
     )
   }
-  register(data:any){
-    console.log(data);
-    
+  register(data:any){ 
     this.http.post<any>(`${URL}/register`,data).subscribe(
       response=>{
-        console.log(response);
         this.showSuccess();
       },error=>{
         console.error(error);
@@ -81,7 +78,6 @@ export class AuthService {
   update(data:any){
     this.http.post<any>(`${URL}/update`,data).subscribe(
       response=>{
-        console.log(response);
         this.showSuccess();
       },error=>{
         console.error(error);
@@ -96,8 +92,8 @@ export class AuthService {
   redirectHome() {
     this._router.navigateByUrl('admin');
   }
-  isLoggedIn():boolean{
-    const token= localStorage.getItem('token');
+  isLoggedIn(){
+    const token= localStorage.getItem('token')
     return !!token;        
   }
   showSuccess(){
@@ -110,4 +106,8 @@ export class AuthService {
     this.toastr.error('Contraseña Incorrecta','ERROR!');
   }
  
+}
+export interface User{
+  username: string;
+  roles: string[];
 }

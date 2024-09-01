@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Component,Inject, Input, OnInit, Output } from "@angular/core";
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { DataTablesModule } from 'angular-datatables';
@@ -22,29 +22,37 @@ const RESERVATION2= environment.SERVER2;
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule],
+  providers: [provideNativeDateAdapter()],
+  imports: [FormsModule,DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule,MatFormFieldModule, MatInputModule, MatDatepickerModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
 export class ReportesCamposDeportivosAdminComponent {
   url:string=RESERVATION2; 
   reserva:any;
+  date:any
+  date1:any
+  date2:any
   isLoading:boolean=true;
   iconoVoucher = 'assets/icons/heroicons/outline/voucher.svg';
   iconoPencil = 'assets/icons/heroicons/outline/pencil.svg';
   dtOptions:ADTSettings={};
   dtTrigger = new Subject<ADTSettings>();
   constructor(private http: HttpClient, public dialog: MatDialog){
+    this.date=new Date();
+    this.date1=new Date();
+    this.date2=new Date();
     setTimeout(()=>{
       this.isLoading=false;
     },1000)
     this.loadReserva();
-    this.dtOptions={
-      pagingType:'simple_numbers',
-      language: LanguageApp.spanish_datatables,
-      responsive: true,
-      order : [10, 'desc'],
+    
+  }
+  validateDate(){
+    if(this.date1>this.date2){
+      return false;
     }
+    return true;
   }
   loadReserva(){
       this.getReserva().subscribe(
@@ -55,9 +63,18 @@ export class ReportesCamposDeportivosAdminComponent {
           console.error(error);
         }
       )
+      this.dtOptions={
+        pagingType:'simple_numbers',
+        language: LanguageApp.spanish_datatables,
+        responsive: true,
+        order : [10, 'desc'],
+      }
   }
   getReserva():Observable<any[]>{
-    return this.http.get<any[]>(`${RESERVATION2}/workshops/reservations`);
+    const day='20240101';
+    const fecha2 = new Date();
+    const day2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+    return this.http.get<any[]>(`${RESERVATION2}/calendars/reservations/${day}/${day2}`);
   }
   showVoucher(id:number){
     console.log(id);
@@ -72,6 +89,39 @@ export class ReportesCamposDeportivosAdminComponent {
       data: data
     });
     
+  }
+  getReport(){
+    const fecha1 = new Date(this.date1);
+    const fecha2 = new Date(this.date2);
+      const date1 = fecha1.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+      const date2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+    if(this.validateDate()){
+      const data={
+        'module':3,
+        'date1':date1,
+        'date2':date2,
+      }
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      this.http.post(`${RESERVATION2}/report/excel`, data, {
+        headers: headers,
+        responseType: 'blob' // Asegúrate de que la respuesta sea tratada como un blob
+      }).subscribe(
+        (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'teatro.xlsx';
+          link.click();
+          window.URL.revokeObjectURL(url);
+        },error => {
+          console.error('Download error:', error);
+        }
+      )
+      console.log("reporte");
+    }
   }
   ngAfterViewInit() {
     setTimeout(() => {

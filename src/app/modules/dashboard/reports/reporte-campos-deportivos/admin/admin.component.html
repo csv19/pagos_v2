@@ -49,4 +49,28 @@
             </tbody>
         </table>
     </div>
+    <div class="my-4" [ngClass]="!isLoading?'block':'hidden'">
+        <h3>Reporte</h3>
+        <div class=" flex justify-between items-start w-[550px]">
+            <div>
+                <mat-form-field>
+                    <mat-label>Fecha de Inicio</mat-label>
+                    <input matInput (ngModelChange)="validateDate()" [(ngModel)]="date1" [max]="date" [matDatepicker]="picker">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-label>Fecha Termino</mat-label>
+                    <input matInput (ngModelChange)="validateDate()" [(ngModel)]="date2" [matDatepicker]="picker2" [max]="date">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+            </div>
+        </div>
+        <div>
+            <button class="mr-2 inline-flex rounded-md px-3 py-2 text-sm font-medium bg-primary text-primary-foreground" (click)="getReport()">Generar</button>
+        </div>
+    </div>
 </div>

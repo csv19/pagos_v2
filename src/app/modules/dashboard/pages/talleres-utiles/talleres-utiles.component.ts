@@ -10,7 +10,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule,MatStepper} from '@angular/material/stepper';
 import {MatButtonModule} from '@angular/material/button';
-import {Observable} from 'rxjs';
+import {interval, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {AsyncPipe} from '@angular/common';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
@@ -64,12 +64,14 @@ export class TalleresUtilesComponent implements OnInit{
   isLinear = true;isEditable=true;
   authenticate!:boolean;stepp!:number;voucher!:number;
   payment!:number;
+  niubiz!:number;
   vacationDay!:number; vacationHour!:number; workshop!:number;
-  dataDocument:any=[]; dataWorkshop:Workshop[] = []; dataWorkshopDate:any=[]; dataWorkshopHour:any=[];
+  dataDocument:any=[]; dataWorkshop:Workshop[] = [];dataWorkshopAge:any=[]; dataWorkshopDate:any=[]; dataWorkshopHour:any=[];
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;sizeCharterStudent!:number;
   dataTypePayments:any=[]; dataOptionPayments:any=[];
-  totalPrice:any; season:string='';
+  totalPrice:any; season:string='';shift:any;campus:any;
   dataVoucher:any=[];
+  arrow = 'assets/icons/heroicons/solid/arrow.svg';
   person:any={
     id:'',
     typeDocument:'',
@@ -91,10 +93,12 @@ export class TalleresUtilesComponent implements OnInit{
     sessionToken:'',
     people_id:'',
     client_id:'',
+    temp:'',
     season:'',
     workshop:'',
+    workshopHour:'',
     date:'',
-    schedule:'',
+    workshopShift:'',
     price:'',
    }
   matcher = new MyErrorStateMatcher();
@@ -113,6 +117,7 @@ export class TalleresUtilesComponent implements OnInit{
     },{ validators: this.checkFieldsNotEmptyFirstGroup });
   secondFormGroup = this._formBuilder.group({
     workshopCtrl: ['', Validators.required],
+    workshopAgeCtrl: [{ value:null, disabled: true }, Validators.required],
     workshopDateCtrl: [{ value:null, disabled: true }, Validators.required],
     workshopHourCtrl: [{ value:null, disabled: true }, Validators.required],
     typePaymentCtrl: [null, localStorage.getItem('token')?Validators.required:null],
@@ -201,13 +206,14 @@ export class TalleresUtilesComponent implements OnInit{
   }
   checkFieldsNotEmptySecondGroup(group: FormGroup){
     const workshop= group.get('workshopCtrl')?.value;
+    const workshopAge= group.get('workshopAgeCtrl')?.value;
     const workshopDate= group.get('workshopDateCtrl')?.value;
     const workshopHour= group.get('workshopHourCtrl')?.value;
     const typePayment= group.get('typePaymentCtrl')?.value;
     if(localStorage.getItem('token')){
-      return (workshop !== null && workshopDate !== null && workshopHour !== null &&  typePayment !== null ) ? null : { fieldsEmpty: true };
+      return (workshop !== null && workshopAge !== null && workshopDate !== null && workshopHour !== null &&  typePayment !== null ) ? null : { fieldsEmpty: true };
     }else{
-      return (workshop !== null && workshopDate !== null && workshopHour !== null ) ? null : { fieldsEmpty: true };
+      return (workshop !== null && workshopAge !== null && workshopDate !== null && workshopHour !== null ) ? null : { fieldsEmpty: true };
     }
   }
   validateFirstFormGroup(){
@@ -257,24 +263,27 @@ export class TalleresUtilesComponent implements OnInit{
   }
   validateSecondFormGroup(){
     const workshop= this.secondFormGroup?.get('workshopCtrl');
+    const workshopAge= this.secondFormGroup?.get('workshopAgeCtrl');
     const workshopDate= this.secondFormGroup?.get('workshopDateCtrl');
     const workshopHour= this.secondFormGroup?.get('workshopHourCtrl');
     const typePayment= this.secondFormGroup?.get('typePaymentCtrl');
     const optionPayment= this.secondFormGroup?.get('optionPaymentCtrl');
     const observationPayment= this.secondFormGroup?.get('observationPaymentCtrl');
     return {
-      workshop,workshopDate,workshopHour,typePayment, optionPayment, observationPayment
+      workshop,workshopAge,workshopDate,workshopHour,typePayment, optionPayment, observationPayment
     };
   }
   resetValidateSecondFormGroup(){
+    const workshopAge = this.validateSecondFormGroup().workshopAge;
     const workshopDate = this.validateSecondFormGroup().workshopDate;
     const workshopHour = this.validateSecondFormGroup().workshopHour;
     workshopHour?.disable();
+    workshopAge?.disable();
     workshopDate?.disable();
     workshopHour?.reset();
     workshopDate?.reset();
     this.totalPrice='';
-    return{workshopDate,workshopHour};
+    return{workshopAge,workshopDate,workshopHour};
   }
 
   savePerson(route: string, data: any) {
@@ -478,77 +487,92 @@ export class TalleresUtilesComponent implements OnInit{
   }
   async getWorkshop(){
     const workshop:any=this.validateSecondFormGroup().workshop?.value;
-    const workshopDate:any=this.validateSecondFormGroup().workshopDate;
+    const workshopAge:any=this.validateSecondFormGroup().workshopAge;
     this.resetValidateSecondFormGroup();
     this.season='';
-    this.dataWorkshopDate=[];
+    this.dataWorkshopAge=[];
     if(workshop.ID){
       this.workshop=workshop.ID;
-      console.log(this.workshop);
-      
-      // this.dataWorkshop.map(
-      //   (value:any)=>{
-      //     if(value.id == workshop.id){
-      //       this.totalPrice=value.price;
-      //       this.season=value.seasonId;
-      //     }
-      //   }
-      // );
-      // console.log(this.totalPrice);
-      
-      workshopDate?.enable();
+      workshopAge?.enable();
       const data=[workshop.ID];
+      const route='workshops/ages';
+      const dataWorkshopAge:any = await this.getSelectSecondFormGroup(route,data).toPromise();
+      dataWorkshopAge.data.map(
+        (value:any)=>{
+          if(value.tbl == "edad"){
+            this.dataWorkshopAge.push(value)
+          }
+        }
+      )
+    }
+  }
+  async getWorkshopAge(){
+    const workshop:any=this.validateSecondFormGroup().workshop?.value;
+    const workshopAge:any=this.validateSecondFormGroup().workshopAge?.value;
+    const workshopDate:any=this.validateSecondFormGroup().workshopDate;
+    workshopDate?.reset();
+    this.dataWorkshopDate=[];
+    if(workshop && workshopAge){
+      const data=[workshop.ID, workshopAge];
+      workshopDate?.enable();
       const route='workshops/dates';
       const dataWorkshopDate:any = await this.getSelectSecondFormGroup(route,data).toPromise();
       dataWorkshopDate.data.map(
         (value:any)=>{
           if(value.tbl == "Dia"){
-            console.log(value);
             this.dataWorkshopDate.push(value)
           }
         }
       )
-      
-      // this.dataWorkshopDate=dataWorkshopDate.data;
     }
   }
   async getWorkshopDate(){
     const workshop:any=this.validateSecondFormGroup().workshop?.value;
+    const workshopAge:any=this.validateSecondFormGroup().workshopAge?.value;
     const workshopDate:any=this.validateSecondFormGroup().workshopDate?.value;
     const workshopHour:any=this.validateSecondFormGroup().workshopHour;
     workshopHour?.reset();
     this.dataWorkshopHour=[];
-    if(workshop && workshopDate){
+    if(workshop && workshopAge && workshopDate){
       workshopHour?.enable();
-      const data=[workshop.ID,workshopDate];
-      console.log(data);
+      const data=[workshop.ID,workshopAge,workshopDate];
       const route='workshops/hours';
       const dataWorkshopHour:any = await this.getSelectSecondFormGroup(route,data).toPromise();
       dataWorkshopHour.data.map(
         (value:any)=>{
           if(value.tbl == "Hora"){
-            console.log(value);
             this.dataWorkshopHour.push(value)
-          }
-          if(value.tbl=="tasa"){
-            this.totalPrice=value.DESCRIPCION;
-            this.totalPrice=50;
-            console.log(this.totalPrice);
           }
         }
       )
-
-
     }
   }
-  getWorkshopHour(){
+  async getWorkshopHour(){
+    const workshop:any=this.validateSecondFormGroup().workshop?.value;
+    const workshopAge:any=this.validateSecondFormGroup().workshopAge?.value;
+    const workshopDate:any=this.validateSecondFormGroup().workshopDate?.value;
     const workshopHour:any=this.validateSecondFormGroup().workshopHour?.value;
-    if(workshopHour){
+    if(workshop && workshopAge && workshopDate &&workshopHour){
+      const data=[workshop.ID,workshopAge,workshopDate,workshopHour];
+      const route='workshops/shifts';
+      const dataWorkshopShift:any = await this.getSelectSecondFormGroup(route,data).toPromise();
       const vacationHour:any=[];
-      this.dataWorkshopHour.map(
+      dataWorkshopShift.data.map(
         (value:any)=>{
-          if(value.id==workshopHour){
-            vacationHour.push(value);
+          if(value.tbl=="tasa"){
+            this.totalPrice=value.DESCRIPCION;
+          }
+          if(value.tbl=="Temporada"){
+            this.season=value.ID;
+          }
+          if(value.tbl=="Sede"){
+            this.campus=value.ID;
+          }
+          if(value.tbl=='Turno'){
+            this.shift=value.ID
+          }
+          if(value.tbl=='Sede'){
+            this.campus=value.ID
           }
         }
       )
@@ -582,9 +606,11 @@ export class TalleresUtilesComponent implements OnInit{
         people_id: this.person.id,
         client_id: this.student.id,
         season: this.season,
+        campus:this.campus,
         workshop: this.workshop,
         workshopHour:this.validateSecondFormGroup().workshopHour?.value,
         date: this.validateSecondFormGroup().workshopDate?.value,
+        workshopShift: this.shift,
         total: this.totalPrice,
         userId: this.atm.data.id,
         module: this.validateSecondFormGroup().typePayment?.value,
@@ -612,6 +638,11 @@ export class TalleresUtilesComponent implements OnInit{
       );
     }else{
       this.payService.getMount(this.totalPrice);
+      this.http.get(`${RESERVATION2}/niubiz/purchaseNumber`).subscribe(
+        (response:any)=>{        
+           this.niubiz=response.data[0].purchaseNumber
+        }
+      )
       this.payService.getSessionToken().subscribe(
         (response)=>{
           console.log(response);
@@ -619,15 +650,17 @@ export class TalleresUtilesComponent implements OnInit{
         (error)=>{
           const sessionToken=error.error.text;
           this.reservation={
-            purchaseNumber: 1001000,
+            purchaseNumber: this.niubiz,
             sessionToken: sessionToken,
             people_id: this.person.id,
             client_id: this.student.id,
+            campus:this.campus,
             season: this.season,
             workshop: this.workshop,
+            age:this.validateSecondFormGroup().workshopAge?.value,
             workshopHour:this.validateSecondFormGroup().workshopHour?.value,
             date: this.validateSecondFormGroup().workshopDate?.value,
-            schedule: this.vacationHour,
+            workshopShift: this.shift,
             total: this.totalPrice,
           } 
           console.log(this.reservation);
@@ -638,7 +671,7 @@ export class TalleresUtilesComponent implements OnInit{
                 const reservationId=response.data.reservation_id;
                 const voucherId=response.data.voucher_id;
                 const paymentId=response.data.payment_id;
-                const total=response.data.total;
+                const total=parseInt(response.data.total);
                 this.pay(reservationId,voucherId,paymentId,total,sessionToken);
               }
             },(error)=>{
@@ -651,7 +684,7 @@ export class TalleresUtilesComponent implements OnInit{
       )
     }
   }
-  pay(reservation_id:number, voucher_id:number,payment_id:number,total:string,sessionToken:string){
+  pay(reservation_id:number, voucher_id:number,payment_id:number,total:any,sessionToken:string){
     const module_id=4;  
     this.payService.getToken(sessionToken).subscribe((data) => {
       const responseToken = data.sessionKey;

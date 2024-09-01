@@ -18,7 +18,7 @@ export const environment = {
   
 
   //HELPDESK
-  API_HOLIDAY:'https://helpdesk.munimagdalena.gob.pe/v1/coworking/holidays',
+  API_HOLIDAY:'https://api_v2.test:4435/api/holidays',
 
   //NIUBIZ
   MERCHANT: 456879852,

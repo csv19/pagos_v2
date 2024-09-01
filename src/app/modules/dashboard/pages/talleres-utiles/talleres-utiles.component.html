@@ -93,7 +93,7 @@
         <mat-step [stepControl]="secondFormGroup" label="Inscripción del Taller" [editable]="isEditable">
           <form [formGroup]="secondFormGroup">
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <mat-form-field class="col-span-4 sm:col-span-2">
+              <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Talleres</mat-label>
                 <input type="text" placeholder="Ingrese taller" (ngModelChange)="getWorkshop()" matInput formControlName="workshopCtrl" [matAutocomplete]="auto">
                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
@@ -101,6 +101,12 @@
                     <mat-option [value]="option">{{option.DESCRIPCION}}</mat-option>
                   }
                 </mat-autocomplete>
+              </mat-form-field>
+              <mat-form-field class="col-span-4 sm:col-span-1">
+                <mat-label>Edad</mat-label>
+                <mat-select (ngModelChange)="getWorkshopAge()" formControlName="workshopAgeCtrl">
+                  <mat-option *ngFor="let value of dataWorkshopAge" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
+                </mat-select>
               </mat-form-field>
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Fechas</mat-label>
@@ -150,16 +156,24 @@
           </form>
         </mat-step>
         <mat-step label="Recibo de Pago">
+          <div class="mt-6">
+            <button mat-button (click)="stepper.reset()">
+              <img width="30" mat-raised-button #tooltip="matTooltip"
+              matTooltip="Regresar"
+              [matTooltipPosition]="positionOption"
+              matTooltipHideDelay="100000" [src]="arrow" alt="" srcset="">
+            </button>
+          </div>
           @if(dataVoucher.length>0){
-            <div class="w-fit mx-auto">
-              <a target="_blank" href="{{url}}/workshops/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
-                <img mat-raised-button #tooltip="matTooltip"
-                matTooltip="Descargar"
-                [matTooltipPosition]="positionOption"
-                matTooltipHideDelay="100000"
-                src="./assets/icons/descargar.png" title="Descargar" alt="descargar" class="cursor-pointer mx-auto w-8" />
-              </a>
-            </div>
+          <div class="w-fit mx-auto">
+            <a target="_blank" href="{{url}}/workshops/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
+              <img mat-raised-button #tooltip="matTooltip"
+              matTooltip="Descargar"
+              [matTooltipPosition]="positionOption"
+              matTooltipHideDelay="100000"
+              src="./assets/icons/descargar.png" title="Descargar" alt="descargar" class="cursor-pointer mx-auto w-8" />
+            </a>
+          </div>
           <div class="my-5 flex h-auto items-start justify-center">
             <div class="w-[350px] rounded border bg-gray-50 p-4 shadow-lg">
               <img src="./assets/icons/logo.png" alt="logo-magdalena" class="mx-auto w-16 pb-4" />
@@ -182,11 +196,11 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-semibold">Código:</span>
-                    <span>{{this.dataVoucher[0].nro_document}}-{{this.dataVoucher[0].payment_id}}</span>
+                    <span>{{this.dataVoucher[0].codigo}}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="font-semibold">Nombre:</span>
-                    <span class="">{{ this.dataVoucher[0].people_name }} {{ this.dataVoucher[0].people_lastname }}</span>
+                    <span class="">{{ this.dataVoucher[0].people_name }} {{ this.dataVoucher[0].people_lastName }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="font-semibold">Generado:</span>
@@ -202,29 +216,25 @@
                   <tbody>
                     <tr class="border-black	border-y" *ngFor="let voucher of dataVoucher">
                       <td class="text-left text-xs">
+                        <span>ALUMNO: {{voucher.client_name}} </span>
+                        <span>{{voucher.client_lastname}}</span>
+                        <br>
                         <span>
-                          {{voucher.campus}}<br>
-                          {{voucher.adress}}<br>
-                          {{voucher.season}}<br>
-                          {{voucher.client_name}} {{voucher.client_lastname}}<br>
-                          {{voucher.workshop}}<br>
-                          {{voucher.day}}<br>
-                          {{voucher.hour}}<br>
+                          {{voucher.descripcion}}
                         </span>
                       </td>
+                      <td class="text-right text-xs"><span>S./{{voucher.price}}</span></td>
                     </tr>
                     <tr>
                       <td class="text-left uppercase font-semibold"><span>Total</span></td>
-                      <td class="text-right text-xs"><span>S./{{dataVoucher[0].price_reservation}}.00</span></td>
+                      <td class="text-right text-xs"><span>S./{{this.dataVoucher[0].total}}</span></td>
                     </tr>
                     <tr>
                       <td align="center" class="text-xs italic" colspan="2">
                         <p>Consideraciones:</p>
                         <span>
                           El usuario es responsable de la fecha y horario separado.</span>
-                        <span>
-                          El usuario deberá estar 10 minutos antes de la hora separada.</span>
-                        <span>
+                          <span>
                           El usuario deberá dejar las instalaciones limpias y en las mismas condiciones en las que fueron
                           entregadas.</span>
                         <span>
@@ -235,10 +245,21 @@
               </table>
             </div>
           </div>
+          }@else {
+            <div class="mt-10 flex items-center">
+              <div class="container flex flex-col md:flex-row items-center justify-center px-5 text-gray-700">
+                <div class="max-w-md">
+                  <div class="text-5xl font-dark font-bold">Uppsss...
+                  </div>
+                  <br />
+                  <div class="font-normal relative mb-4 block w-full rounded-lg bg-gradient-to-tr from-red-600 to-red-400 p-4 text-base leading-5 text-white opacity-100">
+                    <i class="fas fa-exclamation mr-2"></i>
+                    No existe pago!
+                  </div>
+                </div>
+              </div>
+            </div>
           }
-          <div>
-            <button mat-button (click)="stepper.reset()">Reset</button>
-          </div>
         </mat-step>
   
       </mat-stepper>
