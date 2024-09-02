@@ -14,6 +14,7 @@ import { ReportesCamposDeportivosAdminComponent } from './reports/reporte-campos
 import { ReportesCamposDeportivosAtmComponent } from './reports/reporte-campos-deportivos/atm/atm.component';
 import { ReportesTalleresUtilesAdminComponent } from './reports/reporte-talleres-utiles/admin/admin.component';
 import { ReportesTalleresUtilesAtmComponent } from './reports/reporte-talleres-utiles/atm/atm.component';
+import { routeGuard } from '../auth/guard/route.guard';
 
 
 
@@ -33,8 +34,12 @@ const routes: Routes = [
       { path: 'talleres-utiles', component: TalleresUtilesComponent, data:{authenticate:true} },
       { path: 'talleres-utiles/recibo/:stepp/:voucher/:payment', component: TalleresUtilesComponent, data:{authenticate:true} },
       //USER
-      { path: 'usuario/registro-usuario', component: SignUpComponent, data:{roles:'admin'} },
-      { path: 'usuario/lista-usuario', component: ListaUsuariosComponent },
+      { path: 'usuario/registro-usuario', 
+        canActivate:[routeGuard],
+        component: SignUpComponent, data:{roles:'admin'} },
+      { path: 'usuario/lista-usuario',
+        canActivate:[routeGuard],
+        component: ListaUsuariosComponent, data:{roles:'admin'} },
       //REPORTES
       { path: 'reporte/campos-deportivos', component:  ReportesCamposDeportivosAdminComponent},
       { path: 'reporte/campos-deportivos/atm', component:  ReportesCamposDeportivosAtmComponent},

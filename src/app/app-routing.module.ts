@@ -4,6 +4,7 @@ import { CamposDeportivosComponent } from './modules/dashboard/pages/campos-depo
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { HttpClientModule } from '@angular/common/http';
 import { authGuard, authGuardMatch } from './modules/auth/guard/auth.guard';
+import { routeGuard } from './modules/auth/guard/route.guard';
 const routes: Routes = [
   {
     path: '',
@@ -11,7 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [authGuard], data: { roles: ['admin','user'] }, 
+    canActivate: [authGuard], 
     loadChildren: () => import('./modules/layout/layout.module').then((m) => m.LayoutModule),
   },
   {

@@ -7,13 +7,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const router = inject(Router);
   const authService= inject(AuthService);
-  const roleRoute = route.data['role'];
-  const role=localStorage.getItem('role');
   if(authService.isLoggedIn()){
-    if(role === roleRoute){
-      return true;
-    }
-  return true;
+    return true;
   }else{
     router.navigateByUrl('/admin/login');
     return false;
