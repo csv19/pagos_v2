@@ -4,45 +4,30 @@
     </div>
     <div [ngClass]="!isLoading?'block':'hidden'">
         <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
-            <thead class="">
+            <thead>
             <tr class="text-primary">
-                <th>N° Documento</th>
-                <th>Nombres</th>
-                <th>Apellidos</th>
+                <th>Cod Tasa</th>
+                <th>Nombres y Apellidos</th>
+                <th>Categoria</th>
                 <th>Reserva</th>
                 <th>Campo</th>
-                <th>Cajero</th>
-                <th>N° Voucher</th>
-                <th>Método de Pago</th>
-                <th>Total</th>
-                <th>Fecha de Pago</th>
-                <th>Accciones</th>
+                <th>Turno</th>
+                <th>Horario</th>
+                <th>Precio</th>
             </tr>
             </thead>
             <tbody>
             @if(reserva){
             @for(item of reserva; track item){
             <tr class="text-muted-foreground uppercase">
-                <td>{{item.nro_document}}</td>
-                <td>{{item.people_name}}</td>
-                <td>{{item.people_lastName}}</td>
-                <td>{{item.category}}</td>
-                <td>{{item.field_name}}</td>
-                <td>{{item.user?item.user:'Online'}}</td>
-                <td>{{item.nro_voucher}}</td>
-                <td>{{item.payment_method}}</td>
-                <td>S/.{{item.price_reservation}}</td>
-                <td>{{item.created_at}}</td>
-                <td>
-                <div class="w-[50px] flex justify-between items-center">
-                    <button class="" (click)="update(item.voucher_id)">
-                        <img width="20" [src]="iconoPencil" alt="" srcset="">
-                    </button>
-                    <a target="_blank" href="{{url}}/fields/voucher/{{item.voucher_id}}/{{item.payment_id}}/2">
-                    <img width="20" [src]="iconoVoucher" alt="" srcset="">
-                    </a>
-                </div>
-                </td>
+                <td>{{item.TASA_P_inCODTAS}}</td>
+                <td>{{item.PERS_chNOMPER}}</td>
+                <td>{{item.CATE_chDESCATE}}</td>
+                <td>{{item.RESERVA_chRESERVA}}</td>
+                <td>{{item.CAMPO_chDESCAMPO}}</td>
+                <td>{{item.TURNO_chCAMPO}}</td>
+                <td>{{item.HORA_chDESHORA}} - {{sumarHora(item.HORA_chDESHORA)}}</td>
+                <td>S/.{{item.TASA_deVALTAS}}</td>
             </tr>
             }
             }

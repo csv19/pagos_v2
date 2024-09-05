@@ -59,7 +59,7 @@ export class ReportesTalleresUtilesAdminComponent {
         pagingType:'simple_numbers',
         language: LanguageApp.spanish_datatables,
         responsive: true,
-        order : [5, 'desc'],
+        order : [0, 'desc'],
       }
   }
   getReserva():Observable<any[]>{

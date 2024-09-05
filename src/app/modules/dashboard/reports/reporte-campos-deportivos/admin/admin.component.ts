@@ -63,12 +63,13 @@ export class ReportesCamposDeportivosAdminComponent {
           console.error(error);
         }
       )
-      this.dtOptions={
-        pagingType:'simple_numbers',
+      this.dtOptions = {
+        pagingType: 'simple_numbers',
         language: LanguageApp.spanish_datatables,
         responsive: true,
-        order : [10, 'desc'],
-      }
+        order: [0, 'desc']  
+      };
+      
   }
   getReserva():Observable<any[]>{
     const day='20240101';
@@ -76,20 +77,16 @@ export class ReportesCamposDeportivosAdminComponent {
     const day2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
     return this.http.get<any[]>(`${RESERVATION2}/calendars/reservations/${day}/${day2}`);
   }
-  showVoucher(id:number){
-    console.log(id);
-  }
-  update(id:number) {
-    console.log(id);
-    
-    const data={
-      id: id
+  sumarHora(cadenaTiempo:any) {
+    let [horas, minutos] = cadenaTiempo.split(':').map(Number);
+    horas += 1;
+    if (horas >= 24) {
+        horas -= 24;
     }
-    this.dialog.open(EditarCampoDeportivoComponent,{
-      data: data
-    });
-    
-  }
+    const horasFormateadas = horas.toString().padStart(2, '0');
+    const minutosFormateados = minutos.toString().padStart(2, '0');
+    return `${horasFormateadas}:${minutosFormateados}`;
+}
   getReport(){
     const fecha1 = new Date(this.date1);
     const fecha2 = new Date(this.date2);
@@ -113,7 +110,7 @@ export class ReportesCamposDeportivosAdminComponent {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'teatro.xlsx';
+          link.download = 'campos.xlsx';
           link.click();
           window.URL.revokeObjectURL(url);
         },error => {

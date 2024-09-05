@@ -1,1 +1,88 @@
-<p class="text-white">tributos-municipales works!</p>
+<section class="w-full p-4">
+    <h2 class="font-bold text-gray-600 text-center uppercase">Tributos Municipales</h2>
+    <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
+        <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
+          <form [formGroup]="firstFormGroup">
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <mat-form-field >
+                <mat-label>Código de contribuyente</mat-label>
+                <input autocomplete="off" onlyNumber matInput placeholder="Ingrese código" formControlName="codeCtrl">
+              </mat-form-field>
+              <mat-form-field >
+                <mat-label>Contraseña</mat-label>
+                <input autocomplete="off" type="password" matInput placeholder="Ingrese contraseña" formControlName="passwordCtrl">
+              </mat-form-field>
+              <div class="col-span-2">
+                <button mat-raised-button color="primary" (click)="inLogin()"
+                >Consultar</button>
+              </div>
+            </div>
+            <div>
+              <button mat-raised-button color="primary" matStepperNext
+                [disabled]="login">Siguiente</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup" label="Tributos" [editable]="isEditable">
+            <div class="flex justify-between items-center">
+                <div><h4 class="font-bold text-gray-600">BIENVENIDO {{taxe.PERS_chNOMCOM}}</h4></div>
+                <div><button mat-raised-button color="primary" (click)="logout()">Cerrar Sesión</button></div>
+            </div>
+            <form [formGroup]="secondFormGroup">
+              <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <mat-form-field class="col-span-4">
+                  <mat-label>Categorias</mat-label>
+                  <mat-select formControlName="benefitCtrl" (selectionChange)="getDetail()">
+                    <mat-option *ngFor="let value of dataBenefit" [value]="value.codtri">
+                      {{ value.texto }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-span-4">
+                    <mat-label>Detalles</mat-label>
+                    <mat-select formControlName="detailCtrl" (selectionChange)="getAdress()">
+                      <mat-option *ngFor="let value of dataBenefitDatail" [value]="value.codtri">
+                        {{ value.texto }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  @if((benefit==0 && codeTrib!=1) || (benefit==1 && (codeTrib==2))){
+                  <mat-form-field class="col-span-4">
+                    <mat-label>Dirección</mat-label>
+                    <mat-select formControlName="adressCtrl" (selectionChange)="getYear()">
+                      <mat-option *ngFor="let value of dataAdress" [value]="value.codtri">
+                        {{ value.texto }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                }
+                @if(benefit!=0 && codeTrib==2){
+                    <mat-form-field class="col-span-4">
+                        <mat-label>Años</mat-label>
+                        <mat-select formControlName="yearCtrl">
+                          <mat-option *ngFor="let value of dataYear" [value]="value.ANIO_P_chCODANO">
+                            {{ value.ANIO_P_chCODANO }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                  }
+              </div>
+              <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="col-span-4">
+                  <mat-form-field floatLabel="always">
+                    <mat-label>Importe a Pagar</mat-label>
+                    <input autocomplete="off" matInput type="number" [value]="totalPrice" disabled
+                      class="example-right-align font-semibold" placeholder="0">
+                    <span class="font-medium text-primary" matTextPrefix>S/.&nbsp;</span>
+                    <span class="font-medium text-primary" matTextSuffix>.00</span>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div>
+                <button mat-raised-button color="primary" (click)="save()"
+                  [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
+              </div>
+            </form>
+          </mat-step>
+      </mat-stepper>
+</section>

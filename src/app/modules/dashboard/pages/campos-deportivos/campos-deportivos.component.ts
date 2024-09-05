@@ -236,8 +236,6 @@ export class CamposDeportivosComponent implements OnInit {
     }else{
       return (category !== null && field !==null && typeReservation !== null && shift !== null && date !== null && schedule !== null ) ? null : { fieldsEmpty: true };
     }
-    
-
   }
   //FIRST GROUP
   validateFirstFormGroup(){
