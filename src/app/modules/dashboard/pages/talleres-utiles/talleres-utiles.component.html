@@ -155,7 +155,7 @@
                 </div>
               </div>
             <div>
-              <button mat-raised-button color="primary" (click)="save()"
+              <button mat-raised-button color="primary" [disabled]="isButtonDisabled" (click)="save()"
                 [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
             </div>
           </form>
@@ -169,7 +169,7 @@
               matTooltipHideDelay="100000" [src]="arrow" alt="" srcset="">
             </button>
           </div>
-          @if(dataVoucher.length>0){
+          @if(dataVoucher.length>=1){
           <div class="w-fit mx-auto">
             <a target="_blank" href="{{url}}/workshops/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
               <img mat-raised-button #tooltip="matTooltip"
@@ -232,8 +232,14 @@
                     </tr>
                     <tr>
                       <td class="text-left uppercase font-semibold"><span>Total</span></td>
-                      <td class="text-right text-xs"><span>S./{{this.dataVoucher[0].total}}</span></td>
+                      <td class="text-right text-xs"><span>S./{{this.dataVoucher[0].price}}</span></td>
                     </tr>
+                    @if(this.dataVoucher[0].price===0){
+                      <tr>
+                        <td class="text-left uppercase font-semibold"><span>Obs</span></td>
+                        <td class="text-right text-xs font-semibold"><span>Gratuito</span></td>
+                      </tr>
+                    }
                     <tr>
                       <td align="center" class="text-xs italic" colspan="2">
                         <p>Consideraciones:</p>

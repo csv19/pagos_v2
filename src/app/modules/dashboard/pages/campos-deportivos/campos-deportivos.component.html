@@ -125,7 +125,7 @@
           </div>
         </div>
         <div>
-          <button mat-raised-button color="primary" (click)="save()"
+          <button mat-raised-button color="primary" [disabled]="isButtonDisabled" (click)="save()"
             [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
         </div>
       </form>

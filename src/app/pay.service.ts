@@ -73,7 +73,7 @@ getVisa(value:string,total:string,purchaseNumber:string,url:string){
       amount: ${total},
       expirationminutes:'5',
       timeouturl:'${url}',
-      merchantlogo:'https://tasasonline.munimagdalena.gob.pe/assets/images/logo_niubiz.png',
+      merchantlogo:'https://pagosenlinea.munimagdalena.gob.pe/img/logom.png',
       formbuttoncolor:'#000000',
       action: '${url}',
       complete: function(params) {

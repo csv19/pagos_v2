@@ -61,7 +61,7 @@ export interface Workshop {
 export class TalleresUtilesComponent implements OnInit{
   url:string=RESERVATION2; 
   positionOption: TooltipPosition='above';
-  isLinear = true;isEditable=true;
+  isLinear = true;isEditable=true;isButtonDisabled = false;
   authenticate!:boolean;stepp!:number;voucher!:number;
   payment!:number;
   niubiz!:number;
@@ -131,9 +131,7 @@ export class TalleresUtilesComponent implements OnInit{
     });
     this.http.get(OPTION_DOCUMENT).subscribe(
       (response:any) => {
-        // this.dataDocument = response.data;
         response.data.map((value:any)=>{
-          console.log(value.type_doc);
           if(value.type_doc !== 'RUC'){
             this.dataDocument.push(value);
           }
@@ -145,7 +143,6 @@ export class TalleresUtilesComponent implements OnInit{
     );
     this.http.get(WORKSHORP).subscribe(
       (response:any) => {  
-        console.log(response);
       response.data.map(
           (value:any)=>{
             if(value.tbl == "taller"){
@@ -309,7 +306,6 @@ export class TalleresUtilesComponent implements OnInit{
           (response: any) => {
             if (response.code === 200) {
               const data = response.data[0] ? response.data[0] : response.data;
-              console.log(data);
               if (option_document != 3) {
                 if(data.id){
                   this.person.id = data.id;
@@ -355,7 +351,6 @@ export class TalleresUtilesComponent implements OnInit{
     const studentName = this.validateFirstFormGroup().studentName;
     const studentLastName = this.validateFirstFormGroup().studentLastName;
     this.resetValidateFirstFormGroupStudent();
-      console.log("ESTUDIANTE");
       if(nro_document.length === this.sizeCharterStudent){
         this.http.get<any>(`${DASHBOARD_DOCUMENT_STUDENT}/${nro_document}/${option_document}`).subscribe(
           (response: any) => {
@@ -452,7 +447,6 @@ export class TalleresUtilesComponent implements OnInit{
       }
       const route='person';
       const data=this.person;
-      console.log(data);
       const person:any=await this.savePerson(route,data).toPromise();
       this.person.id=person.data[0].inserted_id;
     }
@@ -467,7 +461,6 @@ export class TalleresUtilesComponent implements OnInit{
       }
       const route='student';
       const data=this.student;
-      console.log(data);
       const student:any=await this.savePerson(route,data).toPromise();
       this.student.id=student.data[0].inserted_id;
     }
@@ -494,6 +487,7 @@ export class TalleresUtilesComponent implements OnInit{
     if(workshop.ID){
       this.workshop=workshop.ID;
       workshopAge?.enable();
+      this.isButtonDisabled = true;
       const data=[workshop.ID];
       const route='workshops/ages';
       const dataWorkshopAge:any = await this.getSelectSecondFormGroup(route,data).toPromise();
@@ -597,45 +591,25 @@ export class TalleresUtilesComponent implements OnInit{
   }
 
   async save(){
+    this.isButtonDisabled = true;
     const atm:any=localStorage.getItem('profileData');
     this.atm=JSON.parse(atm);
     this.setPerson();
     this.setStudent()
-    if(this.authenticate){
-      this.reservation={
-        people_id: this.person.id,
-        client_id: this.student.id,
-        season: this.season,
-        campus:this.campus,
-        workshop: this.workshop,
-        workshopHour:this.validateSecondFormGroup().workshopHour?.value,
-        date: this.validateSecondFormGroup().workshopDate?.value,
-        workshopShift: this.shift,
-        total: this.totalPrice,
-        userId: this.atm.data.id,
-        module: this.validateSecondFormGroup().typePayment?.value,
-        option: this.validateSecondFormGroup().optionPayment?.value,
-        observation: this.validateSecondFormGroup().observationPayment?.value,
-      } 
-      console.log("Pago por Admin");
-      const route='workshops/atm';
-      this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
-        (response) => {
-          if (response && response.code === 200) {   
-            console.log(response);
-            this.isEditable=false;
-            const voucher=response.data.voucher_id;
-            const payment=response.data.payment_id;
-            this.stepper.next();
-            this.getVoucher(voucher,payment);
-            this.print(voucher,payment);
-          }
-        },(error)=>{
-          console.error(error.error.message)
-          // alert(error.error.message)
-          this.showError();
-        }
-      );
+    if(this.totalPrice==='0.00'){
+        this.reservation={
+          codeReservation: `${this.person.id}-${this.student.id}-${this.season}-${this.campus}-${this.workshop}-${this.validateSecondFormGroup().workshopAge?.value}-${this.validateSecondFormGroup().workshopHour?.value}-${this.shift}`,
+          date: this.validateSecondFormGroup().workshopDate?.value,
+          total: this.totalPrice,
+        } 
+          const route='workshops/satmun/free';
+          this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
+            (response) => {                
+              this.router.navigateByUrl(`/talleres-utiles/recibo/2/${response.data.voucher}/${response.data.payment}`);
+            },error=>{
+              this.showError();
+            }
+          )
     }else{
       this.payService.getMount(this.totalPrice);
       this.http.get(`${RESERVATION2}/niubiz/purchaseNumber`).subscribe(
@@ -645,7 +619,6 @@ export class TalleresUtilesComponent implements OnInit{
       )
       this.payService.getSessionToken().subscribe(
         (response)=>{
-          console.log(response);
         },
         (error)=>{
           const sessionToken=error.error.text;
@@ -663,7 +636,6 @@ export class TalleresUtilesComponent implements OnInit{
             workshopShift: this.shift,
             total: this.totalPrice,
           } 
-          console.log(this.reservation);
           const route='workshops/niubiz';
           this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
             (response) => {
@@ -675,14 +647,12 @@ export class TalleresUtilesComponent implements OnInit{
                 this.pay(reservationId,voucherId,paymentId,total,sessionToken);
               }
             },(error)=>{
-              console.error(error.error.message)
-              // alert(error.error.message)
               this.showError();
             }
           );
         }
       )
-    }
+      }
   }
   pay(reservation_id:number, voucher_id:number,payment_id:number,total:any,sessionToken:string){
     const module_id=4;  
@@ -705,9 +675,7 @@ export class TalleresUtilesComponent implements OnInit{
     const module=4;
     this.http.get(`${RESERVATION2}/payment/voucher/${module}/${voucherId}/${paymentId}`).subscribe(
       (response:any)=>{
-        console.log(response);
         this.dataVoucher=response.data;
-        
       },error=>{console.error(error)}
     )
   }

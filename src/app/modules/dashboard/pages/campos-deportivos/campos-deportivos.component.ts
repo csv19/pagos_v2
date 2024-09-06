@@ -60,6 +60,7 @@ export class CamposDeportivosComponent implements OnInit {
    stepp!:number;
    voucher!:number;
    payment!:number;
+   isButtonDisabled = false;
    textScheduleLabel:string;
    arrow = 'assets/icons/heroicons/solid/arrow.svg';
    styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;
@@ -120,8 +121,6 @@ export class CamposDeportivosComponent implements OnInit {
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef,private toastr: ToastrService){
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
-      console.log(this.authenticate);
-      
     });
     this.textScheduleLabel='Horarios Disponibles';
     this.getCalendar();
@@ -369,7 +368,6 @@ export class CamposDeportivosComponent implements OnInit {
         (response: any) => {
           if (response.code === 200) {
             const data = response.data[0] ? response.data[0] : response.data;
-            console.log(data);
             if (option_document != 3) {
               if(data.id){
                 this.calendar.people_id = data.id;
@@ -393,7 +391,6 @@ export class CamposDeportivosComponent implements OnInit {
               phone?.disable();
             }
           }
-          console.log(this.calendar);
         },
         (error) => {
           console.error('Error en la solicitud:', error);
@@ -459,7 +456,6 @@ export class CamposDeportivosComponent implements OnInit {
       }
       const route='person';
       const data=this.person;
-      console.log(data);
       const person:any=await this.savePerson(route,data).toPromise();
       this.calendar.people_id=person.data[0].inserted_id;
     }
@@ -486,6 +482,7 @@ export class CamposDeportivosComponent implements OnInit {
         })
       }
     }
+    this.isButtonDisabled = true;
     this.resetValidateSecondFormGroup(1);
   }
   async getField(){
@@ -509,7 +506,6 @@ export class CamposDeportivosComponent implements OnInit {
     const field= this.validateSecondFormGroup().field;
     const typeReservation= this.validateSecondFormGroup().typeReservation;
     if(category?.value &&field?.value &&typeReservation?.value){
-      console.log(category.value,field.value,typeReservation.value);
       const route='dates';
       const data=[category.value,field.value, typeReservation.value];
       const dataList:any= await this.getSelectSecondFormGroup(route,data).toPromise();
@@ -532,7 +528,6 @@ export class CamposDeportivosComponent implements OnInit {
     if(category?.value&&field?.value&&typeReservation?.value&&date?.value){
       const fecha = new Date(date.value);
       this.date = fecha.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
-      console.log(this.calendar.campus,category.value,field.value,typeReservation.value,this.date);
       const data=[this.calendar.campus,category.value,field.value,typeReservation.value,this.date];
       const route='schedules';
       const dataSchedules:any= await this.getSelectSecondFormGroup(route,data).toPromise();
@@ -561,6 +556,7 @@ export class CamposDeportivosComponent implements OnInit {
     }
   }
   async save(){
+    this.isButtonDisabled = true;
     const atm:any=localStorage.getItem('profileData');
     this.atm=JSON.parse(atm);
     this.setPerson()
@@ -579,12 +575,10 @@ export class CamposDeportivosComponent implements OnInit {
         option: this.validateSecondFormGroup().optionPayment?.value,
         observation: this.validateSecondFormGroup().observationPayment?.value,
       } 
-      console.log("Pago por Admin");
       const route='calendars/atm';
       this.http.post<any>(`${RESERVATION2}/${route}`, this.calendar).subscribe(
         (response) => {
           if (response && response.code === 200) {   
-            console.log(response);
             this.isEditable=false;
             const voucher=response.data.voucher_id;
             const payment=response.data.payment_id;
@@ -608,7 +602,6 @@ export class CamposDeportivosComponent implements OnInit {
       )
       this.payService.getSessionToken().subscribe(
         (response)=>{
-          console.log(response);
         },
         (error)=>{
           const sessionToken=error.error.text;
@@ -625,7 +618,6 @@ export class CamposDeportivosComponent implements OnInit {
             price: this.price,
             total:this.totalPrice
           } 
-          console.log(this.calendar);
           const route='calendars/niubiz';
           this.http.post<any>(`${RESERVATION2}/${route}`, this.calendar).subscribe(
             (response) => {
@@ -668,15 +660,12 @@ export class CamposDeportivosComponent implements OnInit {
     const module=3;
     this.http.get(`${RESERVATION2}/payment/voucher/${module}/${voucherId}/${paymentId}`).subscribe(
       (response:any)=>{
-        console.log(response);
         this.dataVoucher=response.data;
         let total=0;
         response.data.map((value:any)=>
           total += parseInt(value.total)
         )
         this.totalPrice=total;
-        console.log(total);
-        
       },error=>{console.error(error)}
     )
   }

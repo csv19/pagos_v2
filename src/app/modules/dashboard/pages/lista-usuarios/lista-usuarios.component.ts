@@ -168,7 +168,7 @@ export class EditarUsuarioComponent implements OnInit{
     user: ['', [Validators.required, Validators.email]],
     code: ['', [Validators.required, Validators.email]],
     name: ['', [Validators.required, Validators.email]],
-    area: ['', [Validators.required, Validators.email]],
+    role: ['', [Validators.required, Validators.email]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
@@ -205,24 +205,23 @@ export class EditarUsuarioComponent implements OnInit{
     const user=this.form.get('user');
     const code=this.form.get('code');
     const name=this.form.get('name');
+    const role=this.form.get('role');
     const email=this.form.get('email');
-    const area=this.form.get('area');
     const password=this.form.get('password');
     
-    if(user && code && name && email && area && password && this.passwordColor){
+    if(user && code && name && email &&role && password && this.passwordColor){
       const people={
         id: this.userId,
         user:user.value,
         code: code.value,
+        role: role.value,
         name: name.value,
         email: email.value,
-        area_id: area.value.id,
         password: password.value
       } 
       this.authService.update(people);
       this.dialog.closeAll()
     }
-    
   }
 }
 export class LanguageApp {
