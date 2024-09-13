@@ -1,5 +1,5 @@
 import { HttpClient,HttpHeaders } from '@angular/common/http';
-import { Component,Inject, Input, OnInit, Output } from "@angular/core";
+import { Component,Inject, Input,AfterViewInit, OnInit,computed, Output,OnDestroy, ViewChild } from "@angular/core";
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { DataTablesModule } from 'angular-datatables';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule,NgForm } from '@angular/forms';
@@ -17,6 +17,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { DataTableDirective } from 'angular-datatables';
 
 const RESERVATION2= environment.SERVER2;
 @Component({
@@ -27,26 +28,26 @@ const RESERVATION2= environment.SERVER2;
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class ReportesCamposDeportivosAdminComponent {
-  url:string=RESERVATION2; 
-  reserva:any;
-  date:any
-  date1:any
-  date2:any
-  isLoading:boolean=true;
+export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit {
+  @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
+  date1:any;date2:any;
+  dtInstance: any;
   iconoVoucher = 'assets/icons/heroicons/outline/voucher.svg';
   iconoPencil = 'assets/icons/heroicons/outline/pencil.svg';
   dtOptions:ADTSettings={};
-  dtTrigger = new Subject<ADTSettings>();
-  constructor(private http: HttpClient, public dialog: MatDialog){
-    this.date=new Date();
-    this.date1=new Date();
-    this.date2=new Date();
-    setTimeout(()=>{
-      this.isLoading=false;
-    },1000)
-    this.loadReserva();
-    
+  dtTrigger = new Subject<ADTSettings>(); 
+  reserva:any=[];
+  constructor(private http: HttpClient){
+    this.date1=new Date().toISOString().slice(0, 10).slice(0, 10);
+    this.date2=new Date().toISOString().slice(0, 10).slice(0, 10);
+  }
+  ngOnInit(): void {
+    this.dtOptions = {
+      pagingType: 'simple_numbers',
+      language: LanguageApp.spanish_datatables,
+      responsive: true,
+    }
+    this.fetchData();
   }
   validateDate(){
     if(this.date1>this.date2){
@@ -54,28 +55,47 @@ export class ReportesCamposDeportivosAdminComponent {
     }
     return true;
   }
-  loadReserva(){
-      this.getReserva().subscribe(
-        (response:any)=>{
-          console.log(response);
-          this.reserva=response.data;        
-        },error=>{
-          console.error(error);
-        }
-      )
-      this.dtOptions = {
-        pagingType: 'simple_numbers',
-        language: LanguageApp.spanish_datatables,
-        responsive: true,
-        order: [0, 'desc']  
-      };
-      
+  fetchData():void{
+    const date1=this.date1.replace(/-/g, '');
+    const date2=this.date2.replace(/-/g, '');
+    console.log(date1);
+    
+    this.http.get(`${RESERVATION2}/calendars/reservations/${date1}/${date2}`).subscribe(
+      (response:any)=>{
+        console.log(response);
+        this.reserva=response.data; 
+        this.dtTrigger.next(this.dtOptions);
+      },error=>{console.log(error);
+      }
+    )
   }
-  getReserva():Observable<any[]>{
-    const day='20240101';
-    const fecha2 = new Date();
-    const day2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
-    return this.http.get<any[]>(`${RESERVATION2}/calendars/reservations/${day}/${day2}`);
+  search(){
+    const date1=this.date1.replace(/-/g, '');
+    const date2=this.date2.replace(/-/g, '');
+    
+    this.http.get(`${RESERVATION2}/calendars/reservations/${date1}/${date2}`).subscribe(
+      (response:any)=>{
+        this.reserva=response.data; 
+        this.rerender()
+      },error=>{console.log(error);
+      }
+    )
+    
+  }
+  rerender(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.destroy();
+      this.dtTrigger.next(this.dtOptions);
+    });
+  }
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
+  }
+  formatDDMMYY(dateString:string) {
+    const year = dateString.substring(0, 4);
+    const month = dateString.substring(4, 6);
+    const day = dateString.substring(6, 8);
+    return `${day}-${month}-${year}`;
   }
   sumarHora(cadenaTiempo:any) {
     let [horas, minutos] = cadenaTiempo.split(':').map(Number);
@@ -86,12 +106,15 @@ export class ReportesCamposDeportivosAdminComponent {
     const horasFormateadas = horas.toString().padStart(2, '0');
     const minutosFormateados = minutos.toString().padStart(2, '0');
     return `${horasFormateadas}:${minutosFormateados}`;
-}
-  getReport(){
+  }
+  
+  download(){
     const fecha1 = new Date(this.date1);
     const fecha2 = new Date(this.date2);
-      const date1 = fecha1.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
-      const date2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+    const date1 = fecha1.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+    const date2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+    console.log(date1);
+    
     if(this.validateDate()){
       const data={
         'module':3,
@@ -120,10 +143,8 @@ export class ReportesCamposDeportivosAdminComponent {
       console.log("reporte");
     }
   }
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.dtTrigger.next(this.dtOptions);
-    }, 200);
+  downloadVoucher(){
+
   }
 }
 export class LanguageApp {
@@ -223,6 +244,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
   formatHour(hour:any) {
     return (hour > 11 ? ((hour - 12)==0?12:hour-12)  +":00pm" : hour +":00am");
   }
+  
   myFilter = (d: Date | null): boolean => {
     const disabledDates:any[] = [];
     const year=new Date().getFullYear();

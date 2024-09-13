@@ -280,6 +280,8 @@ export class TalleresUtilesComponent implements OnInit{
     workshopHour?.reset();
     workshopDate?.reset();
     this.totalPrice='';
+    this.person.name='';
+    this.person.lastName='';
     return{workshopAge,workshopDate,workshopHour};
   }
 
@@ -296,17 +298,16 @@ export class TalleresUtilesComponent implements OnInit{
   }
   makeDocument(option_document:any, nro_document:any){
     const email = this.validateFirstFormGroup().email;
-    const fullName = this.validateFirstFormGroup().fullName;
     const name = this.validateFirstFormGroup().name;
     const lastName = this.validateFirstFormGroup().lastName;
     const phone = this.validateFirstFormGroup().phone;
     this.resetValidateFirstFormGroup();
+    
       if(nro_document.length === this.sizeCharter){
         this.http.get<any>(`${DASHBOARD_DOCUMENT}/${nro_document}/${option_document}`).subscribe(
           (response: any) => {
             if (response.code === 200) {
               const data = response.data[0] ? response.data[0] : response.data;
-              if (option_document != 3) {
                 if(data.id){
                   this.person.id = data.id;
                   email?.setValue(data.email);
@@ -316,31 +317,19 @@ export class TalleresUtilesComponent implements OnInit{
                   phone?.disable();
                 }
                 const setNameAndLastName = (nameValue: string, lastNameValue: string) => {
+                  this.person.name=nameValue;
+                  this.person.lastName=lastNameValue;
                   name?.setValue(this.authenticate ?nameValue: this.convertText(nameValue, 1), 1);
                   lastName?.setValue(this.authenticate ?lastNameValue: this.convertText(lastNameValue, 1) , 1);
                 };
                 setNameAndLastName(data.name, data.lastName);
-              } else {
-                fullName?.setValue(data.name);
-                email?.setValue(data.email);
-                email?.disable();
-                const dataPhone = data.phone ?? null;
-                phone?.setValue(dataPhone);
-                phone?.disable();
-              }
-              this.person.name=data.name;
-              this.person.lastName=data.lastName;
             }
           },
           (error) => {
             console.error('Error en la solicitud:', error);
             if (error.error.code === 404) {
-              if (option_document != 3) {
                 name?.enable();
                 lastName?.enable();
-              } else {
-                fullName?.enable();
-              }
             }
           }
         );
@@ -369,10 +358,8 @@ export class TalleresUtilesComponent implements OnInit{
           (error) => {
             console.error('Error en la solicitud:', error);
             if (error.error.code === 404) {
-              if (option_document != 3) {
                 studentName?.enable();
                 studentLastName?.enable();
-              } 
             }
           }
         );
@@ -425,30 +412,27 @@ export class TalleresUtilesComponent implements OnInit{
   }
   async setPerson(){
     const option_document=this.validateFirstFormGroup().option_document?.value;
+    if(this.person.name===''){
+      this.person.name=this.validateFirstFormGroup().name?.value
+    }
+    if(this.person.lastName===''){
+      this.person.lastName=this.validateFirstFormGroup().lastName?.value
+    }
+    
     if(this.person.id == 0 || this.person.id==null){
-      if(option_document !==3){
         this.person={
           typeDocument:option_document,
           document:this.validateFirstFormGroup().document?.value,
-          name:this.person.name?this.person.name:this.validateFirstFormGroup().name?.value,
-          lastName:this.person.lastName?this.person.lastName:this.validateFirstFormGroup().lastName?.value,
+          name:this.person.name,
+          lastName:this.person.lastName,
           email:this.validateFirstFormGroup().email?.value,
           phone:this.validateFirstFormGroup().phone?.value
         }
-      }else{
-        this.person={
-          typeDocument:option_document,
-          document:this.validateFirstFormGroup().document?.value,
-          name:this.person.name?this.person.name:this.validateFirstFormGroup().fullName?.value,
-          lastName:'',
-          email:this.validateFirstFormGroup().email?.value,
-          phone:this.validateFirstFormGroup().phone?.value
-        }
-      }
       const route='person';
       const data=this.person;
       const person:any=await this.savePerson(route,data).toPromise();
       this.person.id=person.data[0].inserted_id;
+      
     }
   }
   async setStudent(){

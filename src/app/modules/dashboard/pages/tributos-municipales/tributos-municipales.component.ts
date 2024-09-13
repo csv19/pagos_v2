@@ -1,3 +1,4 @@
+import {SelectionModel} from '@angular/cdk/collections';
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { NgFor, NgStyle } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,6 +14,8 @@ import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { AuthTaxeService } from 'src/app/modules/auth/services/auth-taxe.service';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 const RESERVATION2= environment.SERVER2;
@@ -28,16 +31,25 @@ const RESERVATION2= environment.SERVER2;
     MatInputModule,
     MatButtonModule,
     MatSelectModule, 
-    NumberOnlyDirective
+    NumberOnlyDirective,
+    MatTableModule, 
+    MatCheckboxModule
   ],
   templateUrl: './tributos-municipales.component.html',
   styleUrl: './tributos-municipales.component.scss'
 })
 export class TributosMunicipalesComponent {
+  //TABLE
+  displayedColumns: string[] = ['select', 'position', 'name', 'weight', 'symbol'];
+  dataSource = new MatTableDataSource<any>();
+  selection = new SelectionModel<any>(true, []);
+  //fin
+
   url:string=RESERVATION2; 
   stepp!:number;
   taxe:any={};
-  benefit!:number;user!:number;codePred!:number;codeTrib!:number;$yearTrib!:number;
+  yearSystem:any;
+  benefit!:number;user!:number;codePred!:number;codeTrib!:string;$yearTrib!:number;
   login:boolean=true;
   isLinear = true;isEditable=true;
   dataTaxe:any=[];
@@ -59,6 +71,7 @@ export class TributosMunicipalesComponent {
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef,private toastr: ToastrService,private authTaxeService: AuthTaxeService){
     this.getBenefit();
+    this.yearSystem= new Date().getFullYear();
   }
   @ViewChild('stepper') stepper!: MatStepper;
   checkFieldsNotEmptyFirstGroup(group: FormGroup) {
@@ -116,6 +129,7 @@ export class TributosMunicipalesComponent {
     const adress= this.secondFormGroup.get('adressCtrl');
     this.dataBenefitDatail=[];
     if(user && benefit){
+      this.totalPrice=0;
       detail?.reset();
       detail?.enable();
       adress?.reset();
@@ -144,26 +158,34 @@ export class TributosMunicipalesComponent {
     const year= this.secondFormGroup.get('yearCtrl');
     this.dataAdress=[];
     if(user && benefit && detail){
-      adress?.reset();
-      adress?.enable();  
-      year?.reset();
-      year?.disable();    
       this.user=user.value; 
-      this.codeTrib=detail.value;
-      if((this.benefit==0 && this.codeTrib!=1) || (this.benefit==1 && (this.codeTrib==2))){
+      this.codeTrib=detail.value; 
+      console.log('-------------');
+      console.log(this.benefit);
+      console.log(this.codeTrib);
+      if(this.benefit==0 && this.codeTrib=='2'){
+        adress?.enable();
+        adress?.reset();
+        console.log(this.benefit);
+        console.log(this.codeTrib);
+        console.log("DIRECCION 1");
         this.http.get(`${RESERVATION2}/taxes/benefit/adress/${user.value}/${detail.value}`).subscribe(
           (response:any)=>{
             console.log(response);
-            if(response.code !==404){
-              this.dataAdress=response.data
-            }
-          },error=>{console.log(error);
+            this.dataAdress=response.data;
           }
         )
-      }else{
-        this.http.get(`${RESERVATION2}/taxes/benefit/prices/${user.value}/${benefit.value}/${detail.value}`).subscribe(
+      }
+      if(this.benefit==1 && (this.codeTrib=='1'||this.codeTrib=='2')){
+        year?.enable();
+        year?.reset();
+        console.log(this.benefit);
+        console.log(this.codeTrib);
+        console.log("AÑO 1");
+        this.http.get(`${RESERVATION2}/taxes/benefit/years/${user.value}/0/${this.codeTrib}`).subscribe(
           (response:any)=>{
             console.log(response);
+            this.dataYear=response.data;
           }
         )
       }
@@ -172,43 +194,68 @@ export class TributosMunicipalesComponent {
   getYear(){
     //Cunando es anteriores deberia salir esta opcion
     const user=this.firstFormGroup?.get('codeCtrl');
+    const benefit = this.secondFormGroup.get('benefitCtrl');
     const detail= this.secondFormGroup.get('detailCtrl');
     const adress= this.secondFormGroup.get('adressCtrl');
     const year= this.secondFormGroup.get('yearCtrl');
-    if(user && detail && adress){
-      year?.reset();
-      year?.enable();    
-      if((this.benefit!=0 && this.codeTrib==2)){
-        this.http.get(`${RESERVATION2}/taxes/benefit/years/${user.value}/${adress.value}/${detail.value}`).subscribe(
-          (response:any)=>{
-            this.dataYear=response.data;
-          },error=>{
-            console.log(error)
-          }
-        )
-      }else{
-        const yearNow= new Date().getFullYear();
-        this.http.get(`${RESERVATION2}/taxes/benefit/prices/${user.value}/${adress.value}/${detail.value}/${yearNow}`).subscribe(
-          (response:any)=>{
-            console.log(response);
-          }
-        )
-      }
+    if(user && benefit && detail && year){
+      this.totalPrice=0;
+      let total:number=0;
+      this.http.get(`${RESERVATION2}/taxes/benefit/prices/${user.value}/0/${detail.value}/${year.value}`).subscribe(
+        (response:any)=>{
+          response.data.map((value:any)=>{
+            total+= parseFloat(value.CTAC_TOTAL);
+          })
+          this.totalPrice=total.toFixed(2);  
+        }
+      )
     }
   }
-  getTaxesPrice(){
+  getTotal(){
     const user=this.firstFormGroup?.get('codeCtrl');
     const detail= this.secondFormGroup.get('detailCtrl');
     const adress= this.secondFormGroup.get('adressCtrl');
-    const year= this.secondFormGroup.get('yearCtrl');
-    if(user && detail && adress && year){
-    this.http.get(`${RESERVATION2}/taxes/benefit/prices/${user.value}/${adress.value}/${detail.value}/${year.value}`).subscribe(
-      (response:any)=>{
-        console.log(response);
-      }
-    )
+    if(adress){
+      let total:number=0;
+        this.http.get(`${RESERVATION2}/taxes/benefit/prices/${user?.value}/${adress.value}/${detail?.value}/${this.yearSystem}`).subscribe(
+          (response:any)=>{
+            response.data.map((value:any)=>{
+              total+= parseFloat(value.CTAC_TOTAL);
+            })
+          this.totalPrice=total.toFixed(2);  
+          }
+        )
+    }else{
+      this.http.get(`${RESERVATION2}/taxes/benefit/prices/${user?.value}/0/${detail?.value}`).subscribe(
+        (response:any)=>{
+          console.log('GET YEAR 2'+response.data);
+        }
+      )
     }
   }
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.data);
+  }
+
+  /** The label for the checkbox on the passed row */
+  // checkboxLabel(row?: TableTaxe): string {
+  //   if (!row) {
+  //     return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+  //   }
+  //   return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  // }
   save(){
 
   }

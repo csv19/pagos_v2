@@ -46,25 +46,25 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
-                  @if((benefit==0 && codeTrib!=1) || (benefit==1 && (codeTrib==2))){
+                  @if((benefit==1 && (codeTrib=='1' || codeTrib=='2'))){
+                  <mat-form-field class="col-span-4">
+                    <mat-label>Año</mat-label>
+                    <mat-select formControlName="yearCtrl" (selectionChange)="getYear()">
+                      <mat-option *ngFor="let value of dataYear" [value]="value.ANIO_P_chCODANO">
+                        {{ value.ANIO_P_chCODANO }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  }
+                  @if((benefit==0 || benefit==1) && codeTrib=='2'){
                   <mat-form-field class="col-span-4">
                     <mat-label>Dirección</mat-label>
-                    <mat-select formControlName="adressCtrl" (selectionChange)="getYear()">
+                    <mat-select formControlName="adressCtrl" (selectionChange)="getTotal()">
                       <mat-option *ngFor="let value of dataAdress" [value]="value.codtri">
                         {{ value.texto }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
-                }
-                @if(benefit!=0 && codeTrib==2){
-                    <mat-form-field class="col-span-4">
-                        <mat-label>Años</mat-label>
-                        <mat-select formControlName="yearCtrl">
-                          <mat-option *ngFor="let value of dataYear" [value]="value.ANIO_P_chCODANO">
-                            {{ value.ANIO_P_chCODANO }}
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
                   }
               </div>
               <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -81,6 +81,9 @@
               <div>
                 <button mat-raised-button color="primary" (click)="save()"
                   [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
+              </div>
+              <div>
+                
               </div>
             </form>
           </mat-step>

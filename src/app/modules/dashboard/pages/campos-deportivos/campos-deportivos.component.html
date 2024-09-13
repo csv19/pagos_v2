@@ -85,11 +85,11 @@
           </mat-form-field>
           <mat-form-field class="col-span-4 sm:col-span-2">
             <mat-label>Fecha de Reserva</mat-label>
-            <input autocomplete="off" (ngModelChange)="getDateReservation()" formControlName="dateCtrl" matInput
+            <input [disabled]="true" autocomplete="off" (ngModelChange)="getDateReservation()" formControlName="dateCtrl" matInput
               [matDatepickerFilter]="myFilter" [min]="currentDate" [max]="nextDate" [matDatepicker]="picker">
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <mat-datepicker #picker disabled="false"></mat-datepicker>
           </mat-form-field>
           <mat-form-field class="col-span-4 sm:col-span-2">
             <mat-label>{{textScheduleLabel}}</mat-label>

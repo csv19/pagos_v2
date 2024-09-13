@@ -1,61 +1,62 @@
 <div class="container bg-transparent py-4 my-4 mx-auto h-full">
-    <div [ngClass]="isLoading?'block':'hidden'" class="w-full h-4/5 flex justify-center items-center">
-        <mat-spinner [diameter]="50"></mat-spinner>
+     <div class="my-4">
+        <h3>Reporte</h3>
+        <div class=" flex justify-around items-center w-[370px]">
+            <div>
+                <input [(ngModel)]="date1" type="date" name="" id="">
+            </div>
+            <div>
+                <input [(ngModel)]="date2" type="date" name="" id="">
+            </div>
+            <div>
+                <button class="mr-2 inline-flex rounded-md px-3 py-2 text-sm font-medium bg-primary text-primary-foreground" (click)="search()">Filtrar</button>
+            </div>
+        </div>
     </div>
-    <div [ngClass]="!isLoading?'block':'hidden'">
+    <!--<div [ngClass]="isLoading?'block':'hidden'" class="w-full h-4/5 flex justify-center items-center">
+        <mat-spinner [diameter]="50"></mat-spinner>
+    </div> -->
+    <div>
+        @if(reserva){
         <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
             <thead>
             <tr class="text-primary">
-                <th>Cod Tasa</th>
+                <th>Nro Voucher</th>
+                <th>Nro Documento</th>
                 <th>Nombres y Apellidos</th>
                 <th>Categoria</th>
                 <th>Reserva</th>
+                <th>Fecha</th>
                 <th>Campo</th>
                 <th>Turno</th>
                 <th>Horario</th>
                 <th>Precio</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
-            @if(reserva){
+            
             @for(item of reserva; track item){
-            <tr class="text-muted-foreground uppercase">
-                <td>{{item.TASA_P_inCODTAS}}</td>
-                <td>{{item.PERS_chNOMPER}}</td>
-                <td>{{item.CATE_chDESCATE}}</td>
-                <td>{{item.RESERVA_chRESERVA}}</td>
-                <td>{{item.CAMPO_chDESCAMPO}}</td>
-                <td>{{item.TURNO_chCAMPO}}</td>
-                <td>{{item.HORA_chDESHORA}} - {{sumarHora(item.HORA_chDESHORA)}}</td>
-                <td>S/.{{item.TASA_deVALTAS}}</td>
-            </tr>
-            }
+                <tr class="text-muted-foreground uppercase">
+                    <td>{{item.PAGO_inNROCOM}}</td>
+                    <td>{{item.TIPDOC}}</td>
+                    <td>{{item.PERS_chNOMPER}}</td>
+                    <td>{{item.CATE_chDESCATE}}</td>
+                    <td>{{item.RESERVA_chRESERVA}}</td>
+                    <td>{{formatDDMMYY(item.RESERVA_chFECHA)}}</td>
+                    <td>{{item.CAMPO_chDESCAMPO}}</td>
+                    <td>{{item.TURNO_chCAMPO}}</td>
+                    <td>{{item.HORA_INICIO}} - {{item.HORA_FINAL}}</td>
+                    <td>S/.{{item.PAGO}}</td>
+                    <td (click)="downloadVoucher()"><img class="cursor-pointer" src="./assets/icons/vista.png" alt=""></td>
+                </tr>
             }
             </tbody>
         </table>
-    </div>
-    <div class="my-4" [ngClass]="!isLoading?'block':'hidden'">
-        <h3>Reporte</h3>
-        <div class=" flex justify-between items-start w-[550px]">
-            <div>
-                <mat-form-field>
-                    <mat-label>Fecha de Inicio</mat-label>
-                    <input matInput (ngModelChange)="validateDate()" [(ngModel)]="date1" [max]="date" [matDatepicker]="picker">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field>
-                    <mat-label>Fecha Termino</mat-label>
-                    <input matInput (ngModelChange)="validateDate()" [(ngModel)]="date2" [matDatepicker]="picker2" [max]="date">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                    <mat-datepicker #picker2></mat-datepicker>
-                </mat-form-field>
-            </div>
+        <div class="flex justify-center">
+            <button class="mr-2 rounded-md px-3 py-2 flex justify-center items-center text-sm font-medium bg-green-600 text-primary-foreground" >Descargar <img 
+                src="./assets/icons/xls.png" title="Descargar" (click)="download()" alt="descargar" class="cursor-pointer mx-auto w-8" /></button>
         </div>
-        <div>
-            <button class="mr-2 inline-flex rounded-md px-3 py-2 text-sm font-medium bg-primary text-primary-foreground" (click)="getReport()">Generar</button>
-        </div>
+        }
     </div>
 </div>
