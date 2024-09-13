@@ -1,13 +1,13 @@
 import { HttpClient,HttpHeaders } from '@angular/common/http';
-import { Component,Inject, Input,AfterViewInit, OnInit,computed, Output,OnDestroy, ViewChild } from "@angular/core";
+import { Component,Inject, OnInit,OnDestroy, ViewChild } from "@angular/core";
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { DataTablesModule } from 'angular-datatables';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule,NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
 import { NgClass, NgIf, NgFor } from '@angular/common';
@@ -16,6 +16,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { DataTableDirective } from 'angular-datatables';
 
@@ -24,7 +25,7 @@ const RESERVATION2= environment.SERVER2;
   selector: 'app-admin',
   standalone: true,
   providers: [provideNativeDateAdapter()],
-  imports: [FormsModule,DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule,MatFormFieldModule, MatInputModule, MatDatepickerModule],
+  imports: [FormsModule,DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule,MatFormFieldModule, MatInputModule, MatDatepickerModule,MatTooltipModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -32,11 +33,10 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
   date1:any;date2:any;
   dtInstance: any;
-  iconoVoucher = 'assets/icons/heroicons/outline/voucher.svg';
-  iconoPencil = 'assets/icons/heroicons/outline/pencil.svg';
   dtOptions:ADTSettings={};
   dtTrigger = new Subject<ADTSettings>(); 
   reserva:any=[];
+  positionOption: TooltipPosition='above';
   constructor(private http: HttpClient){
     this.date1=new Date().toISOString().slice(0, 10).slice(0, 10);
     this.date2=new Date().toISOString().slice(0, 10).slice(0, 10);
@@ -140,11 +140,32 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
           console.error('Download error:', error);
         }
       )
-      console.log("reporte");
     }
   }
-  downloadVoucher(){
-
+  downloadVoucher(operation:number){
+    console.log(operation);
+    const data={
+      'operation':operation
+    }
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    this.http.post(`${RESERVATION2}/report/voucher`, data, {
+      headers: headers,
+      responseType: 'blob' // Asegúrate de que la respuesta sea tratada como un blob
+    }).subscribe(
+      (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.target='_blank';
+        link.href = url;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },error => {
+        console.error('Download error:', error);
+      }
+    )
   }
 }
 export class LanguageApp {

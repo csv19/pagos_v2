@@ -1,57 +1,67 @@
-<div class="container bg-transparent my-4 mx-auto h-full">
-    <div [ngClass]="isLoading?'block':'hidden'" class="w-full h-4/5 flex justify-center items-center">
-        <mat-spinner [diameter]="50"></mat-spinner>
+<div class="container bg-transparent py-4 my-4 mx-auto h-full">
+    <div class="my-4">
+       <h3>Reporte</h3>
+       <div class="flex justify-between items-center">
+        <div class=" flex justify-around items-center w-[370px]">
+            <div>
+                <input [(ngModel)]="date1" type="date" name="" id="">
+            </div>
+            <div>
+                <input [(ngModel)]="date2" type="date" name="" id="">
+            </div>
+            <div>
+                <button class="mr-2 inline-flex rounded-md px-3 py-2 text-sm font-medium bg-primary text-primary-foreground" (click)="search()">Filtrar</button>
+            </div>
+        </div>
+        <div class="flex justify-center">
+            <img (click)="download()" #tooltip="matTooltip"
+            matTooltip="Descargar Reporte"
+            [matTooltipPosition]="positionOption"
+            matTooltipHideDelay="500"
+                src="./assets/icons/xls.png" alt="descargar" class="cursor-pointer mx-auto w-8 h-8" />
+        </div>
     </div>
-    <div [ngClass]="!isLoading?'block':'hidden'">
-        <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
-            <thead class="">
-            <tr class="text-primary">
-                <th>N° Documento</th>
-                <th>Nombres y Apellidos</th>
-                <th>Edad</th>
-                <th>Fecha</th>
-                <th>Horario</th>
-                <th>Taller</th>
-            </tr>
-            </thead>
-            <tbody>
-            @if(reserva){
-                @for(item of reserva; track item){
-                <tr class="text-muted-foreground uppercase">
-                    <td>{{item.DNIALUMNO}}</td>
+   </div>
+   <div>
+       @if(reserva){
+       <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+           <thead>
+           <tr class="text-primary">
+               <th>Nro Documento</th>
+               <th>Nombres y Apellidos</th>
+               <th>Edad</th>
+               <th>Fecha</th>
+               <th>Horario</th>
+               <th>Taller</th>
+               <th>Temporada</th>
+               <th></th>
+           </tr>
+           </thead>
+           <tbody>
+           
+           @for(item of reserva; track item){
+               <tr class="text-muted-foreground uppercase">
+                   <td>{{item.DNIALUMNO}}</td>
                     <td>{{item.NOMBREALUMNO}}</td>
                     <td>{{item.RANGO_chDESRANGO}}</td>
                     <td>{{item.GRUPO_chDATE}}</td>
                     <td>{{item.GRUPO_chDESGRUPO}}</td>
                     <td>{{item.TALLERDESC_chDESTALLER}}</td>
-                </tr>
-                }
-            }
-            </tbody>
-        </table>
-    </div>
-    <div class="my-4" [ngClass]="!isLoading?'block':'hidden'">
-        <h3>Reporte</h3>
-        <div class=" flex justify-between items-start w-[550px]">
-            <div>
-                <mat-form-field>
-                    <mat-label>Fecha de Inicio</mat-label>
-                    <input matInput (ngModelChange)="validateDate()" [(ngModel)]="date1" [max]="date" [matDatepicker]="picker">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field>
-                    <mat-label>Fecha Termino</mat-label>
-                    <input matInput (ngModelChange)="validateDate()" [(ngModel)]="date2" [matDatepicker]="picker2" [max]="date">
-                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                    <mat-datepicker #picker2></mat-datepicker>
-                </mat-form-field>
-            </div>
-        </div>
-        <div>
-            <button class="mr-2 inline-flex rounded-md px-3 py-2 text-sm font-medium bg-primary text-primary-foreground" (click)="getReport()">Generar</button>
-        </div>
-    </div>
+                    <td>{{item.TEMPORADA_chDESTEMPORADA}}</td>
+                   <td>
+                       @if(item.OPER_P_inCODOPE){
+                        <div (click)="downloadVoucher(item.OPER_P_inCODOPE)">
+                            <img class="cursor-pointer w-4" mat-raised-button #tooltip="matTooltip"
+                            matTooltip="Detalles"
+                            [matTooltipPosition]="positionOption"
+                            matTooltipHideDelay="300" src="./assets/icons/vista.png" alt="">
+                        </div>
+                       }
+                   </td>
+               </tr>
+           }
+           </tbody>
+       </table>
+       }
+   </div>
 </div>

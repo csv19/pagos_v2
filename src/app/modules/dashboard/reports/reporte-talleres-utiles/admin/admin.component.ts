@@ -1,17 +1,19 @@
-import { Component } from '@angular/core';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { Component, OnInit,OnDestroy, ViewChild } from "@angular/core";
 import {provideNativeDateAdapter} from '@angular/material/core';
-import { HttpClient, HttpHeaders  } from '@angular/common/http';
 import { DataTablesModule } from 'angular-datatables';
-import { FormsModule } from '@angular/forms'; // Importa FormsModule
+import { FormsModule } from '@angular/forms';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { NgClass, NgIf, NgFor } from '@angular/common';
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import { environment } from 'src/environments/environment';
-import { Observable, Subject } from 'rxjs';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
+import { Subject } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { NgClass} from '@angular/common';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatInputModule} from '@angular/material/input';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
+import { DataTableDirective } from 'angular-datatables';
 
 const RESERVATION2= environment.SERVER2;
 
@@ -19,27 +21,29 @@ const RESERVATION2= environment.SERVER2;
   selector: 'app-admin',
   standalone: true,
   providers: [provideNativeDateAdapter()],
-  imports: [FormsModule,DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule,MatFormFieldModule, MatInputModule, MatDatepickerModule],
+  imports: [FormsModule,DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule,MatFormFieldModule, MatInputModule, MatDatepickerModule,MatTooltipModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class ReportesTalleresUtilesAdminComponent {
-  url:string=RESERVATION2; 
-  reserva:any;
-  isLoading:boolean=true;
-  date:any
-  date1:any
-  date2:any
+export class ReportesTalleresUtilesAdminComponent implements OnDestroy, OnInit {  
+  @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
+  date1:any;date2:any;
+  dtInstance: any;
   dtOptions:ADTSettings={};
-  dtTrigger = new Subject<ADTSettings>();
+  dtTrigger = new Subject<ADTSettings>(); 
+  reserva:any=[];
+  positionOption: TooltipPosition='above';
   constructor(private http: HttpClient, public dialog: MatDialog){
-    this.date=new Date();
-    this.date1=new Date();
-    this.date2=new Date();
-    setTimeout(()=>{
-      this.isLoading=false;
-    },1000)
-    this.loadReserva();
+    this.date1=new Date().toISOString().slice(0, 10).slice(0, 10);
+    this.date2=new Date().toISOString().slice(0, 10).slice(0, 10);
+  }
+  ngOnInit(): void {
+    this.dtOptions = {
+      pagingType: 'simple_numbers',
+      language: LanguageApp.spanish_datatables,
+      responsive: true,
+    }
+    this.fetchData();
   }
   validateDate(){
     if(this.date1>this.date2){
@@ -47,32 +51,49 @@ export class ReportesTalleresUtilesAdminComponent {
     }
     return true;
   }
-  loadReserva(){
-      this.getReserva().subscribe(
-        (response:any)=>{
-          this.reserva=response.data;        
-        },error=>{
-          console.error(error);
-        }
-      )
-      this.dtOptions={
-        pagingType:'simple_numbers',
-        language: LanguageApp.spanish_datatables,
-        responsive: true,
-        order : [0, 'desc'],
+  fetchData():void{
+    const date1=this.date1.replace(/-/g, '');
+    const date2=this.date2.replace(/-/g, '');
+    console.log(date1);
+    
+    this.http.get(`${RESERVATION2}/workshops/reservations/${date1}/${date2}`).subscribe(
+      (response:any)=>{
+        console.log(response);
+        this.reserva=response.data; 
+        this.dtTrigger.next(this.dtOptions);
+      },error=>{console.log(error);
       }
+    )
   }
-  getReserva():Observable<any[]>{
-    const day='20240101';
-    const fecha2 = new Date();
-    const day2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
-    return this.http.get<any[]>(`${RESERVATION2}/workshops/reservations/${day}/${day2}`);
+  search(){
+    const date1=this.date1.replace(/-/g, '');
+    const date2=this.date2.replace(/-/g, '');
+    
+    this.http.get(`${RESERVATION2}/workshops/reservations/${date1}/${date2}`).subscribe(
+      (response:any)=>{
+        this.reserva=response.data; 
+        this.rerender()
+      },error=>{console.log(error);
+      }
+    )
+    
   }
-  getReport(){
+  rerender(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.destroy();
+      this.dtTrigger.next(this.dtOptions);
+    });
+  }
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
+  }
+  download(){
     const fecha1 = new Date(this.date1);
     const fecha2 = new Date(this.date2);
-      const date1 = fecha1.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
-      const date2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+    const date1 = fecha1.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+    const date2 = fecha2.toISOString().slice(0, 10).replace(/-/g, '').slice(0, 8);
+    console.log(date1);
+    
     if(this.validateDate()){
       const data={
         'module':4,
@@ -91,20 +112,38 @@ export class ReportesTalleresUtilesAdminComponent {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'teatro.xlsx';
+          link.download = 'talleres.xlsx';
           link.click();
           window.URL.revokeObjectURL(url);
         },error => {
           console.error('Download error:', error);
         }
       )
-      console.log("reporte");
     }
   }
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.dtTrigger.next(this.dtOptions);
-    }, 200);
+  downloadVoucher(operation:number){
+    const data={
+      'operation':operation
+    }
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    this.http.post(`${RESERVATION2}/report/voucher`, data, {
+      headers: headers,
+      responseType: 'blob' // Asegúrate de que la respuesta sea tratada como un blob
+    }).subscribe(
+      (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.target='_blank';
+        link.href = url;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },error => {
+        console.error('Download error:', error);
+      }
+    )
   }
 }
 export class LanguageApp {
