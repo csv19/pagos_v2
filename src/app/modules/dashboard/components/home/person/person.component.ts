@@ -12,9 +12,7 @@ import { environment } from 'src/environments/environment';
 import { NgFor, NgStyle } from '@angular/common';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
 
-const OPTION_DOCUMENT=environment.API_DOCUMENT;
-const DASHBOARD_DOCUMENT=environment.API_DASHBOARD_DOCUMENT;
-const RESERVATION= environment.SERVER2;
+const SERVER=environment.SERVER;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -40,7 +38,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   styleUrl: './person.component.scss'
 })
 export class PersonComponent implements OnInit{
-  url:string=RESERVATION; 
+  url:string=SERVER; 
    authenticate!:boolean;
    styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;
    dataDocument:any;
@@ -70,7 +68,7 @@ export class PersonComponent implements OnInit{
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
     });
-    this.http.get(OPTION_DOCUMENT).subscribe(
+    this.http.get(`${SERVER}/documents`).subscribe(
       (response:any) => {
         this.dataDocument = response.data;
       },
@@ -121,7 +119,7 @@ export class PersonComponent implements OnInit{
     return{name,lastName,email,phone};
   }
   savePerson(route: string, data: any) {
-    const  list = this.http.post<any>(`${RESERVATION}/${route}`, data);
+    const  list = this.http.post<any>(`${SERVER}/${route}`, data);
     return list;
   }
   convertText(value: any, type: number): string {
@@ -141,7 +139,7 @@ export class PersonComponent implements OnInit{
     this.resetValidateFirstFormGroup();
 
     if(nro_document.length === this.sizeCharter){
-      this.http.get<any>(`${DASHBOARD_DOCUMENT}/${nro_document}/${option_document}`).subscribe(
+      this.http.get<any>(`${SERVER}/search/person/${nro_document}/${option_document}`).subscribe(
         (response: any) => {
           if (response.code === 200) {
             const data = response.data[0] ? response.data[0] : response.data;

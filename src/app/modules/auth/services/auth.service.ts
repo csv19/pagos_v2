@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-const URL=environment.SERVER2;
+const SERVER=environment.SERVER;
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +18,7 @@ export class AuthService {
       email: email,
       password: password
     };
-    this.http.post<any>(`${URL}/login`,data).subscribe(
+    this.http.post<any>(`${SERVER}/login`,data).subscribe(
       response=>{
         console.log(response);
         localStorage.setItem('token',response.token);
@@ -34,7 +34,7 @@ export class AuthService {
       'Accept': 'application/json',
       'Authorization': 'Bearer ' + token
     });
-    this.http.get(`${URL}/profile`, { headers: headers }).subscribe(
+    this.http.get(`${SERVER}/profile`, { headers: headers }).subscribe(
       (response:any)=>{
         localStorage.setItem('profileData', JSON.stringify(response));
         this.redirectHome();
@@ -51,7 +51,7 @@ export class AuthService {
       'Authorization': 'Bearer ' + token
     });
     
-    this.http.get(`${URL}/logout`, { headers: headers }).subscribe(
+    this.http.get(`${SERVER}/logout`, { headers: headers }).subscribe(
       response=>{
         localStorage.removeItem('profileData');
         localStorage.removeItem('token');
@@ -68,7 +68,7 @@ export class AuthService {
   register(data:any){
     console.log(data);
     
-    this.http.post<any>(`${URL}/register`,data).subscribe(
+    this.http.post<any>(`${SERVER}/register`,data).subscribe(
       response=>{
         console.log(response);
         this.showSuccess();
@@ -79,7 +79,7 @@ export class AuthService {
     );
   }
   update(data:any){
-    this.http.post<any>(`${URL}/update`,data).subscribe(
+    this.http.post<any>(`${SERVER}/update`,data).subscribe(
       response=>{
         console.log(response);
         this.showSuccess();

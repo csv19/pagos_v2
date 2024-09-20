@@ -17,7 +17,7 @@ import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import {map, startWith} from 'rxjs/operators';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
 
-const RESERVATION2= environment.SERVER2;
+const SERVER= environment.SERVER;
 @Component({
   selector: 'app-lista-usuarios',
   standalone: true,
@@ -55,7 +55,7 @@ export class ListaUsuariosComponent implements OnInit {
     )
   }
   getUsers():Observable<any[]>{
-    return this.http.get<any[]>(`${RESERVATION2}/users`);
+    return this.http.get<any[]>(`${SERVER}/users`);
   }
   update(id:number) {
     const data={
@@ -84,7 +84,7 @@ export class ListaUsuariosComponent implements OnInit {
       }
     }).then((result) => {
       if (result.value) {
-        this.http.post(`${RESERVATION2}/delete`,data).subscribe(
+        this.http.post(`${SERVER}/delete`,data).subscribe(
           response=>{
             console.log(response);
             this.loadUsers();
@@ -139,10 +139,10 @@ export class EditarUsuarioComponent implements OnInit{
   filteredOptions: Observable<Area[]> | undefined;
   userId!:number;
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient, private authService: AuthService,public dialog: MatDialog) {
-    this.http.get(`${RESERVATION2}/areas`).subscribe(
+    this.http.get(`${SERVER}/areas`).subscribe(
       (value:any) => {
         this.areas = value.data;
-        this.http.get(`${RESERVATION2}/edit/${data.id}`).subscribe(
+        this.http.get(`${SERVER}/edit/${data.id}`).subscribe(
           (response:any)=>{
               const area_id:number=response.data[0].area_id;
               this.userId=data.id;

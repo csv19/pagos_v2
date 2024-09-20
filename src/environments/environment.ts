@@ -1,10 +1,8 @@
 export const environment = {
   production: true,
   HOME:'https://localhost:4200',
-  SERVER: 'https://api_v2.test:4435/v1',
-  SERVER2: 'https://api_v2.test:4435/api',
+  SERVER: 'https://api_v2.test:4435/api',
   //MODULE
-  API_MODULE: 'https://api_v2.test:4435/api/modules',
   API_DOCUMENT: 'https://api_v2.test:4435/api/documents',
   API_DASHBOARD_DOCUMENT: 'https://api_v2.test:4435/api/search/person',
   API_DASHBOARD_DOCUMENT_STUDENT: 'https://api_v2.test:4435/api/search/client',

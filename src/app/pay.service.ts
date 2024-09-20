@@ -7,7 +7,6 @@ const MERCHANT= environment.MERCHANT;
 const URLSESSION= environment.URLSESSION;
 const AUTHSECURITY= btoa(`${environment.USER}:${environment.PWD}`);
 const URLTOKEN= environment.URLTOKEN;
-const URLAUTORIZATE= environment.URLAUTORIZATE;
 
 @Injectable({
   providedIn: 'root'

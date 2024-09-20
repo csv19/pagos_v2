@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { MenuItem } from '../models/menu.model';
 import { environment } from 'src/environments/environment';
-const RESERVATION2= environment.SERVER2;
+const SERVER= environment.SERVER;
 export class Menu {
 
   public static pages: MenuItem[] = [

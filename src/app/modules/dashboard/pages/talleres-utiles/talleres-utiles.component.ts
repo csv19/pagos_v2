@@ -22,11 +22,7 @@ import { PayService } from 'src/app/pay.service';
 import { PersonComponent } from '../../components/home/person/person.component';
 import { ToastrService } from 'ngx-toastr';
 
-const RESERVATION2= environment.SERVER2;
-const OPTION_DOCUMENT=environment.API_DOCUMENT;
-const DASHBOARD_DOCUMENT=environment.API_DASHBOARD_DOCUMENT;
-const WORKSHORP=environment.API_WORKSHORP;
-const DASHBOARD_DOCUMENT_STUDENT=environment.API_DASHBOARD_DOCUMENT_STUDENT;
+const SERVER= environment.SERVER;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -59,7 +55,7 @@ export interface Workshop {
   styleUrl: './talleres-utiles.component.scss'
 })
 export class TalleresUtilesComponent implements OnInit{
-  url:string=RESERVATION2; 
+  url:string=SERVER; 
   positionOption: TooltipPosition='above';
   isLinear = true;isEditable=true;
   authenticate!:boolean;stepp!:number;voucher!:number;
@@ -124,7 +120,7 @@ export class TalleresUtilesComponent implements OnInit{
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
     });
-    this.http.get(OPTION_DOCUMENT).subscribe(
+    this.http.get(`${SERVER}/documents`).subscribe(
       (response:any) => {
         this.dataDocument = response.data;
       },
@@ -132,7 +128,7 @@ export class TalleresUtilesComponent implements OnInit{
         console.error('Error en la solicitud:', error);
       }
     );
-    this.http.get(WORKSHORP).subscribe(
+    this.http.get(`${SERVER}/workshops`).subscribe(
       (response:any) => {
         this.dataWorkshop = response.data;
         console.log(this.dataWorkshop);
@@ -141,7 +137,7 @@ export class TalleresUtilesComponent implements OnInit{
         console.error('Error en la solicitud:', error);
       }
     );
-    this.http.get(`${RESERVATION2}/type-payments`).subscribe(
+    this.http.get(`${SERVER}/type-payments`).subscribe(
       (response:any) => {
         if(response.code===200){
           this.dataTypePayments= response.data;
@@ -278,7 +274,7 @@ export class TalleresUtilesComponent implements OnInit{
   }
 
   savePerson(route: string, data: any) {
-    const  list = this.http.post<any>(`${RESERVATION2}/${route}`, data);
+    const  list = this.http.post<any>(`${SERVER}/${route}`, data);
     return list;
   }
   convertText(value: any, type: number): string {
@@ -296,7 +292,7 @@ export class TalleresUtilesComponent implements OnInit{
     const phone = this.validateFirstFormGroup().phone;
     this.resetValidateFirstFormGroup();
       if(nro_document.length === this.sizeCharter){
-        this.http.get<any>(`${DASHBOARD_DOCUMENT}/${nro_document}/${option_document}`).subscribe(
+        this.http.get<any>(`${SERVER}/${nro_document}/search/person/${option_document}`).subscribe(
           (response: any) => {
             if (response.code === 200) {
               const data = response.data[0] ? response.data[0] : response.data;
@@ -348,7 +344,7 @@ export class TalleresUtilesComponent implements OnInit{
     this.resetValidateFirstFormGroupStudent();
       console.log("ESTUDIANTE");
       if(nro_document.length === this.sizeCharterStudent){
-        this.http.get<any>(`${DASHBOARD_DOCUMENT_STUDENT}/${nro_document}/${option_document}`).subscribe(
+        this.http.get<any>(`${SERVER}/${nro_document}/search/client/${option_document}`).subscribe(
           (response: any) => {
             if (response.code === 200) {
               const data = response.data[0] ? response.data[0] : response.data;
@@ -469,10 +465,10 @@ export class TalleresUtilesComponent implements OnInit{
   }
   //SECOND GROUP
   getSelectSecondFormGroup(route: string, data: any) {
-    let list = this.http.get(`${RESERVATION2}/${route}`);
+    let list = this.http.get(`${SERVER}/${route}`);
     if (data) {
         const values = data.join('/');
-        list = this.http.get(`${RESERVATION2}/${route}/${values}`);
+        list = this.http.get(`${SERVER}/${route}/${values}`);
     }
     return list;
   }
@@ -572,7 +568,7 @@ export class TalleresUtilesComponent implements OnInit{
       } 
       console.log("Pago por Admin");
       const route='workshops/atm';
-      this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
+      this.http.post<any>(`${SERVER}/${route}`, this.reservation).subscribe(
         (response) => {
           if (response && response.code === 200) {   
             console.log(response);
@@ -611,7 +607,7 @@ export class TalleresUtilesComponent implements OnInit{
           } 
           console.log(this.reservation);
           const route='workshops/niubiz';
-          this.http.post<any>(`${RESERVATION2}/${route}`, this.reservation).subscribe(
+          this.http.post<any>(`${SERVER}/${route}`, this.reservation).subscribe(
             (response) => {
               if (response && response.code === 200) {   
                 const reservationId=response.data.reservation_id;
@@ -635,7 +631,7 @@ export class TalleresUtilesComponent implements OnInit{
     this.payService.getToken(sessionToken).subscribe((data) => {
       const responseToken = data.sessionKey;
       const script = this.renderer.createElement('script');
-      const url=`${RESERVATION2}/voucher/${module_id}/${reservation_id}/${voucher_id}/${payment_id}/${total}`;
+      const url=`${SERVER}/voucher/${module_id}/${reservation_id}/${voucher_id}/${payment_id}/${total}`;
       script.type = 'text/javascript';
       script.text = this.payService.getVisa(
         responseToken,
@@ -649,7 +645,7 @@ export class TalleresUtilesComponent implements OnInit{
   //THIRD GROUP
   getVoucher(voucherId:number,paymentId:number){
     const module=4;
-    this.http.get(`${RESERVATION2}/payment/voucher/${module}/${voucherId}/${paymentId}`).subscribe(
+    this.http.get(`${SERVER}/payment/voucher/${module}/${voucherId}/${paymentId}`).subscribe(
       (response:any)=>{
         console.log(response);
         this.dataVoucher=response.data;
@@ -658,7 +654,7 @@ export class TalleresUtilesComponent implements OnInit{
     )
   }
   print(voucherId:number,paymentId:number) {
-    const url = `${RESERVATION2}/workshops/voucher/${voucherId}/${paymentId}/2`; 
+    const url = `${SERVER}/workshops/voucher/${voucherId}/${paymentId}/2`; 
     window.open(url, '_blank');
   }
   showError() {

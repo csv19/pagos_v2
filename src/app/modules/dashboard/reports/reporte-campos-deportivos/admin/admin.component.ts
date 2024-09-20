@@ -18,7 +18,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 
-const RESERVATION2= environment.SERVER2;
+const SERVER= environment.SERVER;
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -27,7 +27,7 @@ const RESERVATION2= environment.SERVER2;
   styleUrl: './admin.component.scss'
 })
 export class ReportesCamposDeportivosAdminComponent {
-  url:string=RESERVATION2; 
+  url:string=SERVER; 
   reserva:any;
   isLoading:boolean=true;
   iconoVoucher = 'assets/icons/heroicons/outline/voucher.svg';
@@ -57,7 +57,7 @@ export class ReportesCamposDeportivosAdminComponent {
       )
   }
   getReserva():Observable<any[]>{
-    return this.http.get<any[]>(`${RESERVATION2}/workshops/reservations`);
+    return this.http.get<any[]>(`${SERVER}/workshops/reservations`);
   }
   showVoucher(id:number){
     console.log(id);
@@ -135,12 +135,12 @@ export class EditarCampoDeportivoComponent implements OnInit{
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog) {
     this.textScheduleLabel='Horarios Disponibles';
-    this.http.get(`${RESERVATION2}/workshop/reservation/${data.id}`).subscribe(
+    this.http.get(`${SERVER}/workshop/reservation/${data.id}`).subscribe(
       (response:any)=>{
         this.quantitySchedule=response.data.length;
         this.category=response.data[0].category_id;
         const field_id=response.data[0].field_id;
-        this.http.get(`${RESERVATION2}/fields/${this.category}`).subscribe(
+        this.http.get(`${SERVER}/fields/${this.category}`).subscribe(
           (value:any) => {
             if(value.code===200){
               this.secondFormGroup?.get('fieldCtrl')?.setValue(field_id);
@@ -204,10 +204,10 @@ export class EditarCampoDeportivoComponent implements OnInit{
   }
   
   getSelectSecondFormGroup(route: string, data: any) {
-    let list = this.http.get(`${RESERVATION2}/${route}`);
+    let list = this.http.get(`${SERVER}/${route}`);
     if (data) {
         const values = data.join('/');
-        list = this.http.get(`${RESERVATION2}/${route}/${values}`);
+        list = this.http.get(`${SERVER}/${route}/${values}`);
     }
     return list;
   }
@@ -220,7 +220,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
       const dateFormat= this.formatDate(date.value);
         schedule?.enable();
         console.log("horarios");
-        const url = `${RESERVATION2}/schedule/${this.category}/${field.value}/${dateFormat}`;
+        const url = `${SERVER}/schedule/${this.category}/${field.value}/${dateFormat}`;
         this.http.get<any>(`${url}`).subscribe(
           (response)=>{
             response.data.map(

@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 import { CardModuleComponent } from '../dashboard/components/home/card-module/card-module.component';
 import { NgFor, NgClass } from '@angular/common';
 import { FooterComponent } from '../layout/components/footer/footer.component';
-const MODULE_URL= environment.API_MODULE;
+const SERVER= environment.SERVER;
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
       }
     });
     
-    this.http.get(MODULE_URL).subscribe(
+    this.http.get(`${SERVER}/modules`).subscribe(
       (response:any)=>{
         this.modules=response.data;
       }

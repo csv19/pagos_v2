@@ -4,7 +4,7 @@ import { NgFor } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 
-const MODULE_URL= environment.API_MODULE;
+const SERVER= environment.SERVER;
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -21,8 +21,10 @@ export class HomeComponent {
   constructor(
     private http: HttpClient,
   ){
-    this.http.get(MODULE_URL).subscribe(
+    this.http.get(`${SERVER}/modules`).subscribe(
       (response:any)=>{
+        console.log(response);
+        
         this.modules=response.data;
       }
     )

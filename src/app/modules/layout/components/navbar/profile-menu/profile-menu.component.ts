@@ -8,7 +8,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
-const URL= environment.SERVER2;
+const SERVER= environment.SERVER;
 @Component({
   selector: 'app-profile-menu',
   templateUrl: './profile-menu.component.html',

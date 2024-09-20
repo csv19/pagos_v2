@@ -11,7 +11,7 @@ import {map, startWith} from 'rxjs/operators';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { environment } from 'src/environments/environment';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
-const RESERVATION2= environment.SERVER2;
+const SERVER= environment.SERVER;
 export interface Area {
   name: string;
 }
@@ -31,7 +31,7 @@ export class SignUpComponent implements OnInit {
   areas:Area[] = [];
   filteredOptions: Observable<Area[]> | undefined;
   constructor(private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient, private authService: AuthService) {
-    this.http.get(`${RESERVATION2}/areas`).subscribe(
+    this.http.get(`${SERVER}/areas`).subscribe(
       (response:any) => {
         this.areas = response.data;
         console.log(this.areas);
