@@ -48,7 +48,7 @@ export class InformacionPersonaComponent implements OnInit {
   firstFormGroup: FormGroup;
   dataHolidays: any[]=[]; currentDate:any; nextDate:any;
   dataDocument:any; dataCategory:any; dataField:any; dataTypeReservation:any; dataShift:any; dataSchedule:any[]=[]; selectSchedule:any;
-  person:any=[];
+  person:any={};
   matcher = new MyErrorStateMatcher();
   @Output() formDataEmitter = new EventEmitter<any>();  
   constructor(private route: ActivatedRoute, private _formBuilder: FormBuilder, private http: HttpClient,private personService: ReniecService){
@@ -179,6 +179,7 @@ export class InformacionPersonaComponent implements OnInit {
         this.person.phone=phone.value;
       }
       if(this.person.id === null){
+        this.person.id=0
         this.person.typeDocument=option_document.value
         this.person.document=document.value
         this.person.name=(this.person.typeDocument!==3?name.value:fullName?.value)

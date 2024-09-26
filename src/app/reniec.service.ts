@@ -48,4 +48,8 @@ export class ReniecService {
         default: return sizeCharter=8;
       }
   }
+  savePerson(person: any) {
+    return this.http.post<any>(`${SERVER}/person`, person)
+}
+
 }
