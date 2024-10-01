@@ -55,7 +55,10 @@
                     <td>{{item.PERS_chNOMPER}}</td>
                     <td>{{item.CATE_chDESCATE}}</td>
                     <td>{{item.RESERVA_chRESERVA}}</td>
-                    <td>{{formatDDMMYY(item.RESERVA_chFECHA)}}</td>
+                    <td>@if(item.PAGO_chFECPAG){
+                        {{formatDDMMYY(item.RESERVA_chFECHA)}}
+                        }
+                    </td>
                     <td>{{item.CAMPO_chDESCAMPO}}</td>
                     <td>{{item.TURNO_chCAMPO}}</td>
                     <td>{{item.HORA_INICIO}} - {{item.HORA_FINAL}}</td>
