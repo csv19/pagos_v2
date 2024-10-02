@@ -59,6 +59,7 @@ export class CamposDeportivosComponent implements OnInit {
    stepp!:number;
    voucher!:number;
    payment!:number;
+   codeId:number;
    textScheduleLabel:string;
    styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;
    dataHolidays: any[]=[]; currentDate:any; nextDate:any;
@@ -106,6 +107,8 @@ export class CamposDeportivosComponent implements OnInit {
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef, private personService: ReniecService){
+    const atm:any=localStorage.getItem('profileData');
+    this.codeId=(atm)?JSON.parse(atm).data.code:789;
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
       console.log(this.authenticate);
@@ -250,9 +253,8 @@ export class CamposDeportivosComponent implements OnInit {
     const route='typeReservations';
     if(category?.value){
       typeReservation?.enable()
-      const admin= (this.authenticate)?1:2;
       const data=[
-        category.value,admin
+        category.value,this.codeId
       ];
       const dataTypeReservation:any= await this.getSelectSecondFormGroup(route,data).toPromise();
       if(dataTypeReservation.code ===200){
@@ -344,13 +346,25 @@ export class CamposDeportivosComponent implements OnInit {
   }
   async getTotal(){
     const category= this.validateSecondFormGroup().category;
+    const typeReservation= this.validateSecondFormGroup().typeReservation;
     const field= this.validateSecondFormGroup().field;
     const shift= this.validateSecondFormGroup().shift;
     const date= this.validateSecondFormGroup().date;
     const schedule= this.validateSecondFormGroup().schedule;
-    if( category?.value&& field?.value&& shift?.value && date?.value && schedule?.value){
+    
+    if( category?.value&& typeReservation?.value && field?.value&& shift?.value && date?.value && schedule?.value){
       const categoryReservation:any=[];
       const fieldData=field.value.length===undefined?field.value:field.value[0]
+      this.http.get(`${SERVER}/type-payments/${typeReservation.value}/${this.codeId}`).subscribe(
+        (response:any) => {
+          if(response.code===200){
+            this.dataTypePayments= response.data;
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        }
+      );
       this.dataField.map((value:any)=>{
         if(value.id === fieldData){
           categoryReservation.push(value)
@@ -454,7 +468,6 @@ export class CamposDeportivosComponent implements OnInit {
       option: this.validateSecondFormGroup().optionPayment?.value,
       observation: this.validateSecondFormGroup().observationPayment?.value,
     } 
-    console.log("Pago por Admin");
     const route='calendars/atm';
     this.http.post<any>(`${SERVER}/${route}`, this.calendar).subscribe(
       (response) => {
@@ -473,24 +486,12 @@ export class CamposDeportivosComponent implements OnInit {
     );
   }
   async save(){
-    const atm:any=localStorage.getItem('profileData');
-    const atmId=JSON.parse(atm).data.id;
     const personId= await this.setPerson()
     if(this.authenticate){
-        this.paymentAdmin(personId,atmId);
-        this.http.get(`${SERVER}/type-payments/${atmId}`).subscribe(
-          (response:any) => {
-            if(response.code===200){
-              this.dataTypePayments= response.data;
-            }
-          },
-          (error) => {
-            console.error('Error en la solicitud:', error);
-          }
-        );
+      this.paymentAdmin(personId,this.codeId);
     }else{
       this.paymentUser(personId);
-      }    
+    }    
   }
   pay(calendar_id:number,payment_id:number,total:string,purchaseNumber:string,sessionToken:string){
     console.log(sessionToken);    
@@ -518,7 +519,7 @@ export class CamposDeportivosComponent implements OnInit {
         this.dataPayment=response.data;        
         let total=0;
         response.data.map((value:any)=>
-          total +=value.price_reservation)
+        total +=value.price_reservation)
         this.totalPrice=total;
         this.reserva.calendarId=this.dataPayment[0].calendar_id;
         this.reserva.paymentId=this.dataPayment[0].payment_id;

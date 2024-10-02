@@ -93,17 +93,10 @@
             </mat-form-field>
           </div>
         </div>
-        @if(!authenticate){
         <div>
           <button mat-raised-button color="primary" (click)="save()" 
             [disabled]="secondFormGroup.invalid">Reservar</button>
         </div>
-      }@else{
-        <div>
-          <button mat-raised-button color="primary" (click)="save()" 
-            [disabled]="secondFormGroup.invalid">Reservar</button>
-        </div>
-      }
       </form>
     </mat-step>
     <mat-step label="Recibo de Pago">
@@ -146,7 +139,10 @@
               <div class="flex justify-between">
                 <span class="font-semibold">Generado:</span>
                 <span>{{ this.dataPayment[0].user ?this.dataPayment[0].user:'ONLINE' }} - {{ this.dataPayment[0].created_at }}</span>
-
+              </div>
+              <div class="flex justify-between">
+                <span class="font-semibold">Método de Pago:</span>
+                <span>{{ this.dataPayment[0].type_payment}}</span>
               </div>
             </div>
           </div>
@@ -159,7 +155,7 @@
                 <tr class="border-black	border-y" *ngFor="let voucher of dataPayment">
                   <td class="text-left text-xs">
                     <span>
-                      {{voucher.category}}<br>
+                      {{voucher.category}} - {{voucher.type_reservation}}<br>
                       {{voucher.field_name}}-{{voucher.campus}}<br>
                       {{formatHour(voucher.hour_start)}} a {{formatHour(voucher.hour_end)}}<br>
                       {{voucher.date_reservation}}
