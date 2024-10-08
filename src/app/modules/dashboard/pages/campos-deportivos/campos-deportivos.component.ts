@@ -28,7 +28,6 @@ const HOLIDAYS=environment.API_HOLIDAY;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
-    // console.log(control && control.invalid && (control.dirty || control.touched || isSubmitted));
     return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
   }
 }
@@ -84,7 +83,7 @@ export class CamposDeportivosComponent implements OnInit {
    calendar:any={
     purchaseNumber:'',
     sessionToken:'',
-    people_id:'',
+    people_id:0,
     campus:'',
     category:'',
     field:'',
@@ -269,7 +268,7 @@ export class CamposDeportivosComponent implements OnInit {
     return{name,lastName,email,phone};
   }
   savePerson(route: string, data: any) {
-    const  list = this.http.post<any>(`${RESERVATION2}/${route}`, this.person);
+    const  list = this.http.post<any>(`${RESERVATION2}/${route}`, data);
     return list;
   }
   validateSecondFormGroup(){
@@ -363,48 +362,44 @@ export class CamposDeportivosComponent implements OnInit {
     this.resetValidateFirstFormGroup();
     this.resetValidateSecondFormGroup(1);
     if(nro_document.length === this.sizeCharter){
+      this.person.document=nro_document;
+      this.person.typeDocument=option_document;
       this.http.get<any>(`${DASHBOARD_DOCUMENT}/${nro_document}/${option_document}`).subscribe(
         (response: any) => {
           if (response.code === 200) {
             const data = response.data[0] ? response.data[0] : response.data;
-            if (option_document != 3) {
-                if(data.id){
-                  this.calendar.people_id = data.id;
-                  email?.setValue(data.email);
-                  email?.disable();
-                  const dataPhone = data.phone ?? null;
-                  phone?.setValue(dataPhone);
-                  phone?.disable();
-                }
-              const setNameAndLastName = (nameValue: string, lastNameValue: string) => {
-                this.person.name=nameValue;
-                this.person.lastName=lastNameValue;
-                name?.setValue(this.authenticate ?nameValue: this.convertText(nameValue, 1), 1);
-                lastName?.setValue(this.authenticate ?lastNameValue: this.convertText(lastNameValue, 1) , 1);
-              };
-            setNameAndLastName(data.name, data.lastName);
-            } else {
-              if(data.id){
-                this.person.name=data.name;
-                fullName?.setValue(data.name);
-                email?.setValue(data.email);
-                email?.disable();
-                const dataPhone = data.phone ?? null;
-                phone?.setValue(dataPhone);
-              }else{
-                this.person.name=data.name;
-                fullName?.setValue(data.name);
-                email?.enable();
-              }
+            if(data.id){
+              this.calendar.people_id = data.id;
+              this.person.name = (option_document !== 3)?data.name:data.fullName;
+              this.person.lastName = (option_document !== 3)?data.lastName:'';
+              this.person.email=data.email;
+              email?.setValue(data.email);
+              email?.disable();
+              const dataPhone = data.phone ?? null;
+              phone?.setValue(dataPhone);
+              phone?.disable();
+            }else{
+              this.person.name = (option_document !== 3)?data.name:data.fullName;
+              this.person.lastName = (option_document != 3)?data.lastName:'';
+              email?.enable();
             }
+            const setNameAndLastName = (nameValue: string, lastNameValue: string) => {
+              if(option_document !== 3){
+                lastName?.setValue(this.authenticate ?lastNameValue: this.convertText(lastNameValue, 1) , 1);
+                name?.setValue(this.authenticate ?nameValue: this.convertText(nameValue, 1), 1);
+              }else{
+                fullName?.setValue(data.name);
+              }
+            };
+            setNameAndLastName(data.name, data.lastName);
           }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
+        },(error) => {
           if (error.error.code === 404) {
-            if (option_document != 3) {
-              name?.enable();
-              lastName?.enable();
+            if(option_document !== 3){
+              name?.enable()
+              lastName?.enable()
+            }else{
+              fullName?.enable()
             }
           }
         }
@@ -438,30 +433,18 @@ export class CamposDeportivosComponent implements OnInit {
     }
   }
   async setPerson(){
-    const option_document=this.validateFirstFormGroup().option_document?.value;
-    if(this.calendar.people_id == 0 || this.calendar.people_id==null){
-      if(option_document !==3){
-        this.person={
-          typeDocument:option_document,
-          document:this.validateFirstFormGroup().document?.value,
-          name:this.person.name,
-          lastName:this.person.lastName,
-          email:this.validateFirstFormGroup().email?.value,
-          phone:this.validateFirstFormGroup().phone?.value
-        }
-      }else{
-        this.person={
-          typeDocument:option_document,
-          document:this.validateFirstFormGroup().document?.value,
-          name:this.person.name,
-          lastName:'',
-          email:this.validateFirstFormGroup().email?.value,
-          phone:this.validateFirstFormGroup().phone?.value
-        }
-      }
+    const fullName = this.validateFirstFormGroup().fullName;
+    const name = this.validateFirstFormGroup().name;
+    const lastName = this.validateFirstFormGroup().lastName;
+    const email = this.validateFirstFormGroup().email;
+    const phone = this.validateFirstFormGroup().phone;
+    if(this.calendar.people_id == 0){
+      this.person.name = this.person.name || (this.person.typeDocument !== 3 ? name?.value : fullName?.value);
+      this.person.lastName = this.person.lastName || lastName?.value;
+      this.person.email = email?.value;
+      this.person.phone = phone?.value;
       const route='person';
-      const data=this.person;
-      const person:any=await this.savePerson(route,data).toPromise();
+      const person:any=await this.savePerson(route,this.person).toPromise();
       this.calendar.people_id=person.data[0].inserted_id;
     }
   }
@@ -477,8 +460,6 @@ export class CamposDeportivosComponent implements OnInit {
   async getCategory(){
     const category= this.validateSecondFormGroup().category;
     const route='fields';
-    console.log(this.validateFirstFormGroup().name?.value);
-    
     this.dataField=[];
     if(category){
       const data=[category.value];
@@ -564,18 +545,15 @@ export class CamposDeportivosComponent implements OnInit {
   }
   async save(){
     this.isButtonDisabled = true;
-    const atm:any=localStorage.getItem('profileData');
-    this.atm=JSON.parse(atm);
-    this.setPerson()
-      this.payService.getMount(this.totalPrice);
-      this.http.get(`${RESERVATION2}/niubiz/purchaseNumber`).subscribe(
-        (response:any)=>{        
-           this.niubiz=response.data[0].purchaseNumber
-        }
+    this.setPerson();
+    this.payService.getMount(this.totalPrice);
+    this.http.get(`${RESERVATION2}/niubiz/purchaseNumber`).subscribe(
+      (response:any)=>{        
+        this.niubiz=response.data[0].purchaseNumber
+      }
       )
-      this.payService.getSessionToken().subscribe(
-        (response)=>{
-        },
+    this.payService.getSessionToken().subscribe(
+        (response)=>{},
         (error)=>{
           const sessionToken=error.error.text;
           this.calendar={
@@ -598,13 +576,11 @@ export class CamposDeportivosComponent implements OnInit {
                 const calendarId=response.data.calendar_id;
                 const voucherId=response.data.voucher_id;
                 const paymentId=response.data.payment_id;
-                const total=response.data.total;
+                const total=response.data.total;                
                 this.pay(calendarId,voucherId,paymentId,total,sessionToken);
               }
             },(error)=>{
-              console.error(error.error.message)
-              // alert(error.error.message)
-              this.showError();
+              this.showError(error.error.message);
             }
           );
         }
@@ -646,7 +622,8 @@ export class CamposDeportivosComponent implements OnInit {
     const url = `${RESERVATION2}/fields/voucher/${voucherId}/${paymentId}/2`; 
     window.open(url, '_blank');
   }
-  showError() {
-    this.toastr.error('El horario ya no se encuentra disponble!','ERROR!',{closeButton:true, positionClass:'toast-top-right'});
+  showError(message:string) {
+    this.toastr.error(message,'ERROR!',{closeButton:true, positionClass:'toast-top-right'});
   }
 }
+

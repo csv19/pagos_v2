@@ -33,7 +33,6 @@ export class PayService {
         'Authorization': this.sessionToken
     })
     console.log(this.headersSecurity);
-    
     // console.log(this.sessionToken);
   }
 getMount(total:string){
@@ -71,7 +70,7 @@ getVisa(value:string,total:string,purchaseNumber:string,url:string){
       merchantid: ${MERCHANT},
       purchasenumber:${purchaseNumber},
       amount: ${total},
-      expirationminutes:'5',
+      expirationminutes:'15',
       timeouturl:'${url}',
       merchantlogo:'https://pagosenlinea.munimagdalena.gob.pe/img/logom.png',
       formbuttoncolor:'#000000',

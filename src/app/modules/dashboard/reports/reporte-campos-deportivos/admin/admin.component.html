@@ -39,11 +39,9 @@
                 <th>Horario</th>
                 <th>Precio</th>
                 <th>Estado</th>
-                <th></th>
             </tr>
             </thead>
             <tbody>
-            
             @for(item of reserva; track item){
                 <tr class="text-muted-foreground uppercase">
                     <td>{{item.PAGO_inNROCOM}}</td>
@@ -66,19 +64,33 @@
                     <td class="font-semibold" [ngClass]="{'text-red-600': item.ESTADO === 'PENDIENTE', 'text-blue-600': item.ESTADO !== 'PENDIENTE'}">
                         {{item.ESTADO}}
                       </td>
-                    <td>
+                    <div class="w-8 h-[96px] flex justify-center items-center">
                         @if(item.OPER_P_inCODOPE){
-                            <div (click)="downloadVoucher(item.OPER_P_inCODOPE)">
-                                <img class="cursor-pointer w-4" mat-raised-button #tooltip="matTooltip"
+                                <img (click)="downloadVoucher(item.OPER_P_inCODOPE)" class="cursor-pointer w-4 h-4" mat-raised-button #tooltip="matTooltip"
                                 matTooltip="Detalles"
                                 [matTooltipPosition]="positionOption"
                                 matTooltipHideDelay="300" src="./assets/icons/vista.png" alt="">
-                            </div>
                         }
-                    </td>
+                    </div>
                 </tr>
             }
             </tbody>
+            <tfoot>
+                <tr>
+                  <th><input class="filter-column-datatable" id="0" type="text" placeholder="Nro Voucher" name="nro-voucher"/></th>
+                  <th><input class="filter-column-datatable" id="1" type="text" placeholder="Fecha Pago" name="fecha-pago"/></th>
+                  <th><input class="filter-column-datatable" id="2" type="text" placeholder="Nro Documento" name="nro-documento"/></th>
+                  <th><input class="filter-column-datatable" id="3" type="text" placeholder="Nombres y Apellidos" name="nombres-apellidos"/></th>
+                  <th><input class="filter-column-datatable" id="4" type="text" placeholder="Categoria" name="categoria"/></th>
+                  <th><input class="filter-column-datatable" id="5" type="text" placeholder="Reserva" name="reserva"/></th>
+                  <th><input class="filter-column-datatable" id="6" type="text" placeholder="Fecha Reserva" name="fecha-reserva"/></th>
+                  <th><input class="filter-column-datatable" id="7" type="text" placeholder="Campo" name="campo"/></th>
+                  <th><input class="filter-column-datatable" id="8" type="text" placeholder="Turno" name="turno"/></th>
+                  <th><input class="filter-column-datatable" id="9" type="text" placeholder="Horario" name="horario"/></th>
+                  <th><input class="filter-column-datatable" id="10" type="text" placeholder="Precio" name="precio"/></th>
+                  <th><input class="filter-column-datatable" id="11" type="text" placeholder="Estado" name="estado"/></th>
+                </tr>
+            </tfoot>
         </table>
         }
     </div>

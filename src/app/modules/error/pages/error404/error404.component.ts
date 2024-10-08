@@ -14,6 +14,6 @@ export class Error404Component {
   constructor(private router: Router) {}
 
   goToHomePage() {
-    this.router.navigate(['admin']);
+    this.router.navigate(['']);
   }
 }

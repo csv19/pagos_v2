@@ -264,4 +264,14 @@ padding: 0 !important;
 table.dataTable td {
   font-size: 12px;
 }
-
+.filter-column-datatable{
+  border: 0px;
+  border-radius: 0px;
+  border-bottom: 1px solid #aaa;
+  padding: 5px;
+  background-color: transparent;
+  color: inherit;
+}
+.filter-column-datatable:focus{
+  box-shadow: none !important;
+}

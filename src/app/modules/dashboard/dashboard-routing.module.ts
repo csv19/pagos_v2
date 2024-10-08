@@ -45,7 +45,7 @@ const routes: Routes = [
       { path: 'reporte/campos-deportivos/atm', component:  ReportesCamposDeportivosAtmComponent},
       { path: 'reporte/talleres-utiles', component:  ReportesTalleresUtilesAdminComponent},
       { path: 'reporte/talleres-utiles/atm', component: ReportesTalleresUtilesAtmComponent },
-      { path: '**', redirectTo: 'errors/404' },
+      // { path: '**', redirectTo: 'errors/404' },
     ],
   },
 ];

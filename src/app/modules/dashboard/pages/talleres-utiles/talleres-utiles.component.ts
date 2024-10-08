@@ -591,7 +591,7 @@ export class TalleresUtilesComponent implements OnInit{
             (response) => {                
               this.router.navigateByUrl(`/talleres-utiles/recibo/2/${response.data.voucher}/${response.data.payment}`);
             },error=>{
-              this.showError();
+              this.showError('El alumno ya esta registrado en este taller');
             }
           )
     }else{
@@ -631,7 +631,7 @@ export class TalleresUtilesComponent implements OnInit{
                 this.pay(reservationId,voucherId,paymentId,total,sessionToken);
               }
             },(error)=>{
-              this.showError();
+              this.showError(error.error.message);
             }
           );
         }
@@ -667,8 +667,8 @@ export class TalleresUtilesComponent implements OnInit{
     const url = `${RESERVATION2}/workshops/voucher/${voucherId}/${paymentId}/2`; 
     window.open(url, '_blank');
   }
-  showError() {
-    this.toastr.error('El alumno ya se encuentra registrado para este taller!','ERROR!',{closeButton:true, positionClass:'toast-top-right'});
+  showError(message:string) {
+    this.toastr.error(message,'ERROR!',{closeButton:true, positionClass:'toast-top-right'});
   }
 }
 

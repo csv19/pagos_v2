@@ -46,6 +46,20 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
       pagingType: 'simple_numbers',
       language: LanguageApp.spanish_datatables,
       responsive: true,
+      columns: [
+        { title: 'Nro Voucher', data: 'PAGO_inNROCOM' },
+        { title: 'Fecha Pago', data: 'PAGO_chFECPAG' },
+        { title: 'Nro Documento', data: 'TIPDOC' },
+        { title: 'Nombres y Apellidos', data: 'PERS_chNOMPER' },
+        { title: 'Categoria', data: 'CATE_chDESCATE' },
+        { title: 'Reserva', data: 'RESERVA_chRESERVA' },
+        { title: 'Fecha Reserva', data: 'RESERVA_chFECHA' },
+        { title: 'Campo', data: 'CAMPO_chDESCAMPO' },
+        { title: 'Turno', data: 'TURNO_chCAMPO' },
+        { title: 'Horario', data: 'HORARIO' },
+        { title: 'Precio', data: 'PAGO' },
+        { title: 'Estado', data: 'ESTADO' },
+      ]
     }
     this.fetchData();
   }
@@ -76,12 +90,30 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     this.http.get(`${RESERVATION2}/calendars/reservations/${date1}/${date2}`).subscribe(
       (response:any)=>{
         this.reserva=response.data; 
-        this.rerender()
+        this.rerender();
       },error=>{console.log(error);
       }
     )
     
   }
+  ngAfterViewInit(): void {
+    this.dtTrigger.subscribe(() => {
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        dtInstance.columns().every(function () {
+          const that = this;
+          $('input', this.footer()).on('keyup change', function () {
+            const inputValue = (<HTMLInputElement>this).value;
+            if (that.search() !== inputValue) {
+              that
+                .search(inputValue) // Filtra según el valor del input
+                .draw(); // Actualiza la tabla con los datos filtrados
+            }
+          });
+        });
+      });
+    });
+  }
+  
   rerender(): void {
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
       dtInstance.destroy();

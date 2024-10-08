@@ -21,10 +21,10 @@ const routes: Routes = [
     // redirectTo: (localStorage.getItem('token')===null)?'admin':'login'
   },
   {
-    path: 'errors',
+    path: 'error/payment',
     loadChildren: () => import('./modules/error/error.module').then((m) => m.ErrorModule),
   },
-  { path: '**', redirectTo: 'errors/404' },
+  // { path: '**', redirectTo: 'errors/404' },
 ];
 
 @NgModule({

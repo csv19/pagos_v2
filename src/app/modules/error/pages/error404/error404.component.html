@@ -1,11 +1,17 @@
 <div
   class="flex max-w-lg flex-col items-center justify-center gap-2 rounded-lg bg-background p-8 text-center shadow-sm">
-  <h1 class="text-4xl font-bold text-foreground">Oops!</h1>
-  <p class="text-base text-muted-foreground">
-    We can't find that page. You can go back to the previous page or go to the homepage.
+  <img src="assets/icons/cerrar.png" width="50" alt="" srcset="">
+  <h1 class="text-4xl font-bold text-foreground">Oops! <br> Pago no Concretado!</h1>
+  <p class="text-base text-justify text-muted-foreground">
+    Estimado/a:<br>
+    Esperamos que te encuentres bien. Nos dirigimos a ti para informarte que el intento de pago no se pudo realizar.
+    Te recomendamos que verifiques los detalles de tu transacción y, si es posible, intentes realizar el pago nuevamente.
+    Agradecemos tu comprensión y quedamos a tu disposición para cualquier duda.
+    Saludos cordiales,
   </p>
+  <img src="assets/icons/card_fail.png" width="200" alt="" srcset="">
   <app-button (buttonClick)="goToHomePage()" impact="bold" tone="primary" shape="rounded" size="medium">
-    Homepage
+    Inicio
   </app-button>
-  <svg-icon src="assets/illustrations/falling.svg" svgClass="w-[300px] h-[300px] text-primary "> </svg-icon>
+  <!-- <svg-icon src="assets/illustrations/falling.svg" svgClass="w-[300px] h-[300px] text-primary "> </svg-icon> -->
 </div>
