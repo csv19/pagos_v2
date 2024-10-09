@@ -120,14 +120,17 @@
           </div>
           <div class="flex flex-col gap-3 py-6 text-xs">
             <div class="flex flex-col uppercase">
+              @if(codeId !==0){
               <div class="flex justify-between">
                 <span class="font-semibold">Operación:</span>
                 <span>{{this.dataPayment[0].nro_operation }}</span>
               </div>
+              
               <div class="flex justify-between">
                 <span class="font-semibold">Recibo:</span>
                 <span></span>
               </div>
+              }
               <div class="flex justify-between">
                 <span class="font-semibold">Código:</span>
                 <span>{{this.dataPayment[0].nro_document}}-{{this.dataPayment[0].payment_id}}</span>
@@ -167,6 +170,10 @@
                   <td class="text-left uppercase font-semibold"><span>Total</span></td>
                   <td class="text-right text-xs"><span>S./{{totalPrice}}.00</span></td>
                 </tr>
+                @if(this.dataPayment[0].observation){
+                  <td class="text-left uppercase font-semibold"><span>Observacion</span></td>
+                  <td class="text-right uppercase text-xs"><span>{{this.dataPayment[0].observation}}</span></td>
+                }
                 <tr>
                   <td align="center" class="text-xs italic" colspan="2">
                     <p>Consideraciones:</p>
@@ -187,7 +194,7 @@
       </div>
       }
       <div>
-        <button mat-button (click)="stepper.reset()">Reset</button>
+        <button mat-button (click)="reset()">Reset</button>
       </div>
     </mat-step>
   </mat-stepper>

@@ -11,7 +11,7 @@ export class Menu {
       items: [
         {
           icon: 'assets/icons/heroicons/outline/chart-pie.svg',
-          label: 'Módulos',
+          label: 'Reservas',
           route: '/admin',
           children: [
             { label: 'Tributos Municipales', route: '/admin/tributos-municipales' },

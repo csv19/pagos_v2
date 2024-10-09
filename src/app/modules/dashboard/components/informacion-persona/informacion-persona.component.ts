@@ -44,11 +44,14 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 })
 export class InformacionPersonaComponent implements OnInit {
   url:string=SERVER; 
+  codeId:number;
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;
   firstFormGroup: FormGroup;
   dataHolidays: any[]=[]; currentDate:any; nextDate:any;
   dataDocument:any; dataCategory:any; dataField:any; dataTypeReservation:any; dataShift:any; dataSchedule:any[]=[]; selectSchedule:any;
-  person:any={};
+  person:any={
+    id:0
+  };
   matcher = new MyErrorStateMatcher();
   @Output() formDataEmitter = new EventEmitter<any>();  
   constructor(private route: ActivatedRoute, private _formBuilder: FormBuilder, private http: HttpClient,private personService: ReniecService){
@@ -60,6 +63,10 @@ export class InformacionPersonaComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
+    const atm:any=localStorage.getItem('profileData');
+    console.log(atm);
+    
+    this.codeId=(atm)?JSON.parse(atm).data.code:789;
     this.firstFormGroup = this._formBuilder.group({
       documentOptionCtrl:[ null, Validators.required],
       documentCtrl:[{ value:null, disabled: true }, [Validators.required]],
@@ -121,12 +128,12 @@ export class InformacionPersonaComponent implements OnInit {
     }
     
   }
-  convertText(value: any, type: number): string {
+  convertText(value: any): string {
     const text= value.toString();
-    const size:number=(type==1)?3:4;
-    const firstString = text.substring(0, size);
-    const hiddenString = '*'.repeat(text.length - size);
-    return firstString + hiddenString;
+    const firstString = text.substring(0, 3);
+    const hiddenString = '*'.repeat(text.length - 3);
+    const response=(this.codeId !==789)?text:firstString + hiddenString;
+    return response;
   }
   
   makeDocument(option_document:any, nro_document:any){
@@ -135,15 +142,19 @@ export class InformacionPersonaComponent implements OnInit {
     const lastName = this.validateFirstFormGroup().lastName;
     const email = this.validateFirstFormGroup().email;
     const phone = this.validateFirstFormGroup().phone;
+    this.person.typeDocument=option_document;
+    this.person.document=nro_document;
     this.personService.getPerson(nro_document, option_document).subscribe(data => {
+      console.log(data);
+      
       this.person = data;
-      (this.person.typeDocument!==3?name?.setValue(this.convertText(this.person.name,1)):fullName?.setValue(this.convertText(this.person.name,1)));
-      (this.person.typeDocument!==3?lastName?.setValue(this.convertText(this.person.lastName,1)):lastName?.setValue(''));
+      (this.person.typeDocument!==3?name?.setValue(this.convertText(this.person.name)):fullName?.setValue(this.person.name));
+      (this.person.typeDocument!==3?lastName?.setValue(this.convertText(this.person.lastName)):lastName?.setValue(''));
       if(this.person.id !==0){
         email?.disable()
         phone?.disable()
-        email?.setValue(this.person.email,1)
-        phone?.setValue(this.person.phone,1)
+        email?.setValue(this.person.email)
+        phone?.setValue(this.person.phone)
       }else{
         email?.enable()
         phone?.enable()
@@ -219,7 +230,7 @@ export class InformacionPersonaComponent implements OnInit {
       email?.enable();
       phone?.enable();
     }
-    this.resetForm(0);
+    this.resetForm(2);
   }
   submitForm() {
     if (this.firstFormGroup.valid) {

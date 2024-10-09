@@ -46,7 +46,7 @@
     --foreground: 0 0% 95%;
     --card: 0 0% 7%;
     --card-foreground: 0 0% 14.9%;
-    --primary: 347 77% 50%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 0 0% 100%;
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
@@ -188,7 +188,7 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 // Style to fix the weird border with angular material
-.active div {
+.active {
   background-color: rgb(96 165 250 / var(--tw-bg-opacity)) !important;
 }
 .dataTables_length{
@@ -224,12 +224,23 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mdc-text-field__input{
   padding: 0 !important;  
 }
+.mat-mdc-form-field{
+  font-size: 13px !important;
+}
 .my-outlined-dialog {
   outline: 2px solid rgb(119, 128, 0);
 }
 .mat-mdc-select{
 border-color: transparent !important;
+font-size: 13px !important;
 padding: 0 !important;
+}
+.mdc-text-field--outlined .mdc-floating-label{
+  font-size: 13px !important;
+}
+.mat-mdc-option{
+  font-size: 13px !important;
+  min-height:20px !important;
 }
 .mdc-text-field__input:focus{
   --tw-ring-color: transparent !important;
@@ -240,4 +251,27 @@ padding: 0 !important;
 .mdc-notched-outline__notch {
   border-right: none !important;
 }
-
+.select-style {
+  border-radius: 20px !important;
+  border: 1px solid gray !important;
+  position: absolute !important;
+  top: 12px !important;
+  height: 10rem;
+}
+.select-style mat-option{
+  font-size: 8px !important;
+}
+table.dataTable td {
+  font-size: 12px;
+}
+.filter-column-datatable{
+  border: 0px;
+  border-radius: 0px;
+  border-bottom: 1px solid #aaa;
+  padding: 5px;
+  background-color: transparent;
+  color: inherit;
+}
+.filter-column-datatable:focus{
+  box-shadow: none !important;
+}
