@@ -160,7 +160,7 @@ export class CamposDeportivosComponent implements OnInit {
           this.dataHolidays=response.data;
         }
       },
-      (error)=>{
+      (error:any)=>{
         console.error('Not found');
       }
     )

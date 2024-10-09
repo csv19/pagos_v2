@@ -50,6 +50,6 @@ export class ReniecService {
   }
   savePerson(person: any) {
     return this.http.post<any>(`${SERVER}/person`, person)
-}
+  }
 
 }

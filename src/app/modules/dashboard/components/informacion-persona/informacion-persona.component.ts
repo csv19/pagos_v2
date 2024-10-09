@@ -100,26 +100,25 @@ export class InformacionPersonaComponent implements OnInit {
       return (document !== null && fullName !==null && email !== null && phone !== null) ? null : { fieldsEmpty: true };
     }
   }
-  // savePerson(route: string, data: any) {
-  //   const  list = this.http.post<any>(`${SERVER}/${route}`, this.person);
-  //   return list;
-  // }
   
   resetForm(selectOption:number){
+    const option_document = this.validateFirstFormGroup().option_document;
     const document = this.validateFirstFormGroup().document;
     const fullName = this.validateFirstFormGroup().fullName;
     const name = this.validateFirstFormGroup().name;
     const lastName = this.validateFirstFormGroup().lastName;
     const email = this.validateFirstFormGroup().email;
     const phone = this.validateFirstFormGroup().phone;
-    if(selectOption===1){
-      document?.reset()
-    } 
-    fullName?.reset()
-    name?.reset()
-    lastName?.reset()
-    email?.reset()
-    phone?.reset()
+    if(selectOption){
+      let data=[option_document,document,fullName,name,lastName,email,phone];
+      data.splice(0,selectOption);
+      data.map((item:any)=>{
+        if(item.value){
+          item.reset()
+          item.setValue(null)
+        }
+      })
+    }
     
   }
   convertText(value: any, type: number): string {
@@ -150,45 +149,31 @@ export class InformacionPersonaComponent implements OnInit {
         phone?.enable()
       }
     },(error:any)=>{
-        this.person.id=null;
-        console.log(option_document);
+      if (error.error.code === 404) {
         if(option_document !== 3){
           name?.enable()
           lastName?.enable()
-          email?.enable()
-          phone?.enable()
         }else{
-          name?.disable()
-          lastName?.disable()
-          email?.disable()
-          phone?.disable()
+          fullName?.enable()
         }
+      }
     });
   }
-  setPerson(){
-    const document = this.validateFirstFormGroup().document;
-    const option_document = this.validateFirstFormGroup().option_document;
+  async setPerson(){    
     const fullName = this.validateFirstFormGroup().fullName;
     const name = this.validateFirstFormGroup().name;
     const lastName = this.validateFirstFormGroup().lastName;
     const email = this.validateFirstFormGroup().email;
     const phone = this.validateFirstFormGroup().phone;
-    if(option_document && document && name && lastName && email && phone){
       if(this.person.id === 0){
-        this.person.email=email.value;
-        this.person.phone=phone.value;
+        this.person.name = this.person.name || (this.person.typeDocument !== 3 ? name?.value : fullName?.value);
+        this.person.lastName = this.person.lastName || lastName?.value;
+        this.person.email = email?.value;
+        this.person.phone = phone?.value;
+        const person:any=await this.personService.savePerson(this.person).toPromise();
+        this.person.id=person.data[0].inserted_id;
       }
-      if(this.person.id === null){
-        this.person.id=0
-        this.person.typeDocument=option_document.value
-        this.person.document=document.value
-        this.person.name=(this.person.typeDocument!==3?name.value:fullName?.value)
-        this.person.lastName=(this.person.typeDocument!==3?lastName.value:'')
-        this.person.email=email.value;
-        this.person.phone=phone.value;
-      }
-    }
-    
+    console.log(this.person.id);
   }
 
 
@@ -199,7 +184,6 @@ export class InformacionPersonaComponent implements OnInit {
     const lastName = this.validateFirstFormGroup().lastName;
     if(option_document){
       console.log(option_document.value);
-      
       switch (option_document.value){
         case 1: 
               this.sizeCharter=8; this.styleBlockDocument='block'; 
@@ -239,7 +223,7 @@ export class InformacionPersonaComponent implements OnInit {
   }
   submitForm() {
     if (this.firstFormGroup.valid) {
-      this.setPerson()
+      this.setPerson();
       this.formDataEmitter.emit(this.person);
     }
   }
