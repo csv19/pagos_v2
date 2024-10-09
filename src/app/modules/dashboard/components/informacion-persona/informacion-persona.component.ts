@@ -46,12 +46,15 @@ export class InformacionPersonaComponent implements OnInit {
   url:string=SERVER; 
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;
   firstFormGroup: FormGroup;
+  codeId:number;
   dataHolidays: any[]=[]; currentDate:any; nextDate:any;
   dataDocument:any; dataCategory:any; dataField:any; dataTypeReservation:any; dataShift:any; dataSchedule:any[]=[]; selectSchedule:any;
   person:any={};
   matcher = new MyErrorStateMatcher();
   @Output() formDataEmitter = new EventEmitter<any>();  
   constructor(private route: ActivatedRoute, private _formBuilder: FormBuilder, private http: HttpClient,private personService: ReniecService){
+    const atm:any=localStorage.getItem('profileData');
+    this.codeId=(atm)?JSON.parse(atm).data.code:789;
     this.http.get(`${SERVER}/documents`).subscribe(
       (response:any) => {
         this.dataDocument = response.data;
@@ -126,6 +129,9 @@ export class InformacionPersonaComponent implements OnInit {
     const size:number=(type==1)?3:4;
     const firstString = text.substring(0, size);
     const hiddenString = '*'.repeat(text.length - size);
+    if(this.codeId !==789){
+      return value;  
+    }
     return firstString + hiddenString;
   }
   
