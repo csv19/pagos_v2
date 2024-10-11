@@ -16,6 +16,7 @@ import {PayService } from 'src/app/pay.service';
 import {ReniecService } from 'src/app/reniec.service';
 import { environment } from 'src/environments/environment';
 const SERVER= environment.SERVER;
+const USERCODE=environment.USER_CODE;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -66,7 +67,7 @@ export class InformacionPersonaComponent implements OnInit {
     const atm:any=localStorage.getItem('profileData');
     console.log(atm);
     
-    this.codeId=(atm)?JSON.parse(atm).data.code:789;
+    this.codeId=(atm)?JSON.parse(atm).data.code:USERCODE;
     this.firstFormGroup = this._formBuilder.group({
       documentOptionCtrl:[ null, Validators.required],
       documentCtrl:[{ value:null, disabled: true }, [Validators.required]],
@@ -117,6 +118,9 @@ export class InformacionPersonaComponent implements OnInit {
     const email = this.validateFirstFormGroup().email;
     const phone = this.validateFirstFormGroup().phone;
     if(selectOption){
+      name?.disable()
+      fullName?.disable()
+      lastName?.disable()
       let data=[option_document,document,fullName,name,lastName,email,phone];
       data.splice(0,selectOption);
       data.map((item:any)=>{
@@ -132,7 +136,7 @@ export class InformacionPersonaComponent implements OnInit {
     const text= value.toString();
     const firstString = text.substring(0, 3);
     const hiddenString = '*'.repeat(text.length - 3);
-    const response=(this.codeId !==789)?text:firstString + hiddenString;
+    const response=(this.codeId !==USERCODE)?text:firstString + hiddenString;
     return response;
   }
   

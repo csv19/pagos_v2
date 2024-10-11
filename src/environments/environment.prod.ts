@@ -1,14 +1,14 @@
 export const environment = {
   production: true,
   HOME:'https://localhost:4200',
-  SERVER: 'https://api_v2.test:4435/v1',
+  SERVER: 'https://api_tasas.test/v1',
 
 
   //TRIBUTOS MUNICIPALES
-  API_USER:'https://api_v2.test:4435/v1/verify/user',
-  API_MENU:'https://api_v2.test:4435/v1/menu',
-  API_SERVICES:'https://api_v2.test:4435/v1/menu/services',
-  API_ARBITRAGE:'https://api_v2.test:4435/v1/arbitrage/user',
+  API_USER:'https://api_tasas.test/v1/verify/user',
+  API_MENU:'https://api_tasas.test/v1/menu',
+  API_SERVICES:'https://api_tasas.test/v1/menu/services',
+  API_ARBITRAGE:'https://api_tasas.test/v1/arbitrage/user',
   
 
   //HELPDESK

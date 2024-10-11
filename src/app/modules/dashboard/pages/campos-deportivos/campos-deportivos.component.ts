@@ -23,6 +23,7 @@ import { ToastrService } from 'ngx-toastr';
 
 const SERVER= environment.SERVER;
 const HOLIDAYS=environment.API_HOLIDAY;
+const USERCODE=environment.USER_CODE;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -110,7 +111,7 @@ export class CamposDeportivosComponent implements OnInit {
   
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef, private personService: ReniecService, private toastr: ToastrService){
     const atm:any=localStorage.getItem('profileData');
-    this.codeId=(atm)?JSON.parse(atm).data.code:789;
+    this.codeId=(atm)?JSON.parse(atm).data.code:USERCODE;
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
       console.log(this.authenticate);
