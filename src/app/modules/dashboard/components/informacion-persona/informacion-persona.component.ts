@@ -65,8 +65,6 @@ export class InformacionPersonaComponent implements OnInit {
       }
     );
     const atm:any=localStorage.getItem('profileData');
-    console.log(atm);
-    
     this.codeId=(atm)?JSON.parse(atm).data.code:USERCODE;
     this.firstFormGroup = this._formBuilder.group({
       documentOptionCtrl:[ null, Validators.required],

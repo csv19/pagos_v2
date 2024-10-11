@@ -20,10 +20,9 @@ import { ReniecService } from 'src/app/reniec.service';
 import { ToastrService } from 'ngx-toastr';
 
 
-
+const USERCODE=environment.USER_CODE;
 const SERVER= environment.SERVER;
 const HOLIDAYS=environment.API_HOLIDAY;
-const USERCODE=environment.USER_CODE;
 export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -114,7 +113,6 @@ export class CamposDeportivosComponent implements OnInit {
     this.codeId=(atm)?JSON.parse(atm).data.code:USERCODE;
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
-      console.log(this.authenticate);
     });
     this.textScheduleLabel='Horarios Disponibles';
     this.getCalendar();
@@ -457,7 +455,7 @@ export class CamposDeportivosComponent implements OnInit {
         }
       )
   }
-  paymentAdmin(personId:number, atmId:number){
+  paymentAdmin(personId:number,atmId:number ,atmCode:number){
     this.calendar={
       people: personId,
       field: this.validateSecondFormGroup().field?.value,
@@ -468,6 +466,7 @@ export class CamposDeportivosComponent implements OnInit {
       price: this.price,
       total: this.totalPrice,
       userId: atmId,
+      userCode: atmCode,
       statePay: (this.codeId!==0)?1:0,
       module: this.validateSecondFormGroup().typePayment?.value,
       option: this.validateSecondFormGroup().optionPayment?.value,
@@ -493,7 +492,9 @@ export class CamposDeportivosComponent implements OnInit {
   async save(){
     const personId= await this.setPerson()
     if(this.authenticate){
-      this.paymentAdmin(personId,this.codeId);
+      const atm:any=localStorage.getItem('profileData');
+      const userId=JSON.parse(atm).data.id;
+      this.paymentAdmin(personId,userId,this.codeId);
     }else{
       this.paymentUser(personId);
     }    
@@ -518,7 +519,7 @@ export class CamposDeportivosComponent implements OnInit {
   
   //THIRD GROUP
   getVoucher(paymentId:number){
-    const module=3;
+    const module=3;//CAMPOS DEPORTIVOS
     this.http.get(`${SERVER}/payment/voucher/${module}/${paymentId}`).subscribe(
       (response:any)=>{
         this.dataPayment=response.data;        
