@@ -71,7 +71,7 @@ export class ListaUsuariosComponent implements OnInit {
       id: id
     }
     Swal.fire({
-      title: 'Estas Seguro de querer eliminar este usuario?',
+      title: 'Estas seguro de querer eliminar este usuario?',
       text: 'No se podrá revertir!',
       icon: 'warning',
       showCancelButton: true,

@@ -27,6 +27,7 @@ export class SignUpComponent implements OnInit {
   login:any;
   passwordTextType!: boolean;
   passwordColor!: boolean;
+  
   submitted = false;
   areas:Area[] = [];
   filteredOptions: Observable<Area[]> | undefined;
@@ -43,10 +44,11 @@ export class SignUpComponent implements OnInit {
   }
   ngOnInit(): void {
       this.form = this._formBuilder.group({
-      user: ['', [Validators.required, Validators.email]],
-      code: ['', [Validators.required, Validators.email]],
-      name: ['', [Validators.required, Validators.email]],
-      area: ['', [Validators.required, Validators.email]],
+      user: ['', Validators.required],
+      optionUser: ['', Validators.required],
+      code: ['', Validators.required],
+      name: ['', Validators.required],
+      area: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
@@ -82,14 +84,21 @@ export class SignUpComponent implements OnInit {
   get colorPassword(){
     return this.passwordColor === undefined ? 'bg-slate-300' : (this.passwordColor ? 'bg-green-500' : 'bg-red-500');
   }
+  setOptionUser(){
+    const optionUser= this.form.get('optionUser')?.value;
+    const code=this.form.get('code');
+    (optionUser==0)?code?.setValue(optionUser): code?.reset();
+  }
 
   onSubmit() {
       const user=this.form.get('user');
+      const optionUser= this.form.get('optionUser');
       const code=this.form.get('code');
       const name=this.form.get('name');
       const email=this.form.get('email');
       const area=this.form.get('area');
       const password=this.form.get('password');
+      
 
     if(user && code && name && email && area && password && this.passwordColor){
       const people={
@@ -102,8 +111,9 @@ export class SignUpComponent implements OnInit {
       } 
       this.authService.register(people);
       this.form.reset();
+      optionUser?.setValue('');
+
     }else{
-      console.log('error');
       this.authService.showErrorPassword();
     }
     

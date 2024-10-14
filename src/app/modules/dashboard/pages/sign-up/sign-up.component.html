@@ -45,7 +45,14 @@
         Área
       </label>
       </div>
-      <div class="relative">
+      <div>
+        <select class="text-sm text-muted-foreground h-[42px]" name="" id="" formControlName="optionUser" (ngModelChange)="setOptionUser()">
+          <option disabled selected value="">Roles</option>
+          <option value="0">Administrador</option>
+          <option value="1">Cajero</option>
+        </select>
+      </div>
+      <div class="relative" [ngClass]="{ 'hidden': form.get('optionUser')?.value == 0, 'block': form.get('optionUser')?.value == 1 }">
         <input
         onlyNumber
         type="text"
