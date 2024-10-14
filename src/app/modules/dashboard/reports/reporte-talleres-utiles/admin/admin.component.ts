@@ -51,6 +51,12 @@ export class ReportesTalleresUtilesAdminComponent implements OnDestroy, OnInit {
     }
     return true;
   }
+  formatDDMMYY(dateString:string) {
+    const year = dateString.substring(0, 4);
+    const month = dateString.substring(4, 6);
+    const day = dateString.substring(6, 8);
+    return `${day}-${month}-${year}`;
+  }
   fetchData():void{
     const date1=this.date1.replace(/-/g, '');
     const date2=this.date2.replace(/-/g, '');

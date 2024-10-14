@@ -34,6 +34,7 @@
                <th>Horario</th>
                <th>Taller</th>
                <th>Temporada</th>
+               <th>Fecha Pago</th>
                <th></th>
            </tr>
            </thead>
@@ -48,6 +49,7 @@
                     <td>{{item.GRUPO_chDESGRUPO}}</td>
                     <td>{{item.TALLERDESC_chDESTALLER}}</td>
                     <td>{{item.TEMPORADA_chDESTEMPORADA}}</td>
+                    <td>{{formatDDMMYY(item.PAGO_chFECPAG)}}</td>
                    <td>
                        @if(item.OPER_P_inCODOPE){
                         <div (click)="downloadVoucher(item.OPER_P_inCODOPE)">
