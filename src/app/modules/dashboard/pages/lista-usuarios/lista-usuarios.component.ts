@@ -95,8 +95,8 @@ export class ListaUsuariosComponent implements OnInit {
           }
         )
         Swal.fire(
-          'Deleted!',
-          'Your imaginary file has been deleted.',
+          'Eliminado!',
+          'Se elimino el usuario con éxito.',
           'success'
         )
       } else if (result.dismiss === Swal.DismissReason.cancel) {
