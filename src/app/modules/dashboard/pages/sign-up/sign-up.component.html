@@ -49,11 +49,11 @@
         <select class="text-sm text-muted-foreground h-[42px]" name="" id="" formControlName="optionUser" (ngModelChange)="setOptionUser()">
           <option disabled selected value="">Roles</option>
           <option value="0">Administrador</option>
-          <option value="2">Cajero</option>
-          <option value="1">Master</option>
+          <option value="1">Cajero</option>
+          <option value="2">Master</option>
         </select>
       </div>
-      <div class="relative" [ngClass]="{ 'hidden': (form.get('optionUser')?.value == 0 || form.get('optionUser')?.value == 1), 'block': form.get('optionUser')?.value == 2 }">
+      <div class="relative" [ngClass]="{ 'hidden': (form.get('optionUser')?.value == 0 || form.get('optionUser')?.value == 2), 'block': form.get('optionUser')?.value == 2 }">
         <input
         onlyNumber
         type="text"

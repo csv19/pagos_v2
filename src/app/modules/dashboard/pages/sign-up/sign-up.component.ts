@@ -87,7 +87,8 @@ export class SignUpComponent implements OnInit {
   setOptionUser(){
     const optionUser= this.form.get('optionUser')?.value;
     const code=this.form.get('code');
-    (optionUser==0)?code?.setValue(optionUser): code?.reset();
+    //Opcion "0" Cajero / Opcion "2" Master
+    (optionUser==0 || optionUser==2)?code?.setValue(optionUser): code?.reset();
   }
 
   onSubmit() {
@@ -116,7 +117,5 @@ export class SignUpComponent implements OnInit {
     }else{
       this.authService.showErrorPassword();
     }
-    
-    
   }
 }

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component,Inject, Input, OnInit, Output } from "@angular/core";
+import { Component,Inject, OnInit,OnDestroy, ViewChild } from "@angular/core";
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 import { DataTablesModule } from 'angular-datatables';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
@@ -16,6 +16,7 @@ import { ButtonComponent } from 'src/app/shared/components/button/button.compone
 import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import {map, startWith} from 'rxjs/operators';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
+import { DataTableDirective } from 'angular-datatables';
 
 const SERVER= environment.SERVER;
 @Component({
@@ -34,13 +35,14 @@ export class ListaUsuariosComponent implements OnInit {
   dtTrigger = new Subject<ADTSettings>();
 
   constructor(private http: HttpClient,public dialog: MatDialog){}
+  @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
+
   ngOnInit(): void {
-    this.loadUsers();
     this.dtOptions={
       pagingType:'simple_numbers',
       language: LanguageApp.spanish_datatables
-
     }
+    this.loadUsers();
     const profile:any=localStorage.getItem('profileData');
     this.user=JSON.parse(profile).data.id;
   }
@@ -48,7 +50,8 @@ export class ListaUsuariosComponent implements OnInit {
     this.getUsers().subscribe(
       (response:any)=>{
         console.log(response);
-        this.usersList=response.data;        
+        this.usersList=response.data;     
+        this.dtTrigger.next(this.dtOptions);   
       },error=>{
         console.error(error);
       }
@@ -110,13 +113,21 @@ export class ListaUsuariosComponent implements OnInit {
       }
     })
   }
-  
-  ngAfterViewInit() {
-    setTimeout(() => {
-      // race condition fails unit tests if dtOptions isn't sent with dtTrigger
-      this.dtTrigger.next(this.dtOptions);
-    }, 200);
+  ngAfterViewInit(): void {
+    this.dtTrigger.subscribe(() => {});
   }
+  rerender(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.destroy();
+      this.dtTrigger.next(this.dtOptions);
+    });
+  }
+  // ngAfterViewInit():void {
+  //   setTimeout(() => {
+  //     // race condition fails unit tests if dtOptions isn't sent with dtTrigger
+  //     this.dtTrigger.next(this.dtOptions);
+  //   }, 200);
+  // }
   
 }
 export interface Area {

@@ -397,7 +397,8 @@ export class CamposDeportivosComponent implements OnInit {
   }
   async getTypePayments(){
     const typePayment= this.validateSecondFormGroup().typePayment;
-    if(typePayment && this.codeId!==0){
+    //Código de Administrador y Master no genera nro de voucher
+    if(typePayment && (this.codeId!==0 && this.codeId!==2)){
       const data= [typePayment.value];
       const route='options-payments';
       if(typePayment.value==2 || typePayment.value==3 || typePayment.value==4){
@@ -467,7 +468,8 @@ export class CamposDeportivosComponent implements OnInit {
       total: this.totalPrice,
       userId: atmId,
       userCode: atmCode,
-      statePay: (this.codeId!==0)?1:0,
+      //Codigo 0 para el Administrador 
+      statePay: (this.codeId==0 || this.codeId==2)?0:1,
       module: this.validateSecondFormGroup().typePayment?.value,
       option: this.validateSecondFormGroup().optionPayment?.value,
       observation: this.validateSecondFormGroup().observationPayment?.value,

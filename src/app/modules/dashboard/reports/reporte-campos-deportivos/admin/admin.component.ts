@@ -1,13 +1,13 @@
-import { HttpClient } from '@angular/common/http';
-import { Component,Inject, Input, OnInit, Output } from "@angular/core";
+import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { Component,Inject, OnInit,OnDestroy, ViewChild } from "@angular/core";
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { DataTablesModule } from 'angular-datatables';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule,NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
 import { NgClass, NgIf, NgFor } from '@angular/common';
@@ -16,67 +16,194 @@ import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { DataTableDirective } from 'angular-datatables';
+// import 'datatables.net-buttons-dt';
 
-const SERVER= environment.SERVER;
+
+const RESERVATION2= environment.SERVER;
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule],
+  providers: [provideNativeDateAdapter()],
+  imports: [FormsModule,DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule,MatFormFieldModule, MatInputModule, MatDatepickerModule,MatTooltipModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class ReportesCamposDeportivosAdminComponent {
-  url:string=SERVER; 
-  reserva:any;
-  isLoading:boolean=true;
-  iconoVoucher = 'assets/icons/heroicons/outline/voucher.svg';
-  iconoPencil = 'assets/icons/heroicons/outline/pencil.svg';
+export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit {
+  @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
+  date1:any;date2:any;
+  dtInstance: any;
   dtOptions:ADTSettings={};
-  dtTrigger = new Subject<ADTSettings>();
-  constructor(private http: HttpClient, public dialog: MatDialog){
-    setTimeout(()=>{
-      this.isLoading=false;
-    },1000)
-    this.loadReserva();
-    this.dtOptions={
-      pagingType:'simple_numbers',
+  dtTrigger = new Subject<ADTSettings>(); 
+  reserva:any=[];
+  positionOption: TooltipPosition='above';
+  constructor(private http: HttpClient){
+    this.date1=new Date().toISOString().slice(0, 10);
+    this.date2=new Date().toISOString().slice(0, 10);
+  }
+  ngOnInit(): void {
+    this.dtOptions = {
+      pagingType: 'simple_numbers',
       language: LanguageApp.spanish_datatables,
       responsive: true,
-      order : [10, 'desc'],
+      columns: [
+        { title: 'Nro Documento', data: 'nro_document' },
+        { title: 'Nombres y Apellidos', data: 'name' },
+        { title: 'Categoria', data: 'category' },
+        { title: 'Reserva', data: 'typeReservation' },
+        { title: 'Fecha Reserva', data: 'date' },
+        { title: 'Campo', data: 'field' },
+        { title: 'Horario', data: 'hour_start'},
+        { title: 'Precio', data: 'total' },
+        { title: 'Tipo de Pago', data: 'typePayment' },
+        { title: 'Fecha Pago', data: 'created_at' },  
+      ],
+      dom: 'Bfrtip',
+      // Configure the buttons
+      // buttons: [
+      //   'columnsToggle',
+      //   'colvis',
+      //   'copy',
+      //   {
+      //     extend: 'csv',
+      //     text: 'CSV export',
+      //     fieldSeparator: ';',
+      //     exportOptions: [1, 2, 3]
+      //   },
+        
+      // ]
     }
+    this.fetchData();
   }
-  loadReserva(){
-      this.getReserva().subscribe(
-        (response:any)=>{
-          console.log(response);
-          this.reserva=response.data;        
-        },error=>{
-          console.error(error);
+  validateDate(){
+    if(this.date1>this.date2){
+      return false;
+    }
+    return true;
+  }
+  fetchData():void{
+    const date1=this.date1
+    const date2=this.date2
+    console.log(date1);
+    
+    this.http.get(`${RESERVATION2}/calendars/reservations/${date1}/${date2}`).subscribe(
+      (response:any)=>{
+        console.log(response);
+        this.reserva=response.data; 
+        this.dtTrigger.next(this.dtOptions);
+      },error=>{console.log(error);
+      }
+    )
+  }
+  search(){
+    const date1=this.date1
+    const date2=this.date2
+    
+    this.http.get(`${RESERVATION2}/calendars/reservations/${date1}/${date2}`).subscribe(
+      (response:any)=>{
+        this.reserva=response.data; 
+        this.rerender();
+      },error=>{console.log(error);
+      }
+    )
+    
+  }
+  ngAfterViewInit(): void {
+    this.dtTrigger.subscribe(() => {
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        dtInstance.columns().every(function () {
+          const that = this;
+          $('input', this.footer()).on('keyup change', function () {
+            const inputValue = (<HTMLInputElement>this).value;
+            if (that.search() !== inputValue) {
+              that
+                .search(inputValue) // Filtra según el valor del input
+                .draw(); // Actualiza la tabla con los datos filtrados
+            }
+          });
+        });
+      });
+    });
+  }
+  
+  rerender(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.destroy();
+      this.dtTrigger.next(this.dtOptions);
+    });
+  }
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
+  }
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    const day = String(date.getDate()+1).padStart(2, '0');
+    console.log(day);
+    
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexed
+    const year = String(date.getFullYear()); // Obtener los últimos 2 dígitos del año
+
+    return `${day}-${month}-${year}`;
+}
+  formatHour(hour:any) {
+    return (hour > 11 ? ((hour - 12)==0?12:hour-12)  +":00pm" : hour +":00am");
+  }
+  download(){
+    const fecha1 = new Date(this.date1);
+    const fecha2 = new Date(this.date2);
+    if(this.validateDate()){
+      const data={
+        'module':3,
+        'date1':fecha1,
+        'date2':fecha2,
+      }
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      this.http.post(`${RESERVATION2}/report/excel`, data, {
+        headers: headers,
+        responseType: 'blob' // Asegúrate de que la respuesta sea tratada como un blob
+      }).subscribe(
+        (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'campos.xlsx';
+          link.click();
+          window.URL.revokeObjectURL(url);
+        },error => {
+          console.error('Download error:', error);
         }
       )
-  }
-  getReserva():Observable<any[]>{
-    return this.http.get<any[]>(`${SERVER}/workshops/reservations`);
-  }
-  showVoucher(id:number){
-    console.log(id);
-  }
-  update(id:number) {
-    console.log(id);
-    
-    const data={
-      id: id
     }
-    this.dialog.open(EditarCampoDeportivoComponent,{
-      data: data
-    });
-    
   }
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.dtTrigger.next(this.dtOptions);
-    }, 200);
+  downloadVoucher(operation:number){
+    console.log(operation);
+    const data={
+      'operation':operation
+    }
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    this.http.post(`${RESERVATION2}/report/voucher`, data, {
+      headers: headers,
+      responseType: 'blob' // Asegúrate de que la respuesta sea tratada como un blob
+    }).subscribe(
+      (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.target='_blank';
+        link.href = url;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },error => {
+        console.error('Download error:', error);
+      }
+    )
   }
 }
 export class LanguageApp {
@@ -135,12 +262,12 @@ export class EditarCampoDeportivoComponent implements OnInit{
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog) {
     this.textScheduleLabel='Horarios Disponibles';
-    this.http.get(`${SERVER}/workshop/reservation/${data.id}`).subscribe(
+    this.http.get(`${RESERVATION2}/workshop/reservation/${data.id}`).subscribe(
       (response:any)=>{
         this.quantitySchedule=response.data.length;
         this.category=response.data[0].category_id;
         const field_id=response.data[0].field_id;
-        this.http.get(`${SERVER}/fields/${this.category}`).subscribe(
+        this.http.get(`${RESERVATION2}/fields/${this.category}`).subscribe(
           (value:any) => {
             if(value.code===200){
               this.secondFormGroup?.get('fieldCtrl')?.setValue(field_id);
@@ -176,6 +303,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
   formatHour(hour:any) {
     return (hour > 11 ? ((hour - 12)==0?12:hour-12)  +":00pm" : hour +":00am");
   }
+  
   myFilter = (d: Date | null): boolean => {
     const disabledDates:any[] = [];
     const year=new Date().getFullYear();
@@ -204,10 +332,10 @@ export class EditarCampoDeportivoComponent implements OnInit{
   }
   
   getSelectSecondFormGroup(route: string, data: any) {
-    let list = this.http.get(`${SERVER}/${route}`);
+    let list = this.http.get(`${RESERVATION2}/${route}`);
     if (data) {
         const values = data.join('/');
-        list = this.http.get(`${SERVER}/${route}/${values}`);
+        list = this.http.get(`${RESERVATION2}/${route}/${values}`);
     }
     return list;
   }
@@ -220,7 +348,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
       const dateFormat= this.formatDate(date.value);
         schedule?.enable();
         console.log("horarios");
-        const url = `${SERVER}/schedule/${this.category}/${field.value}/${dateFormat}`;
+        const url = `${RESERVATION2}/schedule/${this.category}/${field.value}/${dateFormat}`;
         this.http.get<any>(`${url}`).subscribe(
           (response)=>{
             response.data.map(
