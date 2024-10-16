@@ -71,18 +71,22 @@ export class AuthService {
     this.http.post<any>(`${SERVER}/register`,data).subscribe(
       response=>{
         console.log(response);
-        this.showSuccess();
+        this.showSuccess('Usuario registrado');
       },error=>{
         console.error(error);
         this.showError();
       }
     );
   }
+  // update(data: any): Observable<any> {
+  //   return this.http.post<any>(`${SERVER}/update`, data);
+  // }
+  
   update(data:any){
     this.http.post<any>(`${SERVER}/update`,data).subscribe(
       response=>{
         console.log(response);
-        this.showSuccess();
+        this.showSuccess('Usuario Actualizado');
       },error=>{
         console.error(error);
         this.showError();
@@ -100,8 +104,8 @@ export class AuthService {
     const token= localStorage.getItem('token');
     return !!token;        
   }
-  showSuccess(){
-    this.toastr.success('Usuario Registrado','CORRECTO!');
+  showSuccess(message:string){
+    this.toastr.success(message,'CORRECTO!');
   }
   showError(){
     this.toastr.error('Usuario Incorrecto','ERROR!');

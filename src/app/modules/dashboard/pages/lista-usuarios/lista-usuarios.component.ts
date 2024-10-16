@@ -29,7 +29,7 @@ const SERVER= environment.SERVER;
 export class ListaUsuariosComponent implements OnInit {
   iconoPencil = 'assets/icons/heroicons/outline/pencil.svg';
   iconoTrash = 'assets/icons/heroicons/outline/trash.svg';
-  usersList:any;
+  usersList:any=[];
   user!:number;
   dtOptions:ADTSettings={};
   dtTrigger = new Subject<ADTSettings>();
@@ -67,7 +67,7 @@ export class ListaUsuariosComponent implements OnInit {
     this.dialog.open(EditarUsuarioComponent,{
       data: data
     });
-    
+
   }
   delete(id:number){
     const data={
@@ -90,11 +90,9 @@ export class ListaUsuariosComponent implements OnInit {
         this.http.post(`${SERVER}/delete`,data).subscribe(
           response=>{
             console.log(response);
-            this.loadUsers();
+            this.rerender(); // Llama a rerender() aquí
           },error=>{
             console.log(error);
-            
-            
           }
         )
         Swal.fire(
@@ -114,13 +112,24 @@ export class ListaUsuariosComponent implements OnInit {
     })
   }
   ngAfterViewInit(): void {
-    this.dtTrigger.subscribe(() => {});
+    this.dtTrigger.subscribe(() => {
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        dtInstance.columns().every(function () {
+          const that = this;
+              that
+                .draw(); // Actualiza la tabla con los datos filtrados
+        });
+      });
+    });;
   }
   rerender(): void {
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
       dtInstance.destroy();
       this.dtTrigger.next(this.dtOptions);
     });
+  }
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
   // ngAfterViewInit():void {
   //   setTimeout(() => {
@@ -232,6 +241,12 @@ export class EditarUsuarioComponent implements OnInit{
       } 
       this.authService.update(people);
       this.dialog.closeAll()
+      // this.authService.update(user).subscribe(() => {
+      //   this.dialog.closeAll(); // Cierra el diálogo y envía un resultado
+      // }, error => {
+      //   console.error(error);
+      //   this.dialog.closeAll(); // Cierra el diálogo sin éxito si hay un error
+      // });
     }
     
   }

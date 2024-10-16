@@ -275,3 +275,6 @@ table.dataTable td {
 .filter-column-datatable:focus{
   box-shadow: none !important;
 }
+.swal2-confirm{
+  background-color: hsl(var(--primary)) !important;
+}

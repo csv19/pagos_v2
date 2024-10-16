@@ -19,10 +19,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { DataTableDirective } from 'angular-datatables';
-// import 'datatables.net-buttons-dt';
 
-
-const RESERVATION2= environment.SERVER;
+const SERVER= environment.SERVER;
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -48,6 +46,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
       pagingType: 'simple_numbers',
       language: LanguageApp.spanish_datatables,
       responsive: true,
+      processing:true,
       columns: [
         { title: 'Nro Documento', data: 'nro_document' },
         { title: 'Nombres y Apellidos', data: 'name' },
@@ -60,20 +59,6 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
         { title: 'Tipo de Pago', data: 'typePayment' },
         { title: 'Fecha Pago', data: 'created_at' },  
       ],
-      dom: 'Bfrtip',
-      // Configure the buttons
-      // buttons: [
-      //   'columnsToggle',
-      //   'colvis',
-      //   'copy',
-      //   {
-      //     extend: 'csv',
-      //     text: 'CSV export',
-      //     fieldSeparator: ';',
-      //     exportOptions: [1, 2, 3]
-      //   },
-        
-      // ]
     }
     this.fetchData();
   }
@@ -88,7 +73,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     const date2=this.date2
     console.log(date1);
     
-    this.http.get(`${RESERVATION2}/calendars/reservations/${date1}/${date2}`).subscribe(
+    this.http.get(`${SERVER}/calendars/reservations/${date1}/${date2}`).subscribe(
       (response:any)=>{
         console.log(response);
         this.reserva=response.data; 
@@ -101,7 +86,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     const date1=this.date1
     const date2=this.date2
     
-    this.http.get(`${RESERVATION2}/calendars/reservations/${date1}/${date2}`).subscribe(
+    this.http.get(`${SERVER}/calendars/reservations/${date1}/${date2}`).subscribe(
       (response:any)=>{
         this.reserva=response.data; 
         this.rerender();
@@ -163,7 +148,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
         'Content-Type': 'application/json',
         'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       });
-      this.http.post(`${RESERVATION2}/report/excel`, data, {
+      this.http.post(`${SERVER}/report/excel`, data, {
         headers: headers,
         responseType: 'blob' // Asegúrate de que la respuesta sea tratada como un blob
       }).subscribe(
@@ -189,7 +174,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
       'Content-Type': 'application/json',
       'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     });
-    this.http.post(`${RESERVATION2}/report/voucher`, data, {
+    this.http.post(`${SERVER}/report/voucher`, data, {
       headers: headers,
       responseType: 'blob' // Asegúrate de que la respuesta sea tratada como un blob
     }).subscribe(
@@ -262,12 +247,12 @@ export class EditarCampoDeportivoComponent implements OnInit{
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog) {
     this.textScheduleLabel='Horarios Disponibles';
-    this.http.get(`${RESERVATION2}/workshop/reservation/${data.id}`).subscribe(
+    this.http.get(`${SERVER}/workshop/reservation/${data.id}`).subscribe(
       (response:any)=>{
         this.quantitySchedule=response.data.length;
         this.category=response.data[0].category_id;
         const field_id=response.data[0].field_id;
-        this.http.get(`${RESERVATION2}/fields/${this.category}`).subscribe(
+        this.http.get(`${SERVER}/fields/${this.category}`).subscribe(
           (value:any) => {
             if(value.code===200){
               this.secondFormGroup?.get('fieldCtrl')?.setValue(field_id);
@@ -332,10 +317,10 @@ export class EditarCampoDeportivoComponent implements OnInit{
   }
   
   getSelectSecondFormGroup(route: string, data: any) {
-    let list = this.http.get(`${RESERVATION2}/${route}`);
+    let list = this.http.get(`${SERVER}/${route}`);
     if (data) {
         const values = data.join('/');
-        list = this.http.get(`${RESERVATION2}/${route}/${values}`);
+        list = this.http.get(`${SERVER}/${route}/${values}`);
     }
     return list;
   }
@@ -348,7 +333,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
       const dateFormat= this.formatDate(date.value);
         schedule?.enable();
         console.log("horarios");
-        const url = `${RESERVATION2}/schedule/${this.category}/${field.value}/${dateFormat}`;
+        const url = `${SERVER}/schedule/${this.category}/${field.value}/${dateFormat}`;
         this.http.get<any>(`${url}`).subscribe(
           (response)=>{
             response.data.map(
