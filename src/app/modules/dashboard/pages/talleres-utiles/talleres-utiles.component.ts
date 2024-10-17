@@ -16,7 +16,7 @@ import {AsyncPipe} from '@angular/common';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import { environment } from 'src/environments/environment';
-import { NgFor, NgStyle } from '@angular/common';
+import { NgClass, NgFor, NgStyle } from '@angular/common';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
 import { PayService } from 'src/app/pay.service';
 import { PersonComponent } from '../../components/home/person/person.component';
@@ -41,6 +41,7 @@ export interface Workshop {
   standalone: true,
   imports: [MatButtonModule,
     MatStepperModule,
+    NgClass,
     NgFor,
     NgStyle,
     FormsModule,
@@ -65,6 +66,8 @@ export class TalleresUtilesComponent implements OnInit{
   authenticate!:boolean;stepp!:number;voucher!:number;
   payment!:number;
   niubiz!:number;
+  tempBlocked:boolean=false;
+  msgBlocked!:string;
   vacationDay!:number; vacationHour!:number; workshop!:number;
   dataDocument:any=[]; dataWorkshop:Workshop[] = [];dataWorkshopAge:any=[]; dataWorkshopDate:any=[]; dataWorkshopHour:any=[];
   styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;sizeCharterStudent!:number;
@@ -145,6 +148,17 @@ export class TalleresUtilesComponent implements OnInit{
       (response:any) => {  
       response.data.map(
           (value:any)=>{
+            //BLOQUEO POR TIEMPO DE MATRICULA
+            if(value.tbl=="Mensaje"){
+              if(value.DESCRIPCION!=''){
+                this.msgBlocked=value.DESCRIPCION
+                this.tempBlocked=true;
+                this.firstFormGroup.get('documentOptionCtrl')?.setValue('')
+                this.firstFormGroup.get('documentOptionCtrl')?.disable()
+                this.firstFormGroup.get('studentDocumentOptionCtrl')?.setValue('')
+                this.firstFormGroup.get('studentDocumentOptionCtrl')?.disable()
+              }
+            }
             if(value.tbl == "taller"){
               this.dataWorkshop.push(value)
             }
@@ -193,13 +207,15 @@ export class TalleresUtilesComponent implements OnInit{
   }
   //FIRST GROUP
   checkFieldsNotEmptyFirstGroup(group: FormGroup) {
+    const documentOption = group.get('documentOptionCtrl')?.value;
     const document = group.get('documentCtrl')?.value;
     const fullName = group.get('fullName')?.value;
     const name = group.get('nameCtrl')?.value;
     const lastName = group.get('lastName')?.value;
     const email = group.get('emailCtrl')?.value;
+    const studentDocumentOption = group.get('studentDocumentOptionCtrl')?.value;
     const studentDocument = group.get('studentDocumentCtrl')?.value;
-    return (document !== null && fullName !==null && name !== null && lastName !== null && email !== null && studentDocument !==null) ? null : { fieldsEmpty: true };
+    return (documentOption !== null && document !== null && fullName !==null && name !== null && lastName !== null && email !== null && studentDocumentOption !==null && studentDocument !==null) ? null : { fieldsEmpty: true };
   }
   checkFieldsNotEmptySecondGroup(group: FormGroup){
     const workshop= group.get('workshopCtrl')?.value;

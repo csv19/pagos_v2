@@ -1,5 +1,12 @@
-<section class="w-full p-4">
-  <h2 class="font-bold text-gray-600 text-center uppercase">Reserva de Talleres-Vacaciones Utiles</h2>
+<section class="w-full p-4 relative h-full flex justify-center items-center">
+  <div [ngClass]="{ 'hidden':tempBlocked===false,'block':tempBlocked===true }" class="absolute inset-y-2/4 z-50">
+    <div class="-rotate-[20deg] border-2 border-red-600 rounded-lg px-4 py-2 text-4xl uppercase font-bold text-center text-red-600
+    ">
+    <p>{{msgBlocked}}</p>
+  </div>
+  </div>
+  <div [ngClass]="{ '':tempBlocked===false,'blur z-0':tempBlocked===true }">
+    <h2 class="font-bold text-gray-600 text-center uppercase">Reserva de Talleres-Vacaciones Utiles</h2>
       <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
         <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
           <form [formGroup]="firstFormGroup">
@@ -274,4 +281,5 @@
         </mat-step>
   
       </mat-stepper>
+  </div>
 </section>
