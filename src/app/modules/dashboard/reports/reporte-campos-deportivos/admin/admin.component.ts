@@ -36,8 +36,9 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   dtOptions:ADTSettings={};
   dtTrigger = new Subject<ADTSettings>(); 
   reserva:any=[];
+  preloader:boolean=true;
   positionOption: TooltipPosition='above';
-  constructor(private http: HttpClient){
+  constructor(private http: HttpClient, public dialog: MatDialog){
     this.date1=new Date().toISOString().slice(0, 10);
     this.date2=new Date().toISOString().slice(0, 10);
   }
@@ -72,15 +73,17 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     const date1=this.date1
     const date2=this.date2
     console.log(date1);
-    
-    this.http.get(`${SERVER}/calendars/reservations/${date1}/${date2}`).subscribe(
-      (response:any)=>{
-        console.log(response);
-        this.reserva=response.data; 
-        this.dtTrigger.next(this.dtOptions);
-      },error=>{console.log(error);
-      }
-    )
+    setTimeout(()=>{
+      this.http.get(`${SERVER}/calendars/reservations/${date1}/${date2}`).subscribe(
+        (response:any)=>{
+          console.log(response);
+          this.reserva=response.data; 
+          this.dtTrigger.next(this.dtOptions);
+        },error=>{console.log(error);
+        }
+      )
+      this.preloader=false;
+    },1000)
   }
   search(){
     const date1=this.date1
@@ -93,6 +96,17 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
       },error=>{console.log(error);
       }
     )
+    
+  }
+  update(id:number) {
+    console.log(id);
+    
+    const data={
+      id: id
+    }
+    this.dialog.open(EditarCampoDeportivoComponent,{
+      data: data
+    });
     
   }
   ngAfterViewInit(): void {
@@ -236,6 +250,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
   voucherId!:number;
   sizeCharter!:number;
   category!:number;
+  shift!:number;
   quantitySchedule!:number;
   optionSchedule!:boolean;
   dataField:any;dataSchedule:any[]=[]; selectSchedule:any;
@@ -247,11 +262,12 @@ export class EditarCampoDeportivoComponent implements OnInit{
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog) {
     this.textScheduleLabel='Horarios Disponibles';
-    this.http.get(`${SERVER}/workshop/reservation/${data.id}`).subscribe(
+    this.http.get(`${SERVER}/calendars/reservation/${data.id}`).subscribe(
       (response:any)=>{
         this.quantitySchedule=response.data.length;
         this.category=response.data[0].category_id;
         const field_id=response.data[0].field_id;
+        this.shift=response.data[0].shift_id;
         this.http.get(`${SERVER}/fields/${this.category}`).subscribe(
           (value:any) => {
             if(value.code===200){
@@ -259,7 +275,6 @@ export class EditarCampoDeportivoComponent implements OnInit{
               this.dataField= value.data;
               this.optionSchedule=false;
               console.log(this.optionSchedule);
-              
             }
           },
           (error) => {
@@ -333,7 +348,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
       const dateFormat= this.formatDate(date.value);
         schedule?.enable();
         console.log("horarios");
-        const url = `${SERVER}/schedule/${this.category}/${field.value}/${dateFormat}`;
+        const url = `${SERVER}/schedule?category=${this.category}&fields=${field.value}&shift=${this.shift}&date=${dateFormat}`;
         this.http.get<any>(`${url}`).subscribe(
           (response)=>{
             response.data.map(

@@ -17,12 +17,14 @@ import { AsyncPipe, NgClass, NgIf } from '@angular/common';
 import {map, startWith} from 'rxjs/operators';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
 import { DataTableDirective } from 'angular-datatables';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 
 const SERVER= environment.SERVER;
 @Component({
   selector: 'app-lista-usuarios',
   standalone: true,
-  imports: [DataTablesModule,MatDialogModule],
+  imports: [DataTablesModule,MatDialogModule,MatProgressSpinnerModule,NgClass],
   templateUrl: './lista-usuarios.component.html',
   styleUrl: './lista-usuarios.component.scss'
 })
@@ -30,6 +32,7 @@ export class ListaUsuariosComponent implements OnInit {
   iconoPencil = 'assets/icons/heroicons/outline/pencil.svg';
   iconoTrash = 'assets/icons/heroicons/outline/trash.svg';
   usersList:any=[];
+  preloader:boolean=true;
   user!:number;
   dtOptions:ADTSettings={};
   dtTrigger = new Subject<ADTSettings>();
@@ -47,15 +50,18 @@ export class ListaUsuariosComponent implements OnInit {
     this.user=JSON.parse(profile).data.id;
   }
   loadUsers(){
-    this.getUsers().subscribe(
-      (response:any)=>{
-        console.log(response);
-        this.usersList=response.data;     
-        this.dtTrigger.next(this.dtOptions);   
-      },error=>{
-        console.error(error);
-      }
-    )
+    setTimeout(()=>{
+      this.getUsers().subscribe(
+        (response:any)=>{
+          console.log(response);
+          this.usersList=response.data;     
+          this.dtTrigger.next(this.dtOptions);   
+        },error=>{
+          console.error(error);
+        }
+      )
+      this.preloader=false;
+    },1000)
   }
   getUsers():Observable<any[]>{
     return this.http.get<any[]>(`${SERVER}/users`);
@@ -64,10 +70,13 @@ export class ListaUsuariosComponent implements OnInit {
     const data={
       id: id
     }
-    this.dialog.open(EditarUsuarioComponent,{
+    const dialogRef=this.dialog.open(EditarUsuarioComponent,{
       data: data
     });
-
+    dialogRef.afterClosed().subscribe(result => {
+      this.preloader=true;
+        this.rerender()
+      });
   }
   delete(id:number){
     const data={
@@ -89,8 +98,8 @@ export class ListaUsuariosComponent implements OnInit {
       if (result.value) {
         this.http.post(`${SERVER}/delete`,data).subscribe(
           response=>{
-            console.log(response);
-            this.rerender(); // Llama a rerender() aquí
+            this.preloader=true;
+            this.rerender();
           },error=>{
             console.log(error);
           }
@@ -123,21 +132,14 @@ export class ListaUsuariosComponent implements OnInit {
     });;
   }
   rerender(): void {
-    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-      dtInstance.destroy();
-      this.dtTrigger.next(this.dtOptions);
-    });
+      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+        dtInstance.destroy();
+        this.loadUsers();
+      });
   }
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
-  // ngAfterViewInit():void {
-  //   setTimeout(() => {
-  //     // race condition fails unit tests if dtOptions isn't sent with dtTrigger
-  //     this.dtTrigger.next(this.dtOptions);
-  //   }, 200);
-  // }
-  
 }
 export interface Area {
   name: string;
@@ -241,14 +243,7 @@ export class EditarUsuarioComponent implements OnInit{
       } 
       this.authService.update(people);
       this.dialog.closeAll()
-      // this.authService.update(user).subscribe(() => {
-      //   this.dialog.closeAll(); // Cierra el diálogo y envía un resultado
-      // }, error => {
-      //   console.error(error);
-      //   this.dialog.closeAll(); // Cierra el diálogo sin éxito si hay un error
-      // });
     }
-    
   }
 }
 export class LanguageApp {
