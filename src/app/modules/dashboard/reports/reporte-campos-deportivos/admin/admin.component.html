@@ -63,8 +63,8 @@
                                    matTooltip="Recibo"
                                    [matTooltipPosition]="positionOption"
                                    matTooltipHideDelay="300" src="./assets/icons/recibo.png" alt="">
-                                <img (click)="update(item.payment_type_bank_card_id)" class="cursor-pointer w-full" mat-raised-button #tooltip="matTooltip"
-                                   matTooltip="Editar Reserva"
+                                <img (click)="update(item.field_id,item.payment_type_bank_card_id)" class="cursor-pointer w-full" mat-raised-button #tooltip="matTooltip"
+                                   matTooltip="Reprogramación"
                                    [matTooltipPosition]="positionOption"
                                    matTooltipHideDelay="300" src="./assets/icons/editar_reserva.png" alt="">
                             </div> 

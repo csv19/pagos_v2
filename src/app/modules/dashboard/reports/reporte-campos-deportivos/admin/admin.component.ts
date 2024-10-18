@@ -98,11 +98,12 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     )
     
   }
-  update(id:number) {
+  update(field_id:number,id:number) {
     console.log(id);
     
     const data={
-      id: id
+      id: id,
+      field_id: field_id
     }
     this.dialog.open(EditarCampoDeportivoComponent,{
       data: data
@@ -139,13 +140,11 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     const day = String(date.getDate()+1).padStart(2, '0');
-    console.log(day);
-    
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexed
     const year = String(date.getFullYear()); // Obtener los últimos 2 dígitos del año
 
     return `${day}-${month}-${year}`;
-}
+  }
   formatHour(hour:any) {
     return (hour > 11 ? ((hour - 12)==0?12:hour-12)  +":00pm" : hour +":00am");
   }
@@ -245,14 +244,15 @@ export class EditarCampoDeportivoComponent implements OnInit{
   authenticate!:boolean;
   passwordTextType!: boolean;
   passwordColor!: boolean;
-  submitted = false;
+  submitted:boolean= true;
   textScheduleLabel:string;
   voucherId!:number;
   sizeCharter!:number;
   category!:number;
   shift!:number;
   quantitySchedule!:number;
-  optionSchedule!:boolean;
+  optionSchedule:any;
+  scheduleId:any=[];
   dataField:any;dataSchedule:any[]=[]; selectSchedule:any;
   dataHolidays: any[]=[]; currentDate:any; nextDate:any;
   secondFormGroup = this._formBuilder.group({
@@ -262,19 +262,22 @@ export class EditarCampoDeportivoComponent implements OnInit{
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog) {
     this.textScheduleLabel='Horarios Disponibles';
-    this.http.get(`${SERVER}/calendars/reservation/${data.id}`).subscribe(
+    this.http.get(`${SERVER}/calendars/reservation/${data.field_id}/${data.id}`).subscribe(
       (response:any)=>{
         this.quantitySchedule=response.data.length;
         this.category=response.data[0].category_id;
         const field_id=response.data[0].field_id;
         this.shift=response.data[0].shift_id;
+        response.data.map((value:any)=>{
+          this.scheduleId.push(value.schedule_id)
+        })
+        
         this.http.get(`${SERVER}/fields/${this.category}`).subscribe(
           (value:any) => {
             if(value.code===200){
               this.secondFormGroup?.get('fieldCtrl')?.setValue(field_id);
               this.dataField= value.data;
               this.optionSchedule=false;
-              console.log(this.optionSchedule);
             }
           },
           (error) => {
@@ -339,15 +342,25 @@ export class EditarCampoDeportivoComponent implements OnInit{
     }
     return list;
   }
+  getField(){
+    this.secondFormGroup.get('dateCtrl')?.reset();
+    this.secondFormGroup.get('scheduleCtrl')?.reset();
+    this.dataSchedule=[];
+    this.optionSchedule=[];
+    this.submitted=true;
+  }
   getDateReservation(){
+    this.secondFormGroup.get('scheduleCtrl')?.reset();
     const dataSchedules:any=[];
+    this.optionSchedule=[];
+    this.submitted=true;
     const field= this.validateSecondFormGroup().field;
     const date= this.validateSecondFormGroup().date;
     const schedule= this.validateSecondFormGroup().schedule;
     if(field?.value&&date?.value){
       const dateFormat= this.formatDate(date.value);
         schedule?.enable();
-        console.log("horarios");
+        // console.log("horarios");
         const url = `${SERVER}/schedule?category=${this.category}&fields=${field.value}&shift=${this.shift}&date=${dateFormat}`;
         this.http.get<any>(`${url}`).subscribe(
           (response)=>{
@@ -355,7 +368,6 @@ export class EditarCampoDeportivoComponent implements OnInit{
               (value:any)=>{    
                 const hourActual=new Date().getHours();
                 if(this.currentDate === date.value){
-                  console.log(value.hour_start);
                   if(Number(value.hour_start) >= hourActual ){
                     dataSchedules.push(value)
                   }
@@ -374,14 +386,42 @@ export class EditarCampoDeportivoComponent implements OnInit{
   getSchedule(){
     const schedule=this.validateSecondFormGroup().schedule;
     if(schedule){
-      const selectSchedule=schedule.value.length;
+      const selectSchedule:any=(schedule.value)?schedule.value.length:null;
+      const dataSchedule:any=[]
       if(this.quantitySchedule == selectSchedule){
-        console.log("SELECCION COMPLETA");
+        this.dataSchedule.map((value:any)=>{
+          dataSchedule.push(value.id)
+        })
+        this.optionSchedule = dataSchedule.filter((element:any) => !schedule.value.includes(element));
+        this.submitted=false;
       }else{
-        console.log("FALTA SELECCIONAR");
+        this.submitted=true;
+        this.optionSchedule = dataSchedule.filter((element:any) => !schedule.value.includes(element));
       }
+    }
+  }
+  isOptionDisabled(optionId: number): boolean {
+    if(this.optionSchedule.length>0){
+      return this.optionSchedule.includes(optionId);
+    }else{
+      return false;
+    }
+  }
+  onSubmit(){
+    const field= this.secondFormGroup?.get('fieldCtrl');
+    const date= this.secondFormGroup?.get('dateCtrl');
+    const schedule= this.secondFormGroup?.get('scheduleCtrl');
+    if(field && date && schedule){
+      const url = `${SERVER}/calendars/reservation/update?field=${this.data.field_id}&fieldNew=${field.value}&date=${this.formatDate(date.value)}&schedule=${this.scheduleId}&scheduleNew=${schedule.value}&payment=${this.data.id}`;
+      this.http.get<any>(`${url}`).subscribe(
+        (value:any)=>{
+          console.log(value);
+        })
+      
+
+      console.log("DATOS DE TABLA ACTUALIZAR"+[this.data.field_id,this.data.id,this.scheduleId]);
+      console.log(`NUEVOS DATOS FIELD_ID:${field.value} DATE${this.formatDate(date.value)} SCHEDULE_ID${schedule.value}`);
     }
     
   }
-  onSubmit(){}
 }
