@@ -19,6 +19,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { DataTableDirective } from 'angular-datatables';
+import { ToastrService } from 'ngx-toastr';
+
 
 const SERVER= environment.SERVER;
 @Component({
@@ -37,12 +39,17 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   dtTrigger = new Subject<ADTSettings>(); 
   reserva:any=[];
   preloader:boolean=true;
+  user!:number;
+  user_code!:number;
   positionOption: TooltipPosition='above';
-  constructor(private http: HttpClient, public dialog: MatDialog){
+  constructor(private http: HttpClient, public dialog: MatDialog, private toastr: ToastrService){
     this.date1=new Date().toISOString().slice(0, 10);
     this.date2=new Date().toISOString().slice(0, 10);
   }
   ngOnInit(): void {
+    const profile:any=localStorage.getItem('profileData');
+    this.user=JSON.parse(profile).data.id;
+    this.user_code=JSON.parse(profile).data.code;
     this.dtOptions = {
       pagingType: 'simple_numbers',
       language: LanguageApp.spanish_datatables,
@@ -72,7 +79,6 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   fetchData():void{
     const date1=this.date1
     const date2=this.date2
-    console.log(date1);
     setTimeout(()=>{
       this.http.get(`${SERVER}/calendars/reservations/${date1}/${date2}`).subscribe(
         (response:any)=>{
@@ -99,16 +105,18 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     
   }
   update(field_id:number,id:number) {
-    console.log(id);
-    
     const data={
       id: id,
-      field_id: field_id
+      field_id: field_id,
+      user_id: this.user,
+      user_code: this.user_code
     }
-    this.dialog.open(EditarCampoDeportivoComponent,{
+    const dialogRef= this.dialog.open(EditarCampoDeportivoComponent,{
       data: data
     });
-    
+    dialogRef.afterClosed().subscribe(result => {
+        this.rerender()
+      });
   }
   ngAfterViewInit(): void {
     this.dtTrigger.subscribe(() => {
@@ -129,9 +137,10 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   }
   
   rerender(): void {
+    this.preloader=true;
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
       dtInstance.destroy();
-      this.dtTrigger.next(this.dtOptions);
+      this.fetchData()
     });
   }
   ngOnDestroy(): void {
@@ -260,7 +269,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
     dateCtrl: [null, Validators.required],
     scheduleCtrl: [{ value:null, disabled: true }, Validators.required],
   },{ validators: this.checkFieldsNotEmptySecondGroup });
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog, private toastr: ToastrService) {
     this.textScheduleLabel='Horarios Disponibles';
     this.http.get(`${SERVER}/calendars/reservation/${data.field_id}/${data.id}`).subscribe(
       (response:any)=>{
@@ -360,7 +369,6 @@ export class EditarCampoDeportivoComponent implements OnInit{
     if(field?.value&&date?.value){
       const dateFormat= this.formatDate(date.value);
         schedule?.enable();
-        // console.log("horarios");
         const url = `${SERVER}/schedule?category=${this.category}&fields=${field.value}&shift=${this.shift}&date=${dateFormat}`;
         this.http.get<any>(`${url}`).subscribe(
           (response)=>{
@@ -407,21 +415,29 @@ export class EditarCampoDeportivoComponent implements OnInit{
       return false;
     }
   }
+  showSuccess(message:string){
+    this.toastr.success(message,'CORRECTO!');
+  }
+  showError(message:string) {
+    this.toastr.error(message,'ERROR!',{closeButton:true, positionClass:'toast-top-right'});
+  }
   onSubmit(){
     const field= this.secondFormGroup?.get('fieldCtrl');
     const date= this.secondFormGroup?.get('dateCtrl');
     const schedule= this.secondFormGroup?.get('scheduleCtrl');
+    
     if(field && date && schedule){
-      const url = `${SERVER}/calendars/reservation/update?field=${this.data.field_id}&fieldNew=${field.value}&date=${this.formatDate(date.value)}&schedule=${this.scheduleId}&scheduleNew=${schedule.value}&payment=${this.data.id}`;
+      const url = `${SERVER}/calendars/reservation/update?user=${this.data.user_id}&user_code=${this.data.user_code}&field=${this.data.field_id}&fieldNew=${field.value}&date=${this.formatDate(date.value)}&schedule=${this.scheduleId}&scheduleNew=${schedule.value}&payment=${this.data.id}`;
       this.http.get<any>(`${url}`).subscribe(
         (value:any)=>{
           console.log(value);
-        })
-      
-
-      console.log("DATOS DE TABLA ACTUALIZAR"+[this.data.field_id,this.data.id,this.scheduleId]);
-      console.log(`NUEVOS DATOS FIELD_ID:${field.value} DATE${this.formatDate(date.value)} SCHEDULE_ID${schedule.value}`);
+          if(value.code !==500){
+            this.showSuccess(value.message)
+          }else{
+            this.showError(value.message)
+          }
+        },error=>this.showError(error.error.message))
     }
-    
+    this.dialog.closeAll()
   }
 }
