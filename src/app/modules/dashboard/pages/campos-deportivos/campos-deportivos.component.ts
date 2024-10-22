@@ -170,7 +170,8 @@ export class CamposDeportivosComponent implements OnInit {
     const year = today.getFullYear();
     const month=('0' + (today.getMonth() + 1)).slice(-2);
     const proxday = ('0' + (today.getDate() + 14)).slice(-2);
-    this.nextDate = `${year}-${month}-${proxday}`;
+    const day=(Number(proxday)>=30)?30:proxday;
+    this.nextDate = `${year}-${month}-${day}`;
     this.currentDate= today;
     this.http.get<any>(HOLIDAYS).subscribe(
       (response)=>{
