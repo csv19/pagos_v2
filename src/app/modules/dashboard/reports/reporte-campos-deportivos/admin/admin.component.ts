@@ -19,6 +19,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { DataTableDirective } from 'angular-datatables';
+import {MatButtonModule} from '@angular/material/button';
 import { ToastrService } from 'ngx-toastr';
 
 
@@ -33,6 +34,7 @@ const SERVER= environment.SERVER;
 })
 export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit {
   @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
+
   date1:any;date2:any;
   dtInstance: any;
   dtOptions:ADTSettings={};
@@ -41,6 +43,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   preloader:boolean=true;
   user!:number;
   user_code!:number;
+  state:boolean=false;
   positionOption: TooltipPosition='above';
   constructor(private http: HttpClient, public dialog: MatDialog, private toastr: ToastrService){
     this.date1=new Date().toISOString().slice(0, 10);
@@ -105,19 +108,27 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     
   }
   update(field_id:number,id:number) {
+    this.state=true;
     const data={
       id: id,
       field_id: field_id,
       user_id: this.user,
       user_code: this.user_code
     }
+    
     const dialogRef= this.dialog.open(EditarCampoDeportivoComponent,{
       data: data
     });
     dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+      if(result){
         this.rerender()
-      });
+      }
+    });
+    // console.log(EditarCampoDeportivoComponent.state);
+    
   }
+  
   ngAfterViewInit(): void {
     this.dtTrigger.subscribe(() => {
       this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
@@ -241,7 +252,7 @@ export class LanguageApp {
   selector: 'editar-campo-deportivo',
   standalone: true,
   providers:[provideNativeDateAdapter()],
-  imports: [EditarCampoDeportivoComponent,MatDialogModule,FormsModule,ReactiveFormsModule,RouterLink,AngularSvgIconModule,ButtonComponent,NgClass,NgIf,NgFor,MatFormFieldModule,
+  imports: [EditarCampoDeportivoComponent,MatDialogModule,MatButtonModule,FormsModule,ReactiveFormsModule,RouterLink,AngularSvgIconModule,ButtonComponent,NgClass,NgIf,NgFor,MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,],
@@ -270,6 +281,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
     scheduleCtrl: [{ value:null, disabled: true }, Validators.required],
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog, private toastr: ToastrService) {
+    
     this.textScheduleLabel='Horarios Disponibles';
     this.http.get(`${SERVER}/calendars/reservation/${data.field_id}/${data.id}`).subscribe(
       (response:any)=>{
@@ -430,14 +442,16 @@ export class EditarCampoDeportivoComponent implements OnInit{
       const url = `${SERVER}/calendars/reservation/update?user=${this.data.user_id}&user_code=${this.data.user_code}&field=${this.data.field_id}&fieldNew=${field.value}&date=${this.formatDate(date.value)}&schedule=${this.scheduleId}&scheduleNew=${schedule.value}&payment=${this.data.id}`;
       this.http.get<any>(`${url}`).subscribe(
         (value:any)=>{
-          console.log(value);
           if(value.code !==500){
             this.showSuccess(value.message)
-          }else{
-            this.showError(value.message)
           }
-        },error=>this.showError(error.error.message))
+        },error=>{
+          this.showError(error.error.message)
+        }
+      )
     }
-    this.dialog.closeAll()
+    this.dialog.closeAll();
+    
+    // dialogRef.beforeClosed().subscribe()
   }
 }

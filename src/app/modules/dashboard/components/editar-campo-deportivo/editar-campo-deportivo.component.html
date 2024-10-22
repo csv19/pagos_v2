@@ -48,7 +48,10 @@
       </div>
 <!-- Submit Button -->
 <div class="text-center">
-  <button  [disabled]="submitted" [ngClass]="{'opacity-30':submitted}" class="opacity-1 mx-auto bg-primary px-4 py-2 rounded-lg text-white">Actualizar Registro</button>
+  <button [mat-dialog-close]="true" [disabled]="submitted" [ngClass]="{'opacity-30':submitted}" class="opacity-1 mx-auto bg-primary px-4 py-2 rounded-lg text-white">Actualizar Registro</button>
+  <!-- <mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
+  </mat-dialog-actions> -->
 </div>
 </form>
 </div>
