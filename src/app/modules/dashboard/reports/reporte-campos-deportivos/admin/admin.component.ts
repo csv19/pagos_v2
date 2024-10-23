@@ -119,14 +119,11 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     const dialogRef= this.dialog.open(EditarCampoDeportivoComponent,{
       data: data
     });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+    dialogRef.beforeClosed().subscribe(result => {
       if(result){
         this.rerender()
       }
     });
-    // console.log(EditarCampoDeportivoComponent.state);
-    
   }
   
   ngAfterViewInit(): void {
@@ -199,9 +196,10 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
     }
   }
   downloadVoucher(operation:number){
-    console.log(operation);
+    const option:number=2; //Abrir en nueva pestaña
     const data={
-      'operation':operation
+      'paymentId':operation,
+      'option': option
     }
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

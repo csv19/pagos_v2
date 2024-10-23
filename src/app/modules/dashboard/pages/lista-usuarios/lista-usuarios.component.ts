@@ -18,7 +18,7 @@ import {map, startWith} from 'rxjs/operators';
 import { NumberOnlyDirective } from 'src/app/number-only.directive';
 import { DataTableDirective } from 'angular-datatables';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-
+import {MatButtonModule} from '@angular/material/button';
 
 const SERVER= environment.SERVER;
 @Component({
@@ -73,9 +73,10 @@ export class ListaUsuariosComponent implements OnInit {
     const dialogRef=this.dialog.open(EditarUsuarioComponent,{
       data: data
     });
-    dialogRef.afterClosed().subscribe(result => {
-      this.preloader=true;
+    dialogRef.beforeClosed().subscribe(result => {
+      if(result){
         this.rerender()
+      }
       });
   }
   delete(id:number){
@@ -98,7 +99,6 @@ export class ListaUsuariosComponent implements OnInit {
       if (result.value) {
         this.http.post(`${SERVER}/delete`,data).subscribe(
           response=>{
-            this.preloader=true;
             this.rerender();
           },error=>{
             console.log(error);
@@ -132,6 +132,7 @@ export class ListaUsuariosComponent implements OnInit {
     });;
   }
   rerender(): void {
+    this.preloader=true;
       this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
         dtInstance.destroy();
         this.loadUsers();
@@ -147,7 +148,7 @@ export interface Area {
 @Component({
   selector: 'editar-usuario.component',
   standalone: true,
-  imports: [EditarUsuarioComponent, FormsModule, ReactiveFormsModule,RouterLink,AngularSvgIconModule,MatAutocompleteModule,ButtonComponent,NgClass,NgIf,AsyncPipe,NumberOnlyDirective],
+  imports: [EditarUsuarioComponent, FormsModule,MatButtonModule,MatDialogModule, ReactiveFormsModule,RouterLink,AngularSvgIconModule,MatAutocompleteModule,ButtonComponent,NgClass,NgIf,AsyncPipe,NumberOnlyDirective],
   templateUrl: '../../components/editar-usuario/editar-usuario.component.html',
 })
 
