@@ -1,5 +1,29 @@
 <section class="w-full p-4">
-  <h2 class="font-bold text-gray-600 text-center uppercase">Reserva de Campos Deportivos</h2>
+  
+  @if(hour >= 6 && hour <=22){
+    <div class="container bg-white h-[350px] md:h-auto">
+      <div class="border-gray-400 border-2 border-double p-2 rounded-lg w-fit mx-auto">
+        <div class=" bg-red-600 text-white rounded-lg px-4 md:px-8 py-2">
+          <p class="font-bold text-xl md:text-4xl tracking-tighter md:tracking-wide	uppercase">¡Horario Cerrado!</p>
+        </div>
+      </div>
+      <div class="relative z-50">
+        <img class="mx-auto w-[150px] md:w-[250px]" src="./assets/images/reloj-out.png" alt="">
+        <div class="absolute -z-10 top-24 md:top-48">
+          <div class="text-white bg-sky-500 rounded-lg w-full h-[150px] p-2 flex justify-center items-end uppercase text-center">
+          <p class="font-bold text-base md:text-lg lg:text-2xl">La atención de la plataforma es de lunes a viernes de 6:00am a 10:00pm</p>
+      </div>
+        </div>
+      
+      </div>
+      
+    </div>
+  }@else {
+    <div class="my-4 bg-blue-600 text-center text-white uppercase font-semibold rounded-lg w-full h-auto">
+      <img class="mx-auto py-2" src="./assets/icons/reloj.png" alt="">
+      La atención de la plataforma es de lunes a viernes de 6:00am a 10:00pm
+    </div>
+    <h2 class="font-bold text-gray-600 text-center uppercase">Reserva de Campos Deportivos</h2>
   <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
     <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
       <form [formGroup]="firstFormGroup">
@@ -242,4 +266,5 @@
       }
     </mat-step>
   </mat-stepper>
+  }
 </section>
