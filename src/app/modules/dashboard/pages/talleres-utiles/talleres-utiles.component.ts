@@ -74,6 +74,7 @@ export class TalleresUtilesComponent implements OnInit{
   dataTypePayments:any=[]; dataOptionPayments:any=[];
   totalPrice:any; season:string='';shift:any;campus:any;
   dataVoucher:any=[];
+  hour:number;
   arrow = 'assets/icons/heroicons/solid/arrow.svg';
   person:any={
     id:'',
@@ -129,6 +130,8 @@ export class TalleresUtilesComponent implements OnInit{
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   filteredOptions: Observable<Workshop[]> | undefined;
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef, private toastr: ToastrService) {
+    const now= new Date();
+    this.hour = now.getHours();
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
     });

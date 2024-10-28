@@ -1,12 +1,35 @@
-<section class="w-full p-4 relative h-full flex justify-center items-center">
-  <div [ngClass]="{ 'hidden':tempBlocked===false,'block':tempBlocked===true }" class="absolute inset-y-32 md:inset-y-2/4 z-50">
-    <div class="-rotate-[20deg] border-2 border-red-600 rounded-lg px-2 md:px-4 py-1 md:py-2 text-xl md:text-4xl uppercase font-bold text-center text-red-600
-    ">
-    <p>{{msgBlocked}}</p>
-  </div>
-  </div>
-  <div [ngClass]="{ '':tempBlocked===false,'blur z-0':tempBlocked===true }">
-    <h2 class="font-bold text-gray-600 text-center uppercase">Reserva de Talleres-Vacaciones Utiles</h2>
+<section class="w-full p-4">
+  @if(hour >= 22 || hour <=5){ <div class="container bg-white h-[350px] md:h-auto">
+    <div class="border-gray-400 border-2 border-double p-2 rounded-lg w-fit mx-auto">
+      <div class=" bg-red-600 text-white rounded-lg px-4 md:px-8 py-2">
+        <p class="font-bold text-xl md:text-4xl tracking-tighter md:tracking-wide	uppercase">¡Horario Cerrado!</p>
+      </div>
+    </div>
+    <div class="relative z-50">
+      <img class="mx-auto w-[150px] md:w-[250px]" src="./assets/images/reloj-out.png" alt="">
+      <div class="absolute -z-10 top-24 md:top-48">
+        <div
+          class="text-white bg-sky-500 rounded-lg w-full h-[150px] p-2 flex justify-center items-end uppercase text-center">
+          <p class="font-bold text-base md:text-lg lg:text-2xl">La atención de la plataforma es de lunes a domingo de
+            6:00am a 10:00pm</p>
+        </div>
+      </div>
+    </div>
+    </div>
+    }@else{
+    <div [ngClass]="{ 'hidden':tempBlocked===false,'block':tempBlocked===true }"
+      class="absolute inset-y-32 md:inset-y-2/4 z-50">
+      <div class="-rotate-[20deg] border-2 border-red-600 rounded-lg px-2 md:px-4 py-1 md:py-2 text-xl md:text-4xl uppercase font-bold text-center text-red-600
+      ">
+        <p>{{msgBlocked}}</p>
+      </div>
+    </div>
+    <div class="flex flex-col md:flex-row justify-center items-center md:items-end my-4 bg-blue-600 text-center text-white uppercase font-medium rounded-lg w-full h-auto">
+      <div><img class="mx-auto py-2" src="./assets/icons/reloj.png" alt=""></div>
+      <div><p class="text-xs md:text-sm">La atención de la plataforma es de lunes a domingo de 6:00am a 10:00pm</p></div>
+    </div>
+    <div [ngClass]="{ '':tempBlocked===false,'blur z-0':tempBlocked===true }">
+      <h2 class="font-bold text-gray-600 text-center uppercase">Reserva de Talleres-Vacaciones Utiles</h2>
       <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
         <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
           <form [formGroup]="firstFormGroup">
@@ -21,9 +44,9 @@
               </mat-form-field>
               <mat-form-field>
                 <mat-label>Documento</mat-label>
-                <input autocomplete="off" onlyNumber matInput placeholder="Ingrese N° Documento" (change)="getDocument()"
-                  name="document" formControlName="documentCtrl" [minlength]="sizeCharter" [maxlength]="sizeCharter"
-                  name="document">
+                <input autocomplete="off" onlyNumber matInput placeholder="Ingrese N° Documento"
+                  (change)="getDocument()" name="document" formControlName="documentCtrl" [minlength]="sizeCharter"
+                  [maxlength]="sizeCharter" name="document">
                 @if (firstFormGroup.get('documentCtrl')?.hasError('required')) {
                 <mat-error>Documento <strong>requerido</strong></mat-error>
                 }
@@ -45,8 +68,8 @@
               </mat-form-field>
               <mat-form-field>
                 <mat-label>Correo electrónico</mat-label>
-                <input autocomplete="off" type="email" [errorStateMatcher]="matcher" matInput placeholder="Ingrese Correo"
-                  formControlName="emailCtrl">
+                <input autocomplete="off" type="email" [errorStateMatcher]="matcher" matInput
+                  placeholder="Ingrese Correo" formControlName="emailCtrl">
                 @if (firstFormGroup.get('emailCtrl')?.hasError('email') &&
                 !firstFormGroup.get('emailCtrl')?.hasError('required')) {
                 <mat-error>Porfavor revise el correo</mat-error>
@@ -73,8 +96,9 @@
               </mat-form-field>
               <mat-form-field>
                 <mat-label>Documento</mat-label>
-                <input autocomplete="off" onlyNumber matInput placeholder="Ingrese N° Documento" (change)="getStudentDocument()"
-                  name="student_document" formControlName="studentDocumentCtrl" [minlength]="sizeCharterStudent" [maxlength]="sizeCharterStudent">
+                <input autocomplete="off" onlyNumber matInput placeholder="Ingrese N° Documento"
+                  (change)="getStudentDocument()" name="student_document" formControlName="studentDocumentCtrl"
+                  [minlength]="sizeCharterStudent" [maxlength]="sizeCharterStudent">
                 @if (firstFormGroup.get('studentDocumentCtrl')?.hasError('required')) {
                 <mat-error>Documento <strong>requerido</strong></mat-error>
                 }
@@ -88,7 +112,8 @@
               </mat-form-field>
               <mat-form-field>
                 <mat-label>Apellidos</mat-label>
-                <input autocomplete="off" matInput placeholder="Ingrese Apellidos" formControlName="studentLastNameCtrl">
+                <input autocomplete="off" matInput placeholder="Ingrese Apellidos"
+                  formControlName="studentLastNameCtrl">
               </mat-form-field>
             </div>
             <div>
@@ -102,14 +127,15 @@
             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Talleres</mat-label>
-                <input type="text" placeholder="Ingrese taller" (ngModelChange)="getWorkshop()" matInput formControlName="workshopCtrl" [matAutocomplete]="auto">
+                <input type="text" placeholder="Ingrese taller" (ngModelChange)="getWorkshop()" matInput
+                  formControlName="workshopCtrl" [matAutocomplete]="auto">
                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
                   @for (option of filteredOptions | async; track option) {
-                    <mat-option [value]="option">
-                      <div class="flex justify-center items-start">
-                        <div class="w-2">-</div>
-                        <div>{{option.DESCRIPCION}}</div>
-                      </div>
+                  <mat-option [value]="option">
+                    <div class="flex justify-center items-start">
+                      <div class="w-2">-</div>
+                      <div>{{option.DESCRIPCION}}</div>
+                    </div>
                   </mat-option>
                   }
                 </mat-autocomplete>
@@ -117,50 +143,54 @@
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Edad</mat-label>
                 <mat-select (ngModelChange)="getWorkshopAge()" formControlName="workshopAgeCtrl">
-                  <mat-option *ngFor="let value of dataWorkshopAge" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
+                  <mat-option *ngFor="let value of dataWorkshopAge" [value]="value.ID">{{value.DESCRIPCION}}
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Fechas</mat-label>
                 <mat-select (ngModelChange)="getWorkshopDate()" formControlName="workshopDateCtrl">
-                  <mat-option *ngFor="let value of dataWorkshopDate" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
+                  <mat-option *ngFor="let value of dataWorkshopDate" [value]="value.ID">{{value.DESCRIPCION}}
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
               <mat-form-field class="col-span-4 sm:col-span-1">
                 <mat-label>Horarios</mat-label>
                 <mat-select (ngModelChange)="getWorkshopHour()" formControlName="workshopHourCtrl">
-                  <mat-option *ngFor="let value of dataWorkshopHour" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
+                  <mat-option *ngFor="let value of dataWorkshopHour" [value]="value.ID">{{value.DESCRIPCION}}
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
-                @if(authenticate){
-                <mat-form-field class="col-span-4 sm:col-span-1">
-                  <mat-label>Tipo de Pago</mat-label>
-                  <mat-select class="bg-transparent" (ngModelChange)="getTypePayments()" name="typePayment"
-                    formControlName="typePaymentCtrl">
-                    <mat-option *ngFor="let value of dataTypePayments" [value]="value.id">{{value.name}}</mat-option>
-                  </mat-select>
+              @if(authenticate){
+              <mat-form-field class="col-span-4 sm:col-span-1">
+                <mat-label>Tipo de Pago</mat-label>
+                <mat-select class="bg-transparent" (ngModelChange)="getTypePayments()" name="typePayment"
+                  formControlName="typePaymentCtrl">
+                  <mat-option *ngFor="let value of dataTypePayments" [value]="value.id">{{value.name}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="col-span-4 sm:col-span-1" [ngStyle]="{'display':styleBlockOption}">
+                <mat-label>Opciones</mat-label>
+                <mat-select class="bg-transparent" name="optionPayment" formControlName="optionPaymentCtrl">
+                  <mat-option *ngFor="let value of dataOptionPayments" [value]="value.id">{{value.name}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="col-span-4 sm:col-span-2">
+                <mat-label>Observación</mat-label>
+                <input autocomplete="off" matInput placeholder="Ingrese Observación"
+                  formControlName="observationPaymentCtrl">
+              </mat-form-field>
+              }
+              <div class="col-span-4">
+                <mat-form-field floatLabel="always">
+                  <mat-label>Importe a Pagar</mat-label>
+                  <input autocomplete="off" matInput type="number" [value]="totalPrice" disabled
+                    class="example-right-align font-semibold" placeholder="0">
+                  <span class="font-medium text-primary" matTextPrefix>S/.&nbsp;</span>
+                  <span class="font-medium text-primary" matTextSuffix>.00</span>
                 </mat-form-field>
-                <mat-form-field class="col-span-4 sm:col-span-1" [ngStyle]="{'display':styleBlockOption}">
-                  <mat-label>Opciones</mat-label>
-                  <mat-select class="bg-transparent" name="optionPayment" formControlName="optionPaymentCtrl">
-                    <mat-option *ngFor="let value of dataOptionPayments" [value]="value.id">{{value.name}}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <mat-form-field class="col-span-4 sm:col-span-2">
-                  <mat-label>Observación</mat-label>
-                  <input autocomplete="off" matInput placeholder="Ingrese Observación" formControlName="observationPaymentCtrl">
-                </mat-form-field>
-                }
-                <div class="col-span-4">
-                  <mat-form-field floatLabel="always">
-                    <mat-label>Importe a Pagar</mat-label>
-                    <input autocomplete="off" matInput type="number" [value]="totalPrice" disabled
-                      class="example-right-align font-semibold" placeholder="0">
-                    <span class="font-medium text-primary" matTextPrefix>S/.&nbsp;</span>
-                    <span class="font-medium text-primary" matTextSuffix>.00</span>
-                  </mat-form-field>
-                </div>
               </div>
+            </div>
             <div>
               <button mat-raised-button color="primary" [disabled]="isButtonDisabled" (click)="save()"
                 [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
@@ -170,20 +200,17 @@
         <mat-step label="Recibo de Pago">
           <div class="mt-6">
             <button mat-button (click)="stepper.reset()">
-              <img width="30" mat-raised-button #tooltip="matTooltip"
-              matTooltip="Regresar"
-              [matTooltipPosition]="positionOption"
-              matTooltipHideDelay="100000" [src]="arrow" alt="" srcset="">
+              <img width="30" mat-raised-button #tooltip="matTooltip" matTooltip="Regresar"
+                [matTooltipPosition]="positionOption" matTooltipHideDelay="100000" [src]="arrow" alt="" srcset="">
             </button>
           </div>
           @if(dataVoucher.length>=1){
           <div class="w-fit mx-auto">
-            <a target="_blank" href="{{url}}/workshops/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
-              <img mat-raised-button #tooltip="matTooltip"
-              matTooltip="Descargar"
-              [matTooltipPosition]="positionOption"
-              matTooltipHideDelay="100000"
-              src="./assets/icons/descargar.png" title="Descargar" alt="descargar" class="cursor-pointer mx-auto w-8" />
+            <a target="_blank"
+              href="{{url}}/workshops/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
+              <img mat-raised-button #tooltip="matTooltip" matTooltip="Descargar" [matTooltipPosition]="positionOption"
+                matTooltipHideDelay="100000" src="./assets/icons/descargar.png" title="Descargar" alt="descargar"
+                class="cursor-pointer mx-auto w-8" />
             </a>
           </div>
           <div class="my-5 flex h-auto items-start justify-center">
@@ -212,74 +239,79 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-semibold">Nombre:</span>
-                    <span class="">{{ this.dataVoucher[0].people_name }} {{ this.dataVoucher[0].people_lastName }}</span>
+                    <span class="">{{ this.dataVoucher[0].people_name }}
+                      {{ this.dataVoucher[0].people_lastName }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="font-semibold">Generado:</span>
-                    <span>{{ this.dataVoucher[0].user ?this.dataVoucher[0].user:'ONLINE' }} - {{ this.dataVoucher[0].created_at }}</span>
+                    <span>{{ this.dataVoucher[0].user ?this.dataVoucher[0].user:'ONLINE' }} -
+                      {{ this.dataVoucher[0].created_at }}</span>
                   </div>
                 </div>
               </div>
               <table class="w-full">
-                  <thead>
-                    <th class="text-left text-sm">Decripción</th>
-                    <th class="text-right text-sm">Monto</th>
-                  </thead>
-                  <tbody>
-                    <tr class="border-black	border-y" *ngFor="let voucher of dataVoucher">
-                      <td class="text-left text-xs">
-                        <span>ALUMNO: {{voucher.client_name}} </span>
-                        <span>{{voucher.client_lastname}}</span>
-                        <br>
-                        <span>
-                          {{voucher.descripcion}}
-                        </span>
-                      </td>
-                      <td class="text-right text-xs"><span>S./{{voucher.price}}</span></td>
-                    </tr>
-                    <tr>
-                      <td class="text-left uppercase font-semibold"><span>Total</span></td>
-                      <td class="text-right text-xs"><span>S./{{this.dataVoucher[0].price}}</span></td>
-                    </tr>
-                    @if(this.dataVoucher[0].price===0){
-                      <tr>
-                        <td class="text-left uppercase font-semibold"><span>Obs</span></td>
-                        <td class="text-right text-xs font-semibold"><span>Gratuito</span></td>
-                      </tr>
-                    }
-                    <tr>
-                      <td align="center" class="text-xs italic" colspan="2">
-                        <p>Consideraciones:</p>
-                        <span>
-                          El usuario es responsable de la fecha y horario separado.</span>
-                          <span>
-                          El usuario deberá dejar las instalaciones limpias y en las mismas condiciones en las que fueron
-                          entregadas.</span>
-                        <span>
-                          No habrá lugar a cambios.</span>
-                      </td>
-                    </tr>
-                  </tbody>
+                <thead>
+                  <th class="text-left text-sm">Decripción</th>
+                  <th class="text-right text-sm">Monto</th>
+                </thead>
+                <tbody>
+                  <tr class="border-black	border-y" *ngFor="let voucher of dataVoucher">
+                    <td class="text-left text-xs">
+                      <span>ALUMNO: {{voucher.client_name}} </span>
+                      <span>{{voucher.client_lastname}}</span>
+                      <br>
+                      <span>
+                        {{voucher.descripcion}}
+                      </span>
+                    </td>
+                    <td class="text-right text-xs"><span>S./{{voucher.price}}</span></td>
+                  </tr>
+                  <tr>
+                    <td class="text-left uppercase font-semibold"><span>Total</span></td>
+                    <td class="text-right text-xs"><span>S./{{this.dataVoucher[0].price}}</span></td>
+                  </tr>
+                  @if(this.dataVoucher[0].price===0){
+                  <tr>
+                    <td class="text-left uppercase font-semibold"><span>Obs</span></td>
+                    <td class="text-right text-xs font-semibold"><span>Gratuito</span></td>
+                  </tr>
+                  }
+                  <tr>
+                    <td align="center" class="text-xs italic" colspan="2">
+                      <p>Consideraciones:</p>
+                      <span>
+                        El usuario es responsable de la fecha y horario separado.</span>
+                      <span>
+                        El usuario deberá dejar las instalaciones limpias y en las mismas condiciones en las que fueron
+                        entregadas.</span>
+                      <span>
+                        No habrá lugar a cambios.</span>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>
           }@else {
-            <div class="mt-10 flex items-center">
-              <div class="container flex flex-col md:flex-row items-center justify-center px-5 text-gray-700">
-                <div class="max-w-md">
-                  <div class="text-5xl font-dark font-bold">Uppsss...
-                  </div>
-                  <br />
-                  <div class="font-normal relative mb-4 block w-full rounded-lg bg-gradient-to-tr from-red-600 to-red-400 p-4 text-base leading-5 text-white opacity-100">
-                    <i class="fas fa-exclamation mr-2"></i>
-                    No existe pago!
-                  </div>
+          <div class="mt-10 flex items-center">
+            <div class="container flex flex-col md:flex-row items-center justify-center px-5 text-gray-700">
+              <div class="max-w-md">
+                <div class="text-5xl font-dark font-bold">Uppsss...
+                </div>
+                <br />
+                <div
+                  class="font-normal relative mb-4 block w-full rounded-lg bg-gradient-to-tr from-red-600 to-red-400 p-4 text-base leading-5 text-white opacity-100">
+                  <i class="fas fa-exclamation mr-2"></i>
+                  No existe pago!
                 </div>
               </div>
             </div>
+          </div>
           }
         </mat-step>
-  
+
       </mat-stepper>
-  </div>
+    </div>
+    }
+
 </section>

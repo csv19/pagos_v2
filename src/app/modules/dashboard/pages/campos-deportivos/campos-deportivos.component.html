@@ -1,213 +1,214 @@
 <section class="w-full p-4">
-  
-  @if(hour >= 6 && hour <=22){
-    <div class="container bg-white h-[350px] md:h-auto">
-      <div class="border-gray-400 border-2 border-double p-2 rounded-lg w-fit mx-auto">
-        <div class=" bg-red-600 text-white rounded-lg px-4 md:px-8 py-2">
-          <p class="font-bold text-xl md:text-4xl tracking-tighter md:tracking-wide	uppercase">¡Horario Cerrado!</p>
-        </div>
+
+  @if(hour >= 22 || hour <=5){ <div class="container bg-white h-[350px] md:h-auto">
+    <div class="border-gray-400 border-2 border-double p-2 rounded-lg w-fit mx-auto">
+      <div class=" bg-red-600 text-white rounded-lg px-4 md:px-8 py-2">
+        <p class="font-bold text-xl md:text-4xl tracking-tighter md:tracking-wide	uppercase">¡Horario Cerrado!</p>
       </div>
-      <div class="relative z-50">
-        <img class="mx-auto w-[150px] md:w-[250px]" src="./assets/images/reloj-out.png" alt="">
-        <div class="absolute -z-10 top-24 md:top-48">
-          <div class="text-white bg-sky-500 rounded-lg w-full h-[150px] p-2 flex justify-center items-end uppercase text-center">
-          <p class="font-bold text-base md:text-lg lg:text-2xl">La atención de la plataforma es de lunes a viernes de 6:00am a 10:00pm</p>
-      </div>
-        </div>
-      
-      </div>
-      
     </div>
-  }@else {
-    <div class="my-4 bg-blue-600 text-center text-white uppercase font-semibold rounded-lg w-full h-auto">
-      <img class="mx-auto py-2" src="./assets/icons/reloj.png" alt="">
-      La atención de la plataforma es de lunes a viernes de 6:00am a 10:00pm
+    <div class="relative z-50">
+      <img class="mx-auto w-[150px] md:w-[250px]" src="./assets/images/reloj-out.png" alt="">
+      <div class="absolute -z-10 top-24 md:top-48">
+        <div
+          class="text-white bg-sky-500 rounded-lg w-full h-[150px] p-2 flex justify-center items-end uppercase text-center">
+          <p class="font-bold text-base md:text-lg lg:text-2xl">La atención de la plataforma es de lunes a domingo de
+            6:00am a 10:00pm</p>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    }@else {
+    <div class="flex flex-col md:flex-row justify-center items-center md:items-end my-4 bg-blue-600 text-center text-white uppercase font-medium rounded-lg w-full h-auto">
+        <div><img class="mx-auto py-2" src="./assets/icons/reloj.png" alt=""></div>
+        <div><p class="text-xs md:text-sm">La atención de la plataforma es de lunes a domingo de 6:00am a 10:00pm</p></div>
     </div>
     <h2 class="font-bold text-gray-600 text-center uppercase">Reserva de Campos Deportivos</h2>
-  <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
-    <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
-      <form [formGroup]="firstFormGroup">
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <mat-form-field>
-            <mat-label>Tipo de Documento</mat-label>
-            <mat-select (ngModelChange)="getDocumentOption()" name="option_document"
-              formControlName="documentOptionCtrl">
-              <mat-option class="mat-mdc-option" *ngFor="let value of dataDocument" [value]="value.id">{{value.type_doc}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Documento</mat-label>
-            <input autocomplete="off" onlyNumber matInput placeholder="Ingrese N° Documento" (change)="getDocument()"
-              name="document" formControlName="documentCtrl" [minlength]="sizeCharter" [maxlength]="sizeCharter"
-              name="document">
-            @if (firstFormGroup.get('documentCtrl')?.hasError('required')) {
-            <mat-error>Documento <strong>requerido</strong></mat-error>
-            }
-            @if (firstFormGroup.get('documentCtrl')?.hasError('minlength')){
-            <mat-error>Documento erróneo</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
-            <mat-label>Nombres</mat-label>
-            <input autocomplete="off" matInput placeholder="Ingrese Nombres" formControlName="nameCtrl">
-          </mat-form-field>
-          <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
-            <mat-label>Apellidos</mat-label>
-            <input autocomplete="off" matInput placeholder="Ingrese Apellidos" formControlName="lastNameCtrl">
-          </mat-form-field>
-          <mat-form-field class="col-span-2" [ngStyle]="{'display':styleBlockRuc}">
-            <mat-label>Razón Social</mat-label>
-            <input autocomplete="off" matInput placeholder="Ingrese Razon Social" formControlName="fullNameCtrl">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Correo electrónico</mat-label>
-            <input autocomplete="off" type="email" [errorStateMatcher]="matcher" matInput placeholder="Ingrese Correo"
-              formControlName="emailCtrl">
-            @if (firstFormGroup.get('emailCtrl')?.hasError('email') &&
-            !firstFormGroup.get('emailCtrl')?.hasError('required')) {
-            <mat-error>Porfavor revise el correo</mat-error>
-            }
-            @if (firstFormGroup.get('emailCtrl')?.hasError('required')) {
-            <mat-error>Correo <strong>requerido</strong></mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Celular</mat-label>
-            <span class="font-medium text-primary" matTextPrefix>+51 &nbsp;</span>
-            <input autocomplete="off" type="tel" maxlength="9" matInput placeholder="Ingrese Celular" onlyNumber
-              formControlName="phoneCtrl">
-          </mat-form-field>
-        </div>
-        <div>
-          <button mat-raised-button color="primary" (click)="setPerson()" matStepperNext
-            [disabled]="firstFormGroup.invalid">Siguiente</button>
-        </div>
-      </form>
-    </mat-step>
-    <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos" [editable]="isEditable">
-      <form [formGroup]="secondFormGroup">
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <mat-form-field class="col-span-4 sm:col-span-1">
-            <mat-label>Categorias</mat-label>
-            <mat-select (ngModelChange)="getCategory()" name="category" formControlName="categoryCtrl">
-              <mat-option *ngFor="let value of dataCategory" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="col-span-4 sm:col-span-1">
-            <mat-label>Campos</mat-label>
-            <mat-select style="background-color: transparent;" (ngModelChange)="getField()" [multiple]="authenticate" name="field"
-              formControlName="fieldCtrl">
-              <mat-option *ngFor="let value of dataField" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="col-span-4 sm:col-span-1">
-            <mat-label>Tipo de Reserva</mat-label>
-            <mat-select (ngModelChange)="getTypeReservation()" name="type_reservation"
-              formControlName="typeReservationCtrl">
-              <mat-option *ngFor="let value of dataTypeReservation" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="col-span-4 sm:col-span-2">
-            <mat-label>Fecha de Reserva</mat-label>
-            <input [disabled]="true" autocomplete="off" (ngModelChange)="getDateReservation()" formControlName="dateCtrl" matInput
-              [matDatepickerFilter]="myFilter" [min]="currentDate" [max]="nextDate" [matDatepicker]="picker">
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker disabled="false"></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field class="col-span-4 sm:col-span-2">
-            <mat-label>{{textScheduleLabel}}</mat-label>
-            <mat-select class="bg-transparent" (selectionChange)="getSchedule()" name="schedule" multiple
-              formControlName="scheduleCtrl">
-              <mat-select-trigger>
-                {{1 || ''}}
-                @if((secondFormGroup.get('scheduleCtrl')?.value?.length || 0)>1){
-                <span>
-                  (+{{(secondFormGroup.get('scheduleCtrl')?.value?.length || 0) - 1}}
-                  {{secondFormGroup.get('scheduleCtrl')?.value?.length === 2 ? 'horario' : 'horarios'}})
-                </span>
-                }
-              </mat-select-trigger>
-              @if(dataSchedule && dataSchedule.length>0){
-              <ng-container>
-                <mat-option *ngFor="let value of dataSchedule" [value]="value.id">
-                  {{value.descripcion}}</mat-option>
-              </ng-container>
+    <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
+      <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
+        <form [formGroup]="firstFormGroup">
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <mat-form-field>
+              <mat-label>Tipo de Documento</mat-label>
+              <mat-select (ngModelChange)="getDocumentOption()" name="option_document"
+                formControlName="documentOptionCtrl">
+                <mat-option class="mat-mdc-option" *ngFor="let value of dataDocument" [value]="value.id">
+                  {{value.type_doc}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Documento</mat-label>
+              <input autocomplete="off" onlyNumber matInput placeholder="Ingrese N° Documento" (change)="getDocument()"
+                name="document" formControlName="documentCtrl" [minlength]="sizeCharter" [maxlength]="sizeCharter"
+                name="document">
+              @if (firstFormGroup.get('documentCtrl')?.hasError('required')) {
+              <mat-error>Documento <strong>requerido</strong></mat-error>
               }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="col-span-4">
-            <mat-form-field floatLabel="always">
-              <mat-label>Importe a Pagar</mat-label>
-              <input autocomplete="off" matInput type="number" [value]="totalPrice" disabled
-                class="example-right-align font-semibold" placeholder="0">
-              <span class="font-medium text-primary" matTextPrefix>S/.&nbsp;</span>
-              <span class="font-medium text-primary" matTextSuffix>.00</span>
+              @if (firstFormGroup.get('documentCtrl')?.hasError('minlength')){
+              <mat-error>Documento erróneo</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
+              <mat-label>Nombres</mat-label>
+              <input autocomplete="off" matInput placeholder="Ingrese Nombres" formControlName="nameCtrl">
+            </mat-form-field>
+            <mat-form-field [ngStyle]="{'display':styleBlockDocument}">
+              <mat-label>Apellidos</mat-label>
+              <input autocomplete="off" matInput placeholder="Ingrese Apellidos" formControlName="lastNameCtrl">
+            </mat-form-field>
+            <mat-form-field class="col-span-2" [ngStyle]="{'display':styleBlockRuc}">
+              <mat-label>Razón Social</mat-label>
+              <input autocomplete="off" matInput placeholder="Ingrese Razon Social" formControlName="fullNameCtrl">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Correo electrónico</mat-label>
+              <input autocomplete="off" type="email" [errorStateMatcher]="matcher" matInput placeholder="Ingrese Correo"
+                formControlName="emailCtrl">
+              @if (firstFormGroup.get('emailCtrl')?.hasError('email') &&
+              !firstFormGroup.get('emailCtrl')?.hasError('required')) {
+              <mat-error>Porfavor revise el correo</mat-error>
+              }
+              @if (firstFormGroup.get('emailCtrl')?.hasError('required')) {
+              <mat-error>Correo <strong>requerido</strong></mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Celular</mat-label>
+              <span class="font-medium text-primary" matTextPrefix>+51 &nbsp;</span>
+              <input autocomplete="off" type="tel" maxlength="9" matInput placeholder="Ingrese Celular" onlyNumber
+                formControlName="phoneCtrl">
             </mat-form-field>
           </div>
-        </div>
-        <div>
-          <button mat-raised-button color="primary" [disabled]="isButtonDisabled" (click)="save()"
-            [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
-        </div>
-      </form>
-    </mat-step>
-    <mat-step label="Recibo de Pago">
-      <div class="mt-6">
-        <button mat-button (click)="stepper.reset()">
-          <img width="30" mat-raised-button #tooltip="matTooltip"
-          matTooltip="Regresar"
-          [matTooltipPosition]="positionOption"
-          matTooltipHideDelay="100000" [src]="arrow" alt="" srcset="">
-        </button>
-      </div>
-      @if(dataVoucher.length>0){
-      <div class="w-fit mx-auto">
-        <a target="_blank" href="{{url}}/fields/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
-          <img mat-raised-button #tooltip="matTooltip"
-          matTooltip="Descargar"
-          [matTooltipPosition]="positionOption"
-          matTooltipHideDelay="100000"
-          src="./assets/icons/descargar.png" title="Descargar" alt="descargar" class="cursor-pointer mx-auto w-8" />
-        </a>
-      </div>
-      <div class="my-5 flex h-auto items-start justify-center">
-        <div class="w-[350px] rounded border bg-gray-50 p-4 shadow-lg">
-          <img src="./assets/icons/logo.png" alt="logo-magdalena" class="mx-auto w-16 pb-4" />
-          <div class="flex flex-col justify-center items-center gap-2">
-            <p class="font-semibold text-center text-sm">Municipalidad de Magdalena del Mar
-              <br>
-              Oficina de Tesorería
-            </p>
-            <p class="text-sm">RUC 20131376848</p>
+          <div>
+            <button mat-raised-button color="primary" (click)="setPerson()" matStepperNext
+              [disabled]="firstFormGroup.invalid">Siguiente</button>
           </div>
-          <div class="flex flex-col gap-3 py-6 text-xs">
-            <div class="flex flex-col uppercase">
-              <div class="flex justify-between">
-                <span class="font-semibold">Operación:</span>
-                <span>{{this.dataVoucher[0].nro_operation }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="font-semibold">Recibo:</span>
-                <span>{{this.dataVoucher[0].nro_voucher }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="font-semibold">Código:</span>
-                <span>{{this.dataVoucher[0].codigo}}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="font-semibold">Nombre:</span>
-                <span class="">{{ this.dataVoucher[0].people_name }} {{ this.dataVoucher[0].people_lastName }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="font-semibold">Generado:</span>
-                <span>{{ this.dataVoucher[0].user ?this.dataVoucher[0].user:'ONLINE' }} - {{ this.dataVoucher[0].created_at }}</span>
-              </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos" [editable]="isEditable">
+        <form [formGroup]="secondFormGroup">
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <mat-form-field class="col-span-4 sm:col-span-1">
+              <mat-label>Categorias</mat-label>
+              <mat-select (ngModelChange)="getCategory()" name="category" formControlName="categoryCtrl">
+                <mat-option *ngFor="let value of dataCategory" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="col-span-4 sm:col-span-1">
+              <mat-label>Campos</mat-label>
+              <mat-select style="background-color: transparent;" (ngModelChange)="getField()" [multiple]="authenticate"
+                name="field" formControlName="fieldCtrl">
+                <mat-option *ngFor="let value of dataField" [value]="value.ID">{{value.DESCRIPCION}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="col-span-4 sm:col-span-1">
+              <mat-label>Tipo de Reserva</mat-label>
+              <mat-select (ngModelChange)="getTypeReservation()" name="type_reservation"
+                formControlName="typeReservationCtrl">
+                <mat-option *ngFor="let value of dataTypeReservation" [value]="value.ID">{{value.DESCRIPCION}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="col-span-4 sm:col-span-2">
+              <mat-label>Fecha de Reserva</mat-label>
+              <input [disabled]="true" autocomplete="off" (ngModelChange)="getDateReservation()"
+                formControlName="dateCtrl" matInput [matDatepickerFilter]="myFilter" [min]="currentDate"
+                [max]="nextDate" [matDatepicker]="picker">
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker disabled="false"></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="col-span-4 sm:col-span-2">
+              <mat-label>{{textScheduleLabel}}</mat-label>
+              <mat-select class="bg-transparent" (selectionChange)="getSchedule()" name="schedule" multiple
+                formControlName="scheduleCtrl">
+                <mat-select-trigger>
+                  {{1 || ''}}
+                  @if((secondFormGroup.get('scheduleCtrl')?.value?.length || 0)>1){
+                  <span>
+                    (+{{(secondFormGroup.get('scheduleCtrl')?.value?.length || 0) - 1}}
+                    {{secondFormGroup.get('scheduleCtrl')?.value?.length === 2 ? 'horario' : 'horarios'}})
+                  </span>
+                  }
+                </mat-select-trigger>
+                @if(dataSchedule && dataSchedule.length>0){
+                <ng-container>
+                  <mat-option *ngFor="let value of dataSchedule" [value]="value.id">
+                    {{value.descripcion}}</mat-option>
+                </ng-container>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="col-span-4">
+              <mat-form-field floatLabel="always">
+                <mat-label>Importe a Pagar</mat-label>
+                <input autocomplete="off" matInput type="number" [value]="totalPrice" disabled
+                  class="example-right-align font-semibold" placeholder="0">
+                <span class="font-medium text-primary" matTextPrefix>S/.&nbsp;</span>
+                <span class="font-medium text-primary" matTextSuffix>.00</span>
+              </mat-form-field>
             </div>
           </div>
-          <table class="w-full">
+          <div>
+            <button mat-raised-button color="primary" [disabled]="isButtonDisabled" (click)="save()"
+              [disabled]="secondFormGroup.invalid">Pagar Aquí</button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step label="Recibo de Pago">
+        <div class="mt-6">
+          <button mat-button (click)="stepper.reset()">
+            <img width="30" mat-raised-button #tooltip="matTooltip" matTooltip="Regresar"
+              [matTooltipPosition]="positionOption" matTooltipHideDelay="100000" [src]="arrow" alt="" srcset="">
+          </button>
+        </div>
+        @if(dataVoucher.length>0){
+        <div class="w-fit mx-auto">
+          <a target="_blank"
+            href="{{url}}/fields/voucher/{{dataVoucher[0].voucher_id}}/{{dataVoucher[0].payment_id}}/{{dataVoucher[0].payment_type == 5 ? 1 : 2 }}">
+            <img mat-raised-button #tooltip="matTooltip" matTooltip="Descargar" [matTooltipPosition]="positionOption"
+              matTooltipHideDelay="100000" src="./assets/icons/descargar.png" title="Descargar" alt="descargar"
+              class="cursor-pointer mx-auto w-8" />
+          </a>
+        </div>
+        <div class="my-5 flex h-auto items-start justify-center">
+          <div class="w-[350px] rounded border bg-gray-50 p-4 shadow-lg">
+            <img src="./assets/icons/logo.png" alt="logo-magdalena" class="mx-auto w-16 pb-4" />
+            <div class="flex flex-col justify-center items-center gap-2">
+              <p class="font-semibold text-center text-sm">Municipalidad de Magdalena del Mar
+                <br>
+                Oficina de Tesorería
+              </p>
+              <p class="text-sm">RUC 20131376848</p>
+            </div>
+            <div class="flex flex-col gap-3 py-6 text-xs">
+              <div class="flex flex-col uppercase">
+                <div class="flex justify-between">
+                  <span class="font-semibold">Operación:</span>
+                  <span>{{this.dataVoucher[0].nro_operation }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold">Recibo:</span>
+                  <span>{{this.dataVoucher[0].nro_voucher }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold">Código:</span>
+                  <span>{{this.dataVoucher[0].codigo}}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold">Nombre:</span>
+                  <span class="">{{ this.dataVoucher[0].people_name }} {{ this.dataVoucher[0].people_lastName }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-semibold">Generado:</span>
+                  <span>{{ this.dataVoucher[0].user ?this.dataVoucher[0].user:'ONLINE' }} -
+                    {{ this.dataVoucher[0].created_at }}</span>
+                </div>
+              </div>
+            </div>
+            <table class="w-full">
               <thead>
                 <th class="text-left text-sm">Decripción</th>
                 <th class="text-center text-sm">Cantidad</th>
@@ -246,25 +247,26 @@
                   </td>
                 </tr>
               </tbody>
-          </table>
+            </table>
+          </div>
         </div>
-      </div>
-      }@else {
+        }@else {
         <div class="mt-10 flex items-center">
           <div class="container flex flex-col md:flex-row items-center justify-center px-5 text-gray-700">
             <div class="max-w-md">
               <div class="text-5xl font-dark font-bold">Uppsss...
               </div>
               <br />
-              <div class="font-normal relative mb-4 block w-full rounded-lg bg-gradient-to-tr from-red-600 to-red-400 p-4 text-base leading-5 text-white opacity-100">
+              <div
+                class="font-normal relative mb-4 block w-full rounded-lg bg-gradient-to-tr from-red-600 to-red-400 p-4 text-base leading-5 text-white opacity-100">
                 <i class="fas fa-exclamation mr-2"></i>
                 No existe pago!
               </div>
             </div>
           </div>
         </div>
-      }
-    </mat-step>
-  </mat-stepper>
-  }
+        }
+      </mat-step>
+    </mat-stepper>
+    }
 </section>
