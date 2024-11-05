@@ -1,24 +1,24 @@
 export const environment = {
   production: true,
-  HOME:'https://tasasonline.munimagdalena.gob.pe',
-  SERVER: 'https://dashboard.munimagdalena.gob.pe/v1',
-  SERVER2: 'https://dashboard.munimagdalena.gob.pe/api',
+  HOME:'https://localhost:4200',
+  SERVER: 'https://api_tasas.test/v1',
+  SERVER2: 'https://api_tasas.test/api',
   //MODULE
-  API_MODULE: 'https://dashboard.munimagdalena.gob.pe/api/modules',
-  API_DOCUMENT: 'https://dashboard.munimagdalena.gob.pe/api/documents',
-  API_DASHBOARD_DOCUMENT: 'https://dashboard.munimagdalena.gob.pe/api/search/person',
-  API_DASHBOARD_DOCUMENT_STUDENT: 'https://dashboard.munimagdalena.gob.pe/api/search/client',
-  API_WORKSHORP: 'https://dashboard.munimagdalena.gob.pe/api/workshops',
+  API_MODULE: 'https://api_tasas.test/api/modules',
+  API_DOCUMENT: 'https://api_tasas.test/api/documents',
+  API_DASHBOARD_DOCUMENT: 'https://api_tasas.test/api/search/person',
+  API_DASHBOARD_DOCUMENT_STUDENT: 'https://api_tasas.test/api/search/client',
+  API_WORKSHORP: 'https://api_tasas.test/api/workshops',
 
   //TRIBUTOS MUNICIPALES
-  API_USER:'https://dashboard.munimagdalena.gob.pe/v1/verify/user',
-  API_MENU:'https://dashboard.munimagdalena.gob.pe/v1/menu',
-  API_SERVICES:'https://dashboard.munimagdalena.gob.pe/v1/menu/services',
-  API_ARBITRAGE:'https://dashboard.munimagdalena.gob.pe/v1/arbitrage/user',
+  API_USER:'https://api_tasas.test/v1/verify/user',
+  API_MENU:'https://api_tasas.test/v1/menu',
+  API_SERVICES:'https://api_tasas.test/v1/menu/services',
+  API_ARBITRAGE:'https://api_tasas.test/v1/arbitrage/user',
   
 
   //HELPDESK
-  API_HOLIDAY:'https://dashboard.munimagdalena.gob.pe/api/holidays',
+  API_HOLIDAY:'https://api_tasas.test/api/holidays',
 
   //NIUBIZ
   // MERCHANT: 456879852,

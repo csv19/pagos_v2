@@ -55,6 +55,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
 export class CamposDeportivosComponent implements OnInit { 
   url:string=RESERVATION2; 
   positionOption: TooltipPosition='above';
+  day:number;
   hour:number;
    authenticate!:boolean;
    stepp!:number;
@@ -120,6 +121,7 @@ export class CamposDeportivosComponent implements OnInit {
   
   constructor(private route: ActivatedRoute, private router: Router, private _formBuilder: FormBuilder, private http: HttpClient, private payService: PayService, private renderer: Renderer2, private el: ElementRef,private toastr: ToastrService){    
     const now= new Date();
+    this.day=now.getDay();
     this.hour = now.getHours();
     this.route.data.subscribe(data => {
       this.authenticate = data['authenticate'];
