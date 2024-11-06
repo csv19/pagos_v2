@@ -8,6 +8,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
 import { Subject } from 'rxjs';
+import Swal, { SweetAlertResult } from 'sweetalert2';
 import { environment } from 'src/environments/environment';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
 import { NgClass, NgIf, NgFor } from '@angular/common';
@@ -21,6 +22,7 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
 import { DataTableDirective } from 'angular-datatables';
 import {MatButtonModule} from '@angular/material/button';
 import { ToastrService } from 'ngx-toastr';
+
 
 
 const SERVER= environment.SERVER;
@@ -97,6 +99,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   search(){
     const date1=this.date1
     const date2=this.date2
+    console.log(date1);
     
     this.http.get(`${SERVER}/calendars/reservations/${date1}/${date2}`).subscribe(
       (response:any)=>{
@@ -125,7 +128,50 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
       }
     });
   }
-  
+  decline(field_id:number,id:number){
+    this.state=true;
+    const data={
+      id: id,
+      field_id: field_id,
+      user_id: this.user,
+    }
+    Swal.fire({
+      title: 'Estas seguro de querer eliminar esta reserva?',
+      text: 'No se podrá revertir!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Si, eliminalo!',
+      cancelButtonText: 'No, ahora',
+      customClass:{
+        confirmButton: 'bg-blue-500',
+        cancelButton: 'bg-red-500',
+        denyButton: 'bg-red-500',
+      }
+    }).then((result) => {
+      if (result.value) {
+        this.http.post(`${SERVER}/calendars/reservation/decline`, data).subscribe(
+          response=>{
+            this.rerender();
+          },error=>{
+            console.log(error);
+          }
+        )
+        Swal.fire(
+          'Eliminado!',
+          'Se elimino la reserva con éxito.',
+          'success'
+        )
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire({
+          title:'Cancelado',
+           text:'No se elimino la reserva',
+           icon: 'error',
+           timer: 1500
+        } 
+        )
+      }
+    })
+  }
   ngAfterViewInit(): void {
     this.dtTrigger.subscribe(() => {
       this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
@@ -191,6 +237,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
           window.URL.revokeObjectURL(url);
         },error => {
           console.error('Download error:', error);
+          this.showError('No se pudo realizar la descarga');
         }
       )
     }
@@ -220,6 +267,12 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
         console.error('Download error:', error);
       }
     )
+  }
+  showSuccess(message:string){
+    this.toastr.success(message,'CORRECTO!');
+  }
+  showError(message:string) {
+    this.toastr.error(message,'ERROR!',{closeButton:true, positionClass:'toast-top-right'});
   }
 }
 export class LanguageApp {
