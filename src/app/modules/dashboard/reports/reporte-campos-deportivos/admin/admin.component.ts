@@ -7,7 +7,7 @@ import { Router, RouterLink } from '@angular/router';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ADTSettings } from 'angular-datatables/src/models/settings';
-import { Subject } from 'rxjs';
+import { interval, Subject } from 'rxjs';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { environment } from 'src/environments/environment';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
@@ -45,7 +45,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   preloader:boolean=true;
   user!:number;
   user_code!:number;
-  state:boolean=false;
+  state:boolean=false;maxDateUpdate:any;
   positionOption: TooltipPosition='above';
   constructor(private http: HttpClient, public dialog: MatDialog, private toastr: ToastrService){
     this.date1=new Date().toISOString().slice(0, 10);
@@ -202,11 +202,27 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
   }
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    const day = String(date.getDate()+1).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses son 0-indexed
-    const year = String(date.getFullYear()); // Obtener los últimos 2 dígitos del año
-
+    const day = date.getDate()+1
+    const month = date.getMonth() + 1
+    const year = date.getFullYear(); 
     return `${day}-${month}-${year}`;
+  }
+  formatDateCreate(dateString: string): number {
+    const date = new Date(dateString);
+    const day = date.getDate()
+    const month = date.getMonth() + 1 
+    const year = date.getFullYear(); 
+    const formattedDate = Number(`${day}${month}${year}`);
+    return formattedDate;
+  }
+  formatDateMax(dateString: string): number {
+    const date = new Date(dateString);
+    let day = date.getDate();
+    day=(day>=29)?day+2:day;
+    const month=date.getMonth() + 1;
+    const year = date.getFullYear(); 
+    const formattedDate = Number(`${day}${month}${year}`);
+    return formattedDate;
   }
   formatHour(hour:any) {
     return (hour > 11 ? ((hour - 12)==0?12:hour-12)  +":00pm" : hour +":00am");
@@ -324,15 +340,14 @@ export class EditarCampoDeportivoComponent implements OnInit{
   quantitySchedule!:number;
   optionSchedule:any;
   scheduleId:any=[];
-  dataField:any;dataSchedule:any[]=[]; selectSchedule:any;
-  dataHolidays: any[]=[]; currentDate:any; nextDate:any;
+  dataField:any;dataSchedule:any[]=[];currentDate:any; selectSchedule:any;
+  dataHolidays: any[]=[]; nextDate:any;
   secondFormGroup = this._formBuilder.group({
     fieldCtrl: [null, Validators.required],
     dateCtrl: [null, Validators.required],
     scheduleCtrl: [{ value:null, disabled: true }, Validators.required],
   },{ validators: this.checkFieldsNotEmptySecondGroup });
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog, private toastr: ToastrService) {
-    
     this.textScheduleLabel='Horarios Disponibles';
     this.http.get(`${SERVER}/calendars/reservation/${data.field_id}/${data.id}`).subscribe(
       (response:any)=>{
@@ -363,6 +378,7 @@ export class EditarCampoDeportivoComponent implements OnInit{
   }
   ngOnInit(): void {
     this.form = this._formBuilder.group({});
+    this.currentDate= new Date();
   }
   get f() {
     return this.form.controls;
@@ -430,6 +446,8 @@ export class EditarCampoDeportivoComponent implements OnInit{
     const date= this.validateSecondFormGroup().date;
     const schedule= this.validateSecondFormGroup().schedule;
     if(field?.value&&date?.value){
+      // console.log(this.currentDate);
+      // console.log(date.value.getDate());
       const dateFormat= this.formatDate(date.value);
         schedule?.enable();
         const url = `${SERVER}/schedule?category=${this.category}&fields=${field.value}&shift=${this.shift}&date=${dateFormat}`;
@@ -437,8 +455,10 @@ export class EditarCampoDeportivoComponent implements OnInit{
           (response)=>{
             response.data.map(
               (value:any)=>{    
-                const hourActual=new Date().getHours();
-                if(this.currentDate === date.value){
+                const hourActual=this.currentDate.getHours();
+                const fechaActual=`${this.currentDate.getDate()}/${this.currentDate.getMonth()}/${this.currentDate.getFullYear()}`;
+                const fechaSeleccionado=`${date.value.getDate()}/${date.value.getMonth()}/${date.value.getFullYear()}`;
+                if(fechaActual === fechaSeleccionado){
                   if(Number(value.hour_start) >= hourActual ){
                     dataSchedules.push(value)
                   }

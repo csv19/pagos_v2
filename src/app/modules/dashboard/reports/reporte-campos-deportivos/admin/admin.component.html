@@ -69,12 +69,14 @@
                                    matTooltip="Recibo"
                                    [matTooltipPosition]="positionOption"
                                    matTooltipHideDelay="300" src="./assets/icons/recibo.png" alt="">
+                                @if((formatDateCreate(item.created_at) >= formatDateMax(item.created_at)) && item.typePayment !== 'LIBRE'){
                                 <img (click)="update(item.field_id,item.payment_type_bank_card_id)" class="cursor-pointer w-full" mat-raised-button #tooltip="matTooltip"
-                                   matTooltip="Reprogramación"
-                                   [matTooltipPosition]="positionOption"
-                                   matTooltipHideDelay="300" src="./assets/icons/editar_reserva.png" alt="">
+                                    matTooltip="Reprogramación"
+                                    [matTooltipPosition]="positionOption"
+                                    matTooltipHideDelay="300" src="./assets/icons/editar_reserva.png" alt="">
+                                }
                                 @if(item.typePayment === 'PAGO PENDIENTE' || item.typePayment === 'LIBRE'){
-                                    <img (click)="decline(item.field_id,item.payment_type_bank_card_id)" class="cursor-pointer w-full" mat-raised-button #tooltip="matTooltip"
+                                <img (click)="decline(item.field_id,item.payment_type_bank_card_id)" class="cursor-pointer w-full" mat-raised-button #tooltip="matTooltip"
                                    matTooltip="Cancelar"
                                    [matTooltipPosition]="positionOption"
                                    matTooltipHideDelay="300" src="./assets/icons/rechazar_reserva.png" alt="">

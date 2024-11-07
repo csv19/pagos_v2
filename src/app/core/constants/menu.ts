@@ -36,7 +36,7 @@ export class Menu {
             { label: 'Tributos Municipales', route: '/admin/reporte/tributos-municipales', children:[{route: '/admin/reporte/tributos-municipales/admin', label: 'Administrador' },{route: '/admin/reporte/tributos-municipales/atm', label: 'Cajero' },] },
             { label: 'Tramites y Servicios', route: '/admin/reporte/tramites-servicios', children:[{route: '/admin/reporte/tramites-servicios/admin', label: 'Administrador' },{route: '/admin/reporte/tramites-servicios/atm', label: 'Cajero' },] },
             { label: 'Multas', route: '/admin/reporte/multas', children:[{route: '/admin/reporte/multas/admin', label: 'Administrador' },{route: '/admin/reporte/multas/atm', label: 'Cajero' },] },
-            { label: 'Campos Deportivos', route: '/admin/reporte/campos-deportivos', children:[{route: '/admin/reporte/campos-deportivos', label: 'Administrador' },{route: '/admin/reporte/campos-deportivos/atm', label: 'Cajero' },] },
+            { label: 'Campos Deportivos', route: '/admin/reporte/campos-deportivos'},
             { label: 'Talleres Utiles', route: '/admin/reporte/talleres-utiles', children:[{route: '/admin/reporte/talleres-utiles', label: 'Administrador' },{route: '/admin/reporte/talleres-utiles/atm', label: 'Cajero' },] },
           ]
         },
