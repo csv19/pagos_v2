@@ -21,9 +21,9 @@ export class CardModuleComponent {
   @Input() url: string = '';
   @Input() link: string = '';
   
-  goToPage(value :string){
-    console.log(value);
+  // goToPage(value :string){
+  //   console.log(value);
     
-    this.router.navigate([value]);
-  }
+  //   this.router.navigate([value]);
+  // }
 }

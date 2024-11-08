@@ -59,7 +59,7 @@ export class ProfileMenuComponent implements OnInit {
   public themeColors = [
     {
       name: 'base',
-      code: '#e11d48',
+      code: '#000',
     },
     {
       name: 'yellow',

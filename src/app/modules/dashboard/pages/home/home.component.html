@@ -1,10 +1,40 @@
-<div class="mx-auto px-4 py-4 sm:px-8 lg:container">
+<div class="mx-auto p-4 sm:px-8 lg:container">
     <!-- Módulos -->
-    <div class="row mt-8">
-      <h3 class="text-sm font-semibold uppercase text-foreground">Módulos</h3>
-      <div class="grid mt-4 gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        <app-card-module  *ngFor="let module of modules" [url]="'admin/'+module.slug" [title]="module.name" [subtitle]="module.slug" [size]="'w-[200px]'" [image]="'assets/'+module.url"/>
+     <div class="grid mt-4 gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div  *ngFor="let module of modules"  [title]="module.name">
+          <div class="bg-primary h-auto md:h-[150px] xl:h-[120px] rounded-md mx-auto py-2">
+            <img class="w-20 h-20 mx-auto" [src]="'assets/'+module.url" alt="">
+            <p class="text-primary-foreground text-xs text-center sm:text-base h-4 sm:h-auto">{{ module.name }}</p>
+          </div>
       </div>
+      </div>
+    <div class="row mt-8">
+      <div class="grid grid-cols-2 justify-center items-center md:grid-cols-3 gap-6 py-4">
+          <div class="scrollbar-thumb-card shadow-lg rounded-md p-4">
+              <div class="text-left text-primary ">
+                  <span class="text-2xl font-bold">${{total}}</span><br><span>Ingresos Totales</span>
+              </div>
+              <div class="" id="total"></div>
+          </div>
+          <div class="scrollbar-thumb-card shadow-lg rounded-md p-4">
+            <div class="text-left text-primary ">
+                <span class="text-2xl font-bold">$424,624</span><br><span>Ingresos Semanales</span>
+            </div>
+            <div class="" id="price"></div>
+        </div>
+        <div class="scrollbar-thumb-card shadow-lg rounded-md p-4">
+          <div class="text-left text-primary ">
+              <span class="text-2xl font-bold">100</span><br><span>Usuarios</span>
+          </div>
+          <div class="" id="user"></div>
+      </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+        <div class="scrollbar-thumb-card p-4 rounded-md shadow-lg h-[400px]" id="pie"></div>
+      <div class="scrollbar-thumb-card p-4 rounded-md shadow-lg h-[400px]" id="line"></div>
+      </div>
+      
+      
     </div>
   </div>
-  
+
