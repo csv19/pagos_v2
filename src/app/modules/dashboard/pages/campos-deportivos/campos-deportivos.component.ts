@@ -134,7 +134,7 @@ export class CamposDeportivosComponent implements OnInit {
     this.route.url.subscribe(url=>{
         const data:any=[];
         url.map((value:any)=>{data.push(value.path)})
-        const route:string=(this.authenticate)?'admin':'';
+        const route:string=(this.authenticate)?'admin/caja':'';
         this.stepp=data[2];
         this.payment=data[3];
         if(this.stepp !=2){

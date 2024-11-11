@@ -13,6 +13,8 @@ import { ListaUsuariosComponent } from './pages/lista-usuarios/lista-usuarios.co
 import { ReportesCamposDeportivosAdminComponent } from './reports/reporte-campos-deportivos/admin/admin.component';
 import { ReportesTalleresUtilesAdminComponent } from './reports/reporte-talleres-utiles/admin/admin.component';
 import { ReportesTalleresUtilesAtmComponent } from './reports/reporte-talleres-utiles/atm/atm.component';
+import { ConfigCamposDeportivosComponent } from './config/config-campos-deportivos/campos-deportivos/campos-deportivos.component';
+import { ConfigTalleresUtilesComponent } from './config/config-talleres-utiles/talleres-utiles/talleres-utiles.component';
 
 
 
@@ -23,21 +25,24 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
-      //REVISAR STEPPER PARA EL RECIBO
-      { path: 'tributos-municipales', component: TributosMunicipalesComponent, data:{authenticate:true}},
-      { path: 'tramites-servicios', component: TramitesServiciosComponent },
-      { path: 'multas', component: MultasComponent },
-      { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:true} },
-      { path: 'campos-deportivos/recibo/:stepp/:payment', component: CamposDeportivosComponent, data:{authenticate:true} },
-      { path: 'talleres-utiles', component: TalleresUtilesComponent, data:{authenticate:true} },
-      { path: 'talleres-utiles/recibo/:stepp/:payment', component: TalleresUtilesComponent, data:{authenticate:true} },
-      //USER
-      { path: 'usuario/registro-usuario', component: SignUpComponent },
-      { path: 'usuario/lista-usuario', component: ListaUsuariosComponent },
+      
+      { path: 'caja/tributos-municipales', component: TributosMunicipalesComponent, data:{authenticate:true}},
+      { path: 'caja/tramites-servicios', component: TramitesServiciosComponent },
+      { path: 'caja/multas', component: MultasComponent },
+      { path: 'caja/campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:true} },
+      { path: 'caja/campos-deportivos/recibo/:stepp/:payment', component: CamposDeportivosComponent, data:{authenticate:true} },
+      { path: 'caja/talleres-utiles', component: TalleresUtilesComponent, data:{authenticate:true} },
+      { path: 'caja/talleres-utiles/recibo/:stepp/:payment', component: TalleresUtilesComponent, data:{authenticate:true} },
       //REPORTES
       { path: 'reporte/campos-deportivos', component:  ReportesCamposDeportivosAdminComponent},
       { path: 'reporte/talleres-utiles', component:  ReportesTalleresUtilesAdminComponent},
       { path: 'reporte/talleres-utiles/atm', component: ReportesTalleresUtilesAtmComponent },
+      //CONFIGURACION
+      { path: 'configuracion/usuario/registro-usuario', component: SignUpComponent },
+      { path: 'configuracion/usuario/lista-usuario', component: ListaUsuariosComponent },
+      { path: 'configuracion/campos-deportivos', component: ConfigCamposDeportivosComponent },
+      { path: 'configuracion/talleres-utiles', component: ConfigTalleresUtilesComponent },
+
       { path: '**', redirectTo: 'errors/404' },
     ],
   },

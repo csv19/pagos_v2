@@ -6,22 +6,34 @@ export class Menu {
 
   public static pages: MenuItem[] = [
     {
-      group: 'Incio',
+      
+      group: 'Inicio',
       separator: true,
       items: [
         {
           icon: 'assets/icons/heroicons/outline/chart-pie.svg',
-          label: 'Reservas',
-          route: '/admin',
+          label: 'Inicio',
+          route: '/admin/home',
+        },
+      ],
+    },
+    {
+      
+      group: 'Caja',
+      separator: true,
+      items: [
+        {
+          icon: 'assets/icons/heroicons/outline/chart-pie.svg',
+          label: 'Caja',
+          route: '/admin/caja',
           children: [
-            { label: 'Tributos Municipales', route: '/admin/tributos-municipales' },
-            { label: 'Tramites y Servicios', route: '/admin/tramites-servicios' },
-            { label: 'Multas', route: '/admin/multas' },
-            { label: 'Campos Deportivos', route: '/admin/campos-deportivos' },
-            { label: 'Talleres Utiles', route: '/admin/talleres-utiles' },
+            { label: 'Tributos Municipales', route: '/admin/caja/tributos-municipales' },
+            { label: 'Tramites y Servicios', route: '/admin/caja/tramites-servicios' },
+            { label: 'Multas', route: '/admin/caja/multas' },
+            { label: 'Campos Deportivos', route: '/admin/caja/campos-deportivos' },
+            { label: 'Talleres Utiles', route: '/admin/caja/talleres-utiles' },
           ],
         },
-        
       ],
     },
     {
@@ -43,17 +55,20 @@ export class Menu {
       ],
     },
     {
-      group: 'Usuarios',
+      group: 'Administrador',
       separator: true,
       items:[
         {
           icon: 'assets/icons/heroicons/outline/users.svg',
-          label: 'Usuarios',
-          route: '/admin/usuario',
+          label: 'Administrador',
+          route: '/admin/configuracion',
           children: [
-            { label: 'Registro de Usuarios', route: '/admin/usuario/registro-usuario' },
-            { label: 'Lista de Usuarios', route: '/admin/usuario/lista-usuario' },
-            // { label: 'Sign in', route: '/admin/sign-in' },
+            {
+              label:'Usuarios',children:[{ label: 'Registro de Usuarios', route: '/admin/configuracion/usuario/registro-usuario' },
+                { label: 'Lista de Usuarios', route: '/admin/configuracion/usuario/lista-usuario' }]
+            },
+            { label: 'Campos Deportivos', route: '/admin/configuracion/campos-deportivos' },
+            { label: 'Talleres Utiles', route: '/admin/configuracion/talleres-deportivos' },
             // { label: 'Forgot Password', route: '/admin/forgot-password' },
             // { label: 'New Password', route: '/admin/new-password' },
             // { label: 'Two Steps', route: '/admin/two-steps' },
@@ -76,7 +91,7 @@ export class Menu {
       items: [
         {
           icon: 'assets/icons/heroicons/outline/cog.svg',
-          label: 'Settings',
+          label: 'Configuración',
           route: '/settings',
         },
         {
