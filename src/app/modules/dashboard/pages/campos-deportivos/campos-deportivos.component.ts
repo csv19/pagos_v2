@@ -468,7 +468,7 @@ export class CamposDeportivosComponent implements OnInit {
       total: this.totalPrice,
       userId: atmId,
       userCode: atmCode,
-      //Codigo 0 para el Administrador 
+      //Codigo 0 para el Administrador || Código 2 para el Master
       statePay: (this.codeId==0 || this.codeId==2)?0:1,
       module: this.validateSecondFormGroup().typePayment?.value,
       option: this.validateSecondFormGroup().optionPayment?.value,
@@ -496,6 +496,8 @@ export class CamposDeportivosComponent implements OnInit {
     if(this.authenticate){
       const atm:any=localStorage.getItem('profileData');
       const userId=JSON.parse(atm).data.id;
+      console.log(userId);
+      
       this.paymentAdmin(personId,userId,this.codeId);
     }else{
       this.paymentUser(personId);
@@ -524,6 +526,8 @@ export class CamposDeportivosComponent implements OnInit {
     const module=3;//CAMPOS DEPORTIVOS
     this.http.get(`${SERVER}/payment/voucher/${module}/${paymentId}`).subscribe(
       (response:any)=>{
+        console.log(response);
+        
         this.dataPayment=response.data;        
         let total=0;
         response.data.map((value:any)=>

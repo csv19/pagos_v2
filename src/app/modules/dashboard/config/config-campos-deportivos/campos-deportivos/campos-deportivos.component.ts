@@ -121,29 +121,57 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
 export class ConfigCampoDeportivoComponent implements OnInit {
   form!: FormGroup;
   submitted = false;
-
+  dataId!:number;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog){
-    this.http.get(`${SERVER}/areas`).subscribe(
-      (value:any) => {
-        this.http.get(`${SERVER}/config/calendar/edit/${data.id}`).subscribe(
+    this.http.get(`${SERVER}/config/calendar/edit/${data.id}`).subscribe(
           (response:any)=>{
+            console.log(response);
+              this.dataId=data.id;
               this.form.get('category')?.setValue(response.data[0].category);
               this.form.get('reservation')?.setValue(response.data[0].reservation);
               this.form.get('field')?.setValue(response.data[0].field);
               this.form.get('shift')?.setValue(response.data[0].shift);
-              this.form.get('price')?.setValue(response.data[0].email);
+              this.form.get('price')?.setValue(response.data[0].price);
           },error=>{console.log(error);
           }
         )
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
   }
-  ngOnInit(): void {}
-  onSubmit(){}
+  ngOnInit(): void {
+    this.form = this._formBuilder.group({
+      category: [{value:'',disabled:true}, Validators.required],
+      reservation: [{value:'',disabled:true}, Validators.required],
+      field: [{value:'',disabled:true}, Validators.required],
+      shift: [{value:'',disabled:true}, Validators.required],
+      price: ['', Validators.required],
+    });
+  }
+  get f() {
+    return this.form.controls;
+  }
+  onSubmit(){
+    const category=this.form.get('category');
+    const reservation=this.form.get('reservation');
+    const field=this.form.get('field');
+    const shift=this.form.get('shift');
+    const price=this.form.get('price');
+    if(category && reservation && field && shift && price){
+      const data={
+        id:this.dataId,
+        price:price.value
+      }
+      console.log(data);
+      
+      this.http.post(`${SERVER}/config/calendar/update`,data).subscribe(
+        response=>{
+         console.log(response);
+         
+        },error=>{
+          console.log(error);
+        }
+      )
+    }
+    }
 }
 export class LanguageApp {
   public static spanish_datatables = {

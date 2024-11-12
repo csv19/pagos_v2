@@ -24,10 +24,11 @@
                        <td>{{item.field}}</td>
                        <td>{{item.shift}}</td>
                        <td>S/.{{item.price}}.00</td>
-                       <div>    
-                            <button class="" (click)="update(item.id)">
-                        <img width="20" [src]="iconoPencil" alt="" srcset="">
-                    </button></div>
+                       <div class="w-40 flex justify-center items-center">
+                        <div class="grid grid-cols-2 gap-4">    
+                            <img width="20" (click)="update(item.id)" [src]="iconoPencil" alt="" srcset="">
+                        </div>
+                       </div>
                    </tr>
                }
                </tbody>
