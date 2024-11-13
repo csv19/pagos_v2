@@ -297,7 +297,7 @@ export class CamposDeportivosComponent implements OnInit {
     if(category && typeReservation && field){
       shift?.enable()
       const route='shifts';
-      const data=false;
+      const data=[category.value,typeReservation.value,field.value];
       const dataShift:any=await this.getSelectSecondFormGroup(route,data).toPromise();
       if(dataShift.code ===200){
         this.dataShift= dataShift.data;
@@ -376,9 +376,14 @@ export class CamposDeportivosComponent implements OnInit {
       const quantity= schedule.value.length;
       const fields= (this.authenticate)?field?.value.length:1;
       const total:any = await this.getSelectSecondFormGroup(route,data).toPromise();
-      if(total.code ===200){
-        this.price=(total.data[0].price).toString();
-        this.totalPrice=  (total.data[0].price * quantity * fields).toString();
+      try{
+        if(total.code ===200){
+          this.price=(total.data[0].price).toString();
+          this.totalPrice=  (total.data[0].price * quantity * fields).toString();
+        }
+      }catch(error){
+        console.log(error);
+        
       }
     }
   }

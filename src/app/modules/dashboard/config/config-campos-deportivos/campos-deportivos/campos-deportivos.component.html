@@ -26,7 +26,8 @@
                        <td>S/.{{item.price}}.00</td>
                        <div class="w-40 flex justify-center items-center">
                         <div class="grid grid-cols-2 gap-4">    
-                            <img width="20" (click)="update(item.id)" [src]="iconoPencil" alt="" srcset="">
+                            <img width="20" class="cursor-pointer" (click)="update(item.id)" [src]="iconoPencil" alt="" srcset="">
+                            <img width="20" class="cursor-pointer" (click)="updateState(item.id)" [src]="iconoTrash" alt="" srcset="">
                         </div>
                        </div>
                    </tr>

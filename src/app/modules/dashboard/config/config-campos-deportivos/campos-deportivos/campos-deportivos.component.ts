@@ -30,7 +30,7 @@ const SERVER= environment.SERVER;
 export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
   @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
   iconoPencil = 'assets/icons/heroicons/outline/pencil.svg';
-  iconoTrash = 'assets/icons/heroicons/outline/trash.svg';
+  iconoTrash = 'assets/icons/heroicons/outline/power-state.svg';
   dtOptions:ADTSettings={};
   dtTrigger = new Subject<ADTSettings>(); 
   data:any=[];
@@ -55,7 +55,6 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
     this.fetchData();
   }
   update(id:number){
-    console.log(id);
     const data={
       id: id
     }
@@ -66,8 +65,10 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
       if(result){
         this.rerender()
       }
-      });
-    
+      }); 
+  }
+  updateState(id:number){
+
   }
   fetchData():void{
     setTimeout(()=>{
