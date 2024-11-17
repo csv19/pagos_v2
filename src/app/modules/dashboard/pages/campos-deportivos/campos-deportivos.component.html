@@ -110,7 +110,7 @@
             <div *ngFor="let value of dataCategory; index as i" class="mx-auto cont-checkbox">
               <input (ngModelChange)="getCategory()" name="category" formControlName="categoryCtrl" class="hidden input-check" [value]="value.ID" type="radio" name="myRadio" [id]="'myRadio-' + i" >
               <label [for]="'myRadio-' + i">
-                <div class="py-2 px-4 md:px-6 mx-auto text-center border rounded-md shadow-md cursor-pointer content-check">
+                <div class="py-2 px-4 md:px-6 mx-auto text-center border rounded-md shadow-md cursor-pointer content-check {{value.DESCRIPCION}}">
                   <img src="./assets/images/{{value.DESCRIPCION}}.png" class="pb-2 w-[35px]" alt="">
                   <span class="font-semibold text-xs sm:text-sm">{{value.DESCRIPCION}}</span>
                 </div>
