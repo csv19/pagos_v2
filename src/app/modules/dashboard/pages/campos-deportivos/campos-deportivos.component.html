@@ -1,5 +1,5 @@
 <section class="w-full p-4">
-  <!-- @if(day===0 && (hour >= 19 || hour <=5)){ 
+  @if(day===0 && (hour >= 19 || hour <=5)){ 
     <div class="container bg-white h-[350px] md:h-auto">
     <div class="border-gray-400 border-2 border-double p-2 rounded-lg w-fit mx-auto">
       <div class=" bg-red-600 text-white rounded-lg px-4 md:px-8 py-2">
@@ -17,8 +17,8 @@
       </div>
     </div>
     </div>
-  } -->
-    <!-- @else if(hour >= 22 || hour <=5){
+  }
+    @else if(hour >= 22 || hour <=5){
       <div class="container bg-white h-[350px] md:h-auto">
         <div class="border-gray-400 border-2 border-double p-2 rounded-lg w-fit mx-auto">
           <div class=" bg-red-600 text-white rounded-lg px-4 md:px-8 py-2">
@@ -36,7 +36,7 @@
           </div>
         </div>
         </div>
-    }@else { -->
+    }@else {
     <div class="flex flex-col md:flex-row justify-center items-center md:items-start my-4 bg-blue-600 text-center text-white uppercase font-medium rounded-lg w-full h-auto">
         <div><img class="mx-auto py-2" src="./assets/icons/reloj.png" alt=""></div>
         <div><p class="text-xs md:text-sm p-2">La atención de la plataforma es de: <br> Lunes a Sábado de
@@ -292,5 +292,5 @@
         }
       </mat-step>
     </mat-stepper>
-    <!-- } -->
+    }
 </section>
