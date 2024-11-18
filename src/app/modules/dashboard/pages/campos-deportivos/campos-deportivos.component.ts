@@ -559,6 +559,9 @@ export class CamposDeportivosComponent implements OnInit {
       this.totalPrice=(this.price).toString();
     }
   }
+  isOptionDisabled(option:number):boolean{    
+    return (option ==1)?true:false;
+  }
   async save(){
     this.isButtonDisabled = true;
     this.setPerson();
