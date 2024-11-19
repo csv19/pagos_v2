@@ -27,14 +27,14 @@ import { ToastrService } from 'ngx-toastr';
 
 const SERVER= environment.SERVER;
 @Component({
-  selector: 'app-admin',
+  selector: 'app-campos-deportivos',
   standalone: true,
   providers: [provideNativeDateAdapter()],
   imports: [FormsModule,DataTablesModule,MatProgressSpinnerModule, NgClass,MatDialogModule,MatFormFieldModule, MatInputModule, MatDatepickerModule,MatTooltipModule],
-  templateUrl: './admin.component.html',
-  styleUrl: './admin.component.scss'
+  templateUrl: './campos-deportivos.component.html',
+  styleUrl: './campos-deportivos.component.scss'
 })
-export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit {
+export class ReportesCamposDeportivosComponent implements OnDestroy, OnInit {
   @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
 
   date1:any;date2:any;

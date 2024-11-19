@@ -1,0 +1,30 @@
+<div>
+    <div class="relative my-4">
+        <div [ngClass]="{'opacity-0 transition-opacity duration-500 ease-in-out': !preloader}" class="absolute w-full h-[500px] flex justify-center items-center"><mat-spinner class="mx-auto" [diameter]="40"></mat-spinner></div>
+
+    <div [ngClass]="{'hidden': preloader}" class="relative container bg-transparent py-4 my-4 mx-auto h-full">
+    <h3>Lista de Clientes</h3>
+    <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+        <thead>
+        <tr class="text-primary">
+            <th>Nro Documento</th>
+            <th>Nombres y Apellidos</th>
+            <th>Correo</th>
+            <th>Celular</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for(item of clients; track item){
+            <tr class="text-muted-foreground uppercase">
+                <td>{{item.nro_document}}</td>
+                <td>{{item.name}} {{item.lastName}}</td>
+                <td>{{item.email}}</td>
+                <td>{{item.phone}}</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+    </div>
+    
+</div>

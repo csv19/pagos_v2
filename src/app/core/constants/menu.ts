@@ -50,6 +50,8 @@ export class Menu {
             { label: 'Multas', route: '/admin/reporte/multas', children:[{route: '/admin/reporte/multas/admin', label: 'Administrador' },{route: '/admin/reporte/multas/atm', label: 'Cajero' },] },
             { label: 'Campos Deportivos', route: '/admin/reporte/campos-deportivos'},
             { label: 'Talleres Utiles', route: '/admin/reporte/talleres-utiles', children:[{route: '/admin/reporte/talleres-utiles', label: 'Administrador' },{route: '/admin/reporte/talleres-utiles/atm', label: 'Cajero' },] },
+            { label: 'Clientes', route: '/admin/reporte/clientes' },
+
           ]
         },
       ],
