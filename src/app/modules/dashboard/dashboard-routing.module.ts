@@ -15,6 +15,7 @@ import { ReportesCamposDeportivosAtmComponent } from './reports/reporte-campos-d
 import { ReportesTalleresUtilesAdminComponent } from './reports/reporte-talleres-utiles/admin/admin.component';
 import { ReportesTalleresUtilesAtmComponent } from './reports/reporte-talleres-utiles/atm/atm.component';
 import { routeGuard } from '../auth/guard/route.guard';
+import { ReportesClientesComponent } from './reports/reporte-clientes/clientes/clientes.component';
 
 
 
@@ -43,6 +44,7 @@ const routes: Routes = [
       //REPORTES
       { path: 'reporte/campos-deportivos', component:  ReportesCamposDeportivosAdminComponent},
       { path: 'reporte/campos-deportivos/atm', component:  ReportesCamposDeportivosAtmComponent},
+      { path: 'reporte/clientes', component:  ReportesClientesComponent},
       { path: 'reporte/talleres-utiles', component:  ReportesTalleresUtilesAdminComponent},
       { path: 'reporte/talleres-utiles/atm', component: ReportesTalleresUtilesAtmComponent },
       // { path: '**', redirectTo: 'errors/404' },

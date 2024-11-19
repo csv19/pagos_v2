@@ -16,6 +16,8 @@ export class Menu {
           children:[
             { label: 'Campos Deportivos', route: '/admin/reporte/campos-deportivos', children:[{route: '/admin/reporte/campos-deportivos', label: 'Administrador' }] },
             { label: 'Talleres Utiles', route: '/admin/reporte/talleres-utiles', children:[{route: '/admin/reporte/talleres-utiles', label: 'Administrador' }] },
+            { label: 'Clientes', route: '/admin/reporte/clientes' },
+
           ]
         },
       ],

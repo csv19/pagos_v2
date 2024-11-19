@@ -1,4 +1,4 @@
-<section class="w-full p-4">
+<section class="w-full p-4 relative">
   @if(day===0 && (hour >= 19 || hour <=5)){ 
     <div class="container bg-white h-[350px] md:h-auto">
     <div class="border-gray-400 border-2 border-double p-2 rounded-lg w-fit mx-auto">
@@ -38,7 +38,7 @@
         </div>
     }@else{
     <div [ngClass]="{ 'hidden':tempBlocked===false,'block':tempBlocked===true }"
-      class="absolute inset-y-32 md:inset-y-2/4 z-50">
+      class="w-full h-full flex justify-center items-center absolute z-50">
       <div class="-rotate-[20deg] border-2 border-red-600 rounded-lg px-2 md:px-4 py-1 md:py-2 text-xl md:text-4xl uppercase font-bold text-center text-red-600
       ">
         <p>{{msgBlocked}}</p>
