@@ -51,23 +51,6 @@ export class ReportesClientesComponent implements OnDestroy, OnInit {
       this.preloader=false;
     },1000)
   }
-  ngAfterViewInit(): void {
-    this.dtTrigger.subscribe(() => {
-      this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-        dtInstance.columns().every(function () {
-          const that = this;
-          $('input', this.footer()).on('keyup change', function () {
-            const inputValue = (<HTMLInputElement>this).value;
-            if (that.search() !== inputValue) {
-              that
-                .search(inputValue) // Filtra según el valor del input
-                .draw(); // Actualiza la tabla con los datos filtrados
-            }
-          });
-        });
-      });
-    });
-  }
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }

@@ -12,10 +12,7 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-
-
-
-
+import Swal, { SweetAlertResult } from 'sweetalert2';
 
 
 const SERVER= environment.SERVER;
@@ -30,11 +27,12 @@ const SERVER= environment.SERVER;
 export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
   @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
   iconoPencil = 'assets/icons/heroicons/outline/pencil.svg';
-  iconoTrash = 'assets/icons/heroicons/outline/power-state.svg';
+  iconoClose = 'assets/icons/heroicons/outline/disable.svg';
+  iconoCheck = 'assets/icons/heroicons/outline/check.svg';
   dtOptions:ADTSettings={};
   dtTrigger = new Subject<ADTSettings>(); 
   data:any=[];
-  preloader:boolean=true;
+  preloader:boolean=false;
   positionOption: TooltipPosition='above';
   constructor(private http: HttpClient,public dialog: MatDialog){}
   ngOnInit(): void {
@@ -50,9 +48,20 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
         { title: 'Campo', data: 'field' },
         { title: 'Turno', data: 'shift' },
         { title: 'Precio', data: 'price' },
+        { title: 'Estado', data: 'state' },
       ],
+      ajax  : {
+        url : `${SERVER}/config/calendar`, // URL de tu endpoint
+        dataSrc : 'tableData'
+      },
     }
-    this.fetchData();
+    // this.fetchData();
+    this.reloadTable()
+  }
+  async reloadTable(){
+    await this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.ajax.reload();
+    });    
   }
   update(id:number){
     const data={
@@ -67,8 +76,58 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
       }
       }); 
   }
-  updateState(id:number){
-
+  updateState(id:number,state:number){
+    const data={
+      id: id,
+      state: state
+    }
+    if(state===0){
+      Swal.fire({
+        title: 'Estas seguro de querer deshabilitar este campo?',
+        text: 'No se podrá revertir!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, deshabilitalo!',
+        cancelButtonText: 'No, ahora',
+        customClass:{
+          confirmButton: 'bg-blue-500',
+          cancelButton: 'bg-red-500',
+          denyButton: 'bg-red-500',
+        }
+      }).then((result) => {
+        if (result.value) {
+          this.http.post(`${SERVER}/config/calendar/state`,data).subscribe(
+            response=>{
+              this.rerender();
+            },error=>{
+              console.log(error);
+            }
+          )
+          Swal.fire(
+            'Deshabilitado!',
+            'Se deshabilito el campo.',
+            'success'
+          )
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          Swal.fire({
+            title:'Cancelado',
+             text:'No se deshabilito el campo',
+             icon: 'error',
+             timer: 1500
+          } 
+          )
+        }
+      })
+    }else{
+      this.http.post(`${SERVER}/config/calendar/state`,data).subscribe(
+        response=>{
+          this.rerender();
+        },error=>{
+          console.log(error);
+        }
+      )
+    }
+    
   }
   fetchData():void{
     setTimeout(()=>{
@@ -101,12 +160,13 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
       });
     });
   }
-  rerender(): void {
+  rerender(): void{
     this.preloader=true;
       this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
         dtInstance.destroy();
         this.fetchData();
       });
+      
   }
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();

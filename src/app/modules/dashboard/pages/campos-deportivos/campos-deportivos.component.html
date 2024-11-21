@@ -1,9 +1,9 @@
 <section class="p-4">
   <h2 class="font-bold text-gray-600 text-center uppercase">Reserva de Campos Deportivos</h2>
   <mat-stepper [selectedIndex]="stepp" [linear]="isLinear" #stepper>
-    <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
+    <!-- <mat-step label="Información Personal" [stepControl]="firstFormGroup" [editable]="isEditable">
       <app-informacion-persona (formDataEmitter)="receiveFormData($event)"></app-informacion-persona>
-    </mat-step>
+    </mat-step> -->
     <mat-step [stepControl]="secondFormGroup" label="Campos Deportivos" [editable]="isEditable">
       <form [formGroup]="secondFormGroup">
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 w-full gap-4">
@@ -38,7 +38,7 @@
             <input autocomplete="off" formControlName="dateCtrl" matInput (ngModelChange)="getSchedules()"
               [matDatepickerFilter]="myFilter" [min]="currentDate" [max]="nextDate" [matDatepicker]="picker">
             <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker-toggle matIconSuffix [disabled]="secondFormGroup.get('dateCtrl')?.disabled" [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
           <mat-form-field class="col-span-4 sm:col-span-2">

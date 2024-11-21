@@ -222,6 +222,7 @@ export class CamposDeportivosComponent implements OnInit {
   }
   resetSecondFormGroup(option:number){
     const category= this.validateSecondFormGroup().category;
+    const typeReservation= this.validateSecondFormGroup().typeReservation;
     const field= this.validateSecondFormGroup().field;
     const shift= this.validateSecondFormGroup().shift;
     const date= this.validateSecondFormGroup().date;
@@ -230,12 +231,12 @@ export class CamposDeportivosComponent implements OnInit {
     const optionPayment=this.validateSecondFormGroup().optionPayment;
     const observationPayment=this.validateSecondFormGroup().observationPayment;
     if(option){
-      let data=[category,field,shift,date,schedule,typePayment,optionPayment,observationPayment];
+      let data=[category,typeReservation,field,shift,date,schedule,typePayment,optionPayment,observationPayment];
       data.splice(0,option);
       data.map((item:any)=>{
         if(item.value){
           item.reset()
-          item.setValue(null)
+          item.setValue(null)              
         }
       })
     }
@@ -252,6 +253,7 @@ export class CamposDeportivosComponent implements OnInit {
     const category= this.validateSecondFormGroup().category;
     const typeReservation= this.validateSecondFormGroup().typeReservation;
     const route='typeReservations';
+    typeReservation?.disable();
     if(category?.value){
       typeReservation?.enable()
       const data=[
@@ -268,8 +270,11 @@ export class CamposDeportivosComponent implements OnInit {
     const category= this.validateSecondFormGroup().category;
     const typeReservation= this.validateSecondFormGroup().typeReservation;
     const field= this.validateSecondFormGroup().field;
+    const date= this.validateSecondFormGroup().date;
+    date?.disable()
     const route='fields';
-    if(category && typeReservation){
+    field?.disable()
+    if(category?.value && typeReservation?.value){
       field?.enable()
       const data=[typeReservation.value];
       const dataField:any= await this.getSelectSecondFormGroup(route,data).toPromise();
@@ -287,23 +292,28 @@ export class CamposDeportivosComponent implements OnInit {
         this.dataField=dataField.data;
       }
     }
-    this.resetSecondFormGroup(1);
+    this.resetSecondFormGroup(2);
   }
   async getShift(){
     const category= this.validateSecondFormGroup().category;
     const field= this.validateSecondFormGroup().field;
     const typeReservation= this.validateSecondFormGroup().typeReservation;
     const shift= this.validateSecondFormGroup().shift;
-    if(category && typeReservation && field){
+    const date= this.validateSecondFormGroup().date;
+    date?.disable()
+    shift?.disable()
+    if(category?.value && typeReservation?.value && field?.value){
       shift?.enable()
       const route='shifts';
       const data=[category.value,typeReservation.value,field.value];
+      console.log(data);
+      
       const dataShift:any=await this.getSelectSecondFormGroup(route,data).toPromise();
       if(dataShift.code ===200){
         this.dataShift= dataShift.data;
       } 
     }
-    this.resetSecondFormGroup(2);
+    this.resetSecondFormGroup(3);
   }
   async getDateReservation(){
     const category= this.validateSecondFormGroup().category;
@@ -311,10 +321,11 @@ export class CamposDeportivosComponent implements OnInit {
     const typeReservation= this.validateSecondFormGroup().typeReservation;
     const shift= this.validateSecondFormGroup().shift;
     const date= this.validateSecondFormGroup().date;
+    date?.disable()
     if(category && typeReservation && field && shift){
       date?.enable()
     }
-    this.resetSecondFormGroup(3);
+    this.resetSecondFormGroup(4);
   }
   getSchedules(){
     const dataSchedules:any=[];
@@ -323,6 +334,8 @@ export class CamposDeportivosComponent implements OnInit {
     const shift= this.validateSecondFormGroup().shift;
     const date= this.validateSecondFormGroup().date;
     const schedule= this.validateSecondFormGroup().schedule;
+
+    schedule?.disable()
     if(category?.value&&field?.value&&shift?.value&&date?.value){
       schedule?.enable()
       const dateFormat= this.formatDate(date.value);
@@ -353,7 +366,7 @@ export class CamposDeportivosComponent implements OnInit {
           }
         )
     }
-    this.resetSecondFormGroup(4);
+    // this.resetSecondFormGroup(4);
   }
   async getTotal(){
     const category= this.validateSecondFormGroup().category;
