@@ -428,7 +428,7 @@ export class CamposDeportivosComponent implements OnInit {
       }else{
         this.styleBlockOption='none';
       }
-      this.resetSecondFormGroup(6);
+      // this.resetSecondFormGroup(6);
     }
   }
   paymentUser(personId:number){

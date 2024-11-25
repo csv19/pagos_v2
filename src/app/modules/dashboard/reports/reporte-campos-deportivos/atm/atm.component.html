@@ -1,0 +1,82 @@
+<div>
+    <div class="relative">
+       <div [ngClass]="{'opacity-0 transition-opacity duration-500 ease-in-out': !preloader}" class="absolute w-full h-[500px] flex justify-center items-center"><mat-spinner class="mx-auto" [diameter]="40"></mat-spinner></div>
+       <div [ngClass]="{'hidden': preloader}" class="relative container bg-transparent py-4 my-4 mx-auto h-full">
+        <div class="my-4">
+            <h3>Reporte de Fechas de Reserva</h3>
+            <div class="flex justify-between items-center">
+                <div class=" flex justify-around items-center w-[370px]">
+                    <div>
+                        <input [(ngModel)]="date1" type="date" name="" id="">
+                    </div>
+                    <div>
+                        <input [(ngModel)]="date2" type="date" name="" id="">
+                    </div>
+                    <div>
+                        <button class="mr-2 inline-flex rounded-md px-3 py-2 text-sm font-medium bg-primary text-primary-foreground" (click)="search()">Filtrar</button>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <img (click)="download()" #tooltip="matTooltip"
+                    matTooltip="Descargar Reporte"
+                    [matTooltipPosition]="positionOption"
+                    matTooltipHideDelay="500"
+                        src="./assets/icons/xls.png" alt="descargar" class="cursor-pointer mx-auto w-8 h-8" />
+                </div>
+            </div>
+        </div>
+           @if(reserva){
+           <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+               <thead>
+               <tr class="text-primary">
+                   <th>Nro Documento</th>
+                   <th>Nombres y Apellidos</th>
+                   <th>Precio</th>
+                   <th>Tipo de Pago</th>
+                   <th>Fecha Pago</th>
+               </tr>
+               </thead>
+               <tbody>
+               @for(item of reserva; track item){
+                   <tr class="text-muted-foreground uppercase">
+                       <td>{{item.nro_document}}</td>
+                       <td>{{item.name}} {{item.lastName}}</td>
+                       <td>S/.{{item.total}}</td>
+                       <td class="font-semibold" [ngClass]="{'text-red-600': item.typePayment === 'PAGO PENDIENTE', 'text-blue-600': item.typePayment !== 'PAGO PENDIENTE'}">
+                           {{item.typePayment}}
+                        </td>
+                        <td>{{item.created_at}}</td>
+                       <div class="w-40 h-[96px] flex justify-center items-center">
+                           @if(item.payment_type_bank_card_id){
+                            <div class="grid grid-cols-4 gap-4">
+                                <img (click)="downloadVoucher(item.payment_type_bank_card_id)" class="cursor-pointer w-full " mat-raised-button #tooltip="matTooltip"
+                                   matTooltip="Recibo"
+                                   [matTooltipPosition]="positionOption"
+                                   matTooltipHideDelay="300" src="./assets/icons/recibo.png" alt="">
+                                @if(item.state_pay === 1){
+                                    <img (click)="ext(item.field_id,item.payment_type_bank_card_id)" class="cursor-pointer w-full" mat-raised-button #tooltip="matTooltip"
+                                    matTooltip="Extornar"
+                                    [matTooltipPosition]="positionOption"
+                                    matTooltipHideDelay="300" src="./assets/icons/extornar.png" alt="">
+                                }
+                            </div> 
+                           }
+                       </div>
+                   </tr>
+               }
+               </tbody>
+               <tfoot>
+                   <tr>
+                     <th><input class="filter-column-datatable" id="0" type="text" placeholder="Nro Documento" name="nro-documento"/></th>
+                     <th><input class="filter-column-datatable" id="1" type="text" placeholder="Nombres y Apellidos" name="nombres-apellidos"/></th>
+                     <th><input class="filter-column-datatable" id="7" type="text" placeholder="Precio" name="precio"/></th>
+                     <th><input class="filter-column-datatable" id="8" type="text" placeholder="Tipo de Pago" name="tipo-pago"/></th>
+                     <th><input class="filter-column-datatable" id="9" type="text" placeholder="Fecha Pago" name="fecha-pago"/></th>
+                   </tr>
+               </tfoot>
+           </table>
+           }
+       </div>
+    </div>
+</div>
+

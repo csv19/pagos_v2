@@ -10,12 +10,13 @@ import { TalleresUtilesComponent } from './pages/talleres-utiles/talleres-utiles
 import { authGuard } from '../auth/guard/auth.guard';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 import { ListaUsuariosComponent } from './pages/lista-usuarios/lista-usuarios.component';
-import { ReportesCamposDeportivosComponent } from './reports/reporte-campos-deportivos/campos-deportivos/campos-deportivos.component';
 import { ReportesTalleresUtilesAdminComponent } from './reports/reporte-talleres-utiles/admin/admin.component';
 import { ReportesTalleresUtilesAtmComponent } from './reports/reporte-talleres-utiles/atm/atm.component';
 import { ConfigCamposDeportivosComponent } from './config/config-campos-deportivos/campos-deportivos/campos-deportivos.component';
 import { ConfigTalleresUtilesComponent } from './config/config-talleres-utiles/talleres-utiles/talleres-utiles.component';
 import { ReportesClientesComponent } from './reports/reporte-clientes/clientes/clientes.component';
+import { ReportesCamposDeportivosAdminComponent } from './reports/reporte-campos-deportivos/admin/campos-deportivos.component';
+import { ReportesCamposDeportivosAtmComponent } from './reports/reporte-campos-deportivos/atm/atm.component';
 
 
 
@@ -35,7 +36,8 @@ const routes: Routes = [
       { path: 'caja/talleres-utiles', component: TalleresUtilesComponent, data:{authenticate:true} },
       { path: 'caja/talleres-utiles/recibo/:stepp/:payment', component: TalleresUtilesComponent, data:{authenticate:true} },
       //REPORTES
-      { path: 'reporte/campos-deportivos', component:  ReportesCamposDeportivosComponent},
+      { path: 'reporte/campos-deportivos/administrador', component:  ReportesCamposDeportivosAdminComponent},
+      { path: 'reporte/campos-deportivos/cajero', component:  ReportesCamposDeportivosAtmComponent},
       { path: 'reporte/talleres-utiles', component:  ReportesTalleresUtilesAdminComponent},
       { path: 'reporte/talleres-utiles/atm', component: ReportesTalleresUtilesAtmComponent },
       { path: 'reporte/clientes', component:  ReportesClientesComponent},

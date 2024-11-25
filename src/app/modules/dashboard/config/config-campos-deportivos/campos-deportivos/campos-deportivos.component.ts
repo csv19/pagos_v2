@@ -13,6 +13,9 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import Swal, { SweetAlertResult } from 'sweetalert2';
+import { NumberOnlyDirective } from 'src/app/number-only.directive';
+
+
 
 
 const SERVER= environment.SERVER;
@@ -50,18 +53,18 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
         { title: 'Precio', data: 'price' },
         { title: 'Estado', data: 'state' },
       ],
-      ajax  : {
-        url : `${SERVER}/config/calendar`, // URL de tu endpoint
-        dataSrc : 'tableData'
-      },
-    }
-    // this.fetchData();
+    };
     this.reloadTable()
   }
-  async reloadTable(){
-    await this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-      dtInstance.ajax.reload();
-    });    
+  async reloadTable(){    
+    try {   
+    const response: any = await this.http.get(`${SERVER}/config/calendar`).toPromise();
+        this.data=response.data;
+          // this.dtTrigger.next(this.data);
+        
+    } catch (error) {
+      console.error('Error al obtener los datos de la tabla:', error);
+    }
   }
   update(id:number){
     const data={
@@ -72,62 +75,61 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
     });
     dialogRef.beforeClosed().subscribe(result => {
       if(result){
-        this.rerender()
+        this.dtTrigger.next(this.data);
       }
       }); 
   }
-  updateState(id:number,state:number){
-    const data={
-      id: id,
-      state: state
-    }
-    if(state===0){
-      Swal.fire({
-        title: 'Estas seguro de querer deshabilitar este campo?',
-        text: 'No se podrá revertir!',
+  async updateState(id: number, state: number) {
+    const data = { id, state };
+
+    if (state === 0) {
+      // Mostrar alerta de confirmación
+      const result = await Swal.fire({
+        title: '¿Estás seguro de querer deshabilitar este campo?',
+        text: '¡No se podrá revertir!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si, deshabilitalo!',
+        confirmButtonText: 'Sí, deshabilítalo!',
         cancelButtonText: 'No, ahora',
-        customClass:{
+        customClass: {
           confirmButton: 'bg-blue-500',
           cancelButton: 'bg-red-500',
-          denyButton: 'bg-red-500',
         }
-      }).then((result) => {
-        if (result.value) {
-          this.http.post(`${SERVER}/config/calendar/state`,data).subscribe(
-            response=>{
-              this.rerender();
-            },error=>{
-              console.log(error);
-            }
-          )
-          Swal.fire(
-            'Deshabilitado!',
-            'Se deshabilito el campo.',
-            'success'
-          )
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          Swal.fire({
-            title:'Cancelado',
-             text:'No se deshabilito el campo',
-             icon: 'error',
-             timer: 1500
-          } 
-          )
+      });
+
+      if (result.isConfirmed) {
+        // Realizar la solicitud al servidor para deshabilitar el campo
+        try {
+          await this.http.post(`${SERVER}/config/calendar/state`, data).toPromise();
+          Swal.fire('Deshabilitado!', 'Se deshabilitó el campo.', 'success');
+          this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+              dtInstance.destroy(); 
+              this.reloadTable();
+            });
+
+        } catch (error) {
+          console.error('Error al actualizar el estado:', error);
         }
-      })
-    }else{
-      this.http.post(`${SERVER}/config/calendar/state`,data).subscribe(
-        response=>{
-          this.rerender();
-        },error=>{
-          console.log(error);
-        }
-      )
+      } else {
+        Swal.fire({
+          title: 'Cancelado',
+          text: 'No se deshabilitó el campo',
+          icon: 'error',
+          timer: 1500
+        });
+      }
+    } else {
+      // Si el estado no es 0, simplemente actualiza el campo
+      try {
+        await this.http.post(`${SERVER}/config/calendar/state`, data).toPromise();
+        this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+          dtInstance.destroy();              
+          this.reloadTable();
+        });
+      } catch (error) {
+        console.error('Error al actualizar el estado:', error);
+      }
     }
-    
   }
   fetchData():void{
     setTimeout(()=>{
@@ -176,7 +178,7 @@ export class ConfigCamposDeportivosComponent implements OnDestroy, OnInit {
 @Component({
   selector: 'app-config-campo-deportivo',
   standalone: true,
-  imports: [ConfigCampoDeportivoComponent,FormsModule,MatDialogModule,ReactiveFormsModule,NgClass],
+  imports: [NumberOnlyDirective,ConfigCampoDeportivoComponent,FormsModule,MatDialogModule,ReactiveFormsModule,NgClass],
   templateUrl: '../../../components/config-campo-deportivo/config-campo-deportivo.component.html',
 })
 export class ConfigCampoDeportivoComponent implements OnInit {

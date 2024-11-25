@@ -34,7 +34,7 @@ const SERVER= environment.SERVER;
   templateUrl: './campos-deportivos.component.html',
   styleUrl: './campos-deportivos.component.scss'
 })
-export class ReportesCamposDeportivosComponent implements OnDestroy, OnInit {
+export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit {
   @ViewChild(DataTableDirective, { static: false }) dtElement!: DataTableDirective;
 
   date1:any;date2:any;
@@ -97,7 +97,7 @@ export class ReportesCamposDeportivosComponent implements OnDestroy, OnInit {
     const date1=this.date1
     const date2=this.date2
     setTimeout(()=>{
-      this.http.get(`${SERVER}/calendars/reservations/${date1}/${date2}`).subscribe(
+      this.http.get(`${SERVER}/calendars/reservations/admin/${date1}/${date2}`).subscribe(
         (response:any)=>{
           console.log(response);
           this.reserva=response.data; 
@@ -113,7 +113,7 @@ export class ReportesCamposDeportivosComponent implements OnDestroy, OnInit {
     const date2=this.date2
     console.log(date1);
     
-    this.http.get(`${SERVER}/calendars/reservations/${date1}/${date2}`).subscribe(
+    this.http.get(`${SERVER}/calendars/reservations/admin/${date1}/${date2}`).subscribe(
       (response:any)=>{
         this.reserva=response.data; 
         this.rerender();
@@ -184,6 +184,7 @@ export class ReportesCamposDeportivosComponent implements OnDestroy, OnInit {
       }
     })
   }
+  
   ngAfterViewInit(): void {
     this.dtTrigger.subscribe(() => {
       this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {

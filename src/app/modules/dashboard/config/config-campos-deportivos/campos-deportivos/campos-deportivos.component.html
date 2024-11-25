@@ -23,7 +23,7 @@
                        <td>
                         <!-- <img src="./assets/icons/{{item.img}}" width="20" alt=""> -->
                         <div class="flex justify-between items-center w-[90px]">
-                                {{item.category}}
+                                <span class="hidden">{{item.category}}</span>
                                 <img src="./assets/icons/{{item.img}}" width="20" alt="">
                         </div>                            
                         </td>
@@ -34,7 +34,8 @@
                        <td>@if(item.state===1){
                         <span class="text-white bg-green-600 px-3 py-1 rounded-lg text-xss">Habilitado</span>}@else{
                             <span class="text-white bg-red-600 px-3 py-1 rounded-lg text-xss">Deshabilitado</span>
-                        }</td>
+                        }
+                        </td>
                        <div class="w-40 flex justify-center items-center">
                         <div class="grid grid-cols-2 gap-4">    
                             <img width="20" class="cursor-pointer" (click)="update(item.id)" [src]="iconoPencil" alt="" srcset="">
