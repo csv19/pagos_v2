@@ -29,6 +29,7 @@
            <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
                <thead>
                <tr class="text-primary">
+                   <th>Nro Recibo</th>
                    <th>Nro Documento</th>
                    <th>Nombres y Apellidos</th>
                    <th>Categoria</th>
@@ -44,6 +45,7 @@
                <tbody>
                @for(item of reserva; track item){
                    <tr class="text-muted-foreground uppercase">
+                       <td>{{item.nro_voucher}}</td>
                        <td>{{item.nro_document}}</td>
                        <td>{{item.name}} {{item.lastName}}</td>
                        <td>{{item.category}}</td>
@@ -61,15 +63,17 @@
                        <td class="font-semibold" [ngClass]="{'text-red-600': item.typePayment === 'PAGO PENDIENTE', 'text-blue-600': item.typePayment !== 'PAGO PENDIENTE'}">
                            {{item.typePayment}}
                         </td>
-                        <td>{{item.created_at}}</td>
+                        <td>{{item.date_payment}}</td>
                        <div class="w-40 h-[96px] flex justify-center items-center">
                            @if(item.payment_type_bank_card_id){
                             <div class="grid grid-cols-4 gap-4">
+                                @if(item.state_pay===1){
                                 <img (click)="downloadVoucher(item.payment_type_bank_card_id)" class="cursor-pointer w-full " mat-raised-button #tooltip="matTooltip"
-                                   matTooltip="Recibo"
-                                   [matTooltipPosition]="positionOption"
-                                   matTooltipHideDelay="300" src="./assets/icons/recibo.png" alt="">
-                                @if((formatDateCreate(item.created_at) >= formatDateMax(item.created_at)) && item.typePayment !== 'LIBRE'){
+                                matTooltip="Recibo"
+                                [matTooltipPosition]="positionOption"
+                                matTooltipHideDelay="300" src="./assets/icons/recibo.png" alt="">
+                                }
+                                @if((formatDateCreate(item.date_payment) >= formatDateMax(item.date_payment)) && item.state_pay !== 'LIBRE'){
                                 <img (click)="update(item.field_id,item.payment_type_bank_card_id)" class="cursor-pointer w-full" mat-raised-button #tooltip="matTooltip"
                                     matTooltip="Reprogramación"
                                     [matTooltipPosition]="positionOption"
@@ -89,16 +93,17 @@
                </tbody>
                <tfoot>
                    <tr>
-                     <th><input class="filter-column-datatable" id="0" type="text" placeholder="Nro Documento" name="nro-documento"/></th>
-                     <th><input class="filter-column-datatable" id="1" type="text" placeholder="Nombres y Apellidos" name="nombres-apellidos"/></th>
-                     <th><input class="filter-column-datatable" id="2" type="text" placeholder="Categoria" name="categoria"/></th>
-                     <th><input class="filter-column-datatable" id="3" type="text" placeholder="Reserva" name="reserva"/></th>
-                     <th><input class="filter-column-datatable" id="4" type="text" placeholder="Fecha Reserva" name="fecha-reserva"/></th>
-                     <th><input class="filter-column-datatable" id="5" type="text" placeholder="Campo" name="campo"/></th>
-                     <th><input class="filter-column-datatable" id="6" type="text" placeholder="Horario" name="horario"/></th>
-                     <th><input class="filter-column-datatable" id="7" type="text" placeholder="Precio" name="precio"/></th>
-                     <th><input class="filter-column-datatable" id="8" type="text" placeholder="Tipo de Pago" name="tipo-pago"/></th>
-                     <th><input class="filter-column-datatable" id="9" type="text" placeholder="Fecha Pago" name="fecha-pago"/></th>
+                    <th><input class="filter-column-datatable" id="0" type="text" placeholder="Nro Recibo" name="nro-recibo"/></th>
+                     <th><input class="filter-column-datatable" id="1" type="text" placeholder="Nro Documento" name="nro-documento"/></th>
+                     <th><input class="filter-column-datatable" id="2" type="text" placeholder="Nombres y Apellidos" name="nombres-apellidos"/></th>
+                     <th><input class="filter-column-datatable" id="3" type="text" placeholder="Categoria" name="categoria"/></th>
+                     <th><input class="filter-column-datatable" id="4" type="text" placeholder="Reserva" name="reserva"/></th>
+                     <th><input class="filter-column-datatable" id="5" type="text" placeholder="Fecha Reserva" name="fecha-reserva"/></th>
+                     <th><input class="filter-column-datatable" id="6" type="text" placeholder="Campo" name="campo"/></th>
+                     <th><input class="filter-column-datatable" id="7" type="text" placeholder="Horario" name="horario"/></th>
+                     <th><input class="filter-column-datatable" id="8" type="text" placeholder="Precio" name="precio"/></th>
+                     <th><input class="filter-column-datatable" id="9" type="text" placeholder="Tipo de Pago" name="tipo-pago"/></th>
+                     <th><input class="filter-column-datatable" id="10" type="text" placeholder="Fecha Pago" name="fecha-pago"/></th>
                    </tr>
                </tfoot>
            </table>

@@ -11,7 +11,7 @@ import { interval, Subject } from 'rxjs';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { environment } from 'src/environments/environment';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
-import { NgClass, NgIf, NgFor } from '@angular/common';
+import { NgClass, NgIf, NgFor,NgStyle } from '@angular/common';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -23,7 +23,7 @@ import { DataTableDirective } from 'angular-datatables';
 import {MatButtonModule} from '@angular/material/button';
 import { ToastrService } from 'ngx-toastr';
 const SERVER= environment.SERVER;
-
+const USERCODE=environment.USER_CODE;
 @Component({
   selector: 'app-atm',
   standalone: true,
@@ -58,6 +58,7 @@ export class ReportesCamposDeportivosAtmComponent implements OnDestroy, OnInit{
       responsive: true,
       processing:true,
       columns: [
+        { title: 'Nro Recibo', data: 'nro_voucher' },
         { title: 'Nro Documento', data: 'nro_document' },
         { title: 'Nombres y Apellidos', data: 'name' },
         { title: 'Precio', data: 'total' },
@@ -65,11 +66,6 @@ export class ReportesCamposDeportivosAtmComponent implements OnDestroy, OnInit{
         { title: 'Fecha Pago', data: 'created_at' },  
       ],
       rowCallback: (row: Node, data: any[] | Object, index: number) => {
-        const self = this;
-        // Unbind first in order to avoid any duplicate handler
-        // (see https://github.com/l-lin/angular-datatables/issues/87)
-        // Note: In newer jQuery v3 versions, unbind and bind are
-        // deprecated in favor of off and on
         $('td', row).off('click');
         $('td', row).on('click', () => {
           console.log(data);
@@ -113,78 +109,6 @@ export class ReportesCamposDeportivosAtmComponent implements OnDestroy, OnInit{
       }
     )
     
-  }
-  
-  decline(field_id:number,id:number){
-    this.state=true;
-    const data={
-      id: id,
-      field_id: field_id,
-      user_id: this.user,
-    }
-    Swal.fire({
-      title: 'Estas seguro de querer eliminar esta reserva?',
-      text: 'No se podrá revertir!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Si, eliminalo!',
-      cancelButtonText: 'No, ahora',
-      customClass:{
-        confirmButton: 'bg-blue-500',
-        cancelButton: 'bg-red-500',
-        denyButton: 'bg-red-500',
-      }
-    }).then((result) => {
-      if (result.value) {
-        this.http.post(`${SERVER}/calendars/reservation/decline`, data).subscribe(
-          response=>{
-            this.rerender();
-          },error=>{
-            console.log(error);
-          }
-        )
-        Swal.fire(
-          'Eliminado!',
-          'Se elimino la reserva con éxito.',
-          'success'
-        )
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire({
-          title:'Cancelado',
-           text:'No se elimino la reserva',
-           icon: 'error',
-           timer: 1500
-        } 
-        )
-      }
-    })
-  }
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    const day = date.getDate()+1
-    const month = date.getMonth() + 1
-    const year = date.getFullYear(); 
-    return `${day}-${month}-${year}`;
-  }
-  formatDateCreate(dateString: string): number {
-    const date = new Date(dateString);
-    const day = date.getDate()
-    const month = date.getMonth() + 1 
-    const year = date.getFullYear(); 
-    const formattedDate = Number(`${day}${month}${year}`);
-    return formattedDate;
-  }
-  formatDateMax(dateString: string): number {
-    const date = new Date(dateString);
-    let day = date.getDate();
-    day=(day>=29)?day+2:day;
-    const month=date.getMonth() + 1;
-    const year = date.getFullYear(); 
-    const formattedDate = Number(`${day}${month}${year}`);
-    return formattedDate;
-  }
-  formatHour(hour:any) {
-    return (hour > 11 ? ((hour - 12)==0?12:hour-12)  +":00pm" : hour +":00am");
   }
   download(){
     const fecha1 = new Date(this.date1);
@@ -295,7 +219,28 @@ export class ReportesCamposDeportivosAtmComponent implements OnDestroy, OnInit{
       }
     })
   }
-
+  //Cobrar
+  charge(id:number,name:string,lastName:string,total:string,type_reservation_id:number){
+    console.log([id,name,lastName,total,type_reservation_id]);
+    const data={
+      id: id,
+      name:name,
+      lastName:lastName,
+      total:total,
+      type_reservation_id:type_reservation_id,
+      user_id: this.user,
+      user_code: this.user_code
+    }
+    const dialogRef= this.dialog.open(ReportCampoDeportivoAtmComponent,{
+      data: data
+    });
+    dialogRef.beforeClosed().subscribe(result => {
+      if(result){
+        this.rerender()
+      }
+    });
+    
+  }
   ngAfterViewInit(): void {
     this.dtTrigger.subscribe(() => {
       this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
@@ -323,6 +268,103 @@ export class ReportesCamposDeportivosAtmComponent implements OnDestroy, OnInit{
   }
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
+  }
+}
+
+@Component({
+  selector: 'app-report-campo-deportivo-atm',
+  standalone: true,
+  imports: [ReportCampoDeportivoAtmComponent,MatDialogModule,MatButtonModule,FormsModule,ReactiveFormsModule,RouterLink,AngularSvgIconModule,ButtonComponent,NgClass,NgIf,NgFor,NgStyle,MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,],
+  templateUrl: '../../../components/report-campo-deportivo-atm/report-campo-deportivo-atm.component.html',
+})
+export class ReportCampoDeportivoAtmComponent {
+  codeId:number;
+  styleBlockOption='none';
+  dataTypePayments:any=[]; dataOptionPayments:any=[];
+  name!:string;lastName!:string;total!:string;
+  firstFormGroup = this._formBuilder.group({
+    typePaymentCtrl: [null, localStorage.getItem('token')?Validators.required:null],
+    optionPaymentCtrl: null,
+    observationPaymentCtrl: null,
+  },{ validators: this.checkFieldsNotEmpty });
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private readonly _formBuilder: FormBuilder, private readonly _router: Router, private http: HttpClient,public dialog: MatDialog, private toastr: ToastrService){
+    const atm:any=localStorage.getItem('profileData');
+    this.codeId=(atm)?JSON.parse(atm).data.code:USERCODE;
+    this.name=data.name;
+    this.lastName=data.lastName;
+    this.total=data.total;
+    this.http.get(`${SERVER}/type-payments/${data.type_reservation_id}/${this.codeId}`).subscribe(
+      (response:any) => {
+        if(response.code===200){
+          this.dataTypePayments= response.data;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+
+  }
+  checkFieldsNotEmpty(group: FormGroup){
+    const typePayment= group.get('typePaymentCtrl')?.value;
+      return (typePayment !== null ) ? null : { fieldsEmpty: true };
+  }
+  validatefirstFormGroup(){
+    const typePayment= this.firstFormGroup?.get('typePaymentCtrl');
+    const optionPayment= this.firstFormGroup?.get('optionPaymentCtrl');
+    const observationPayment= this.firstFormGroup?.get('observationPaymentCtrl');
+    return {typePayment, optionPayment, observationPayment};
+  }
+  
+  getSelectFirstFormGroup(route: string, data: any) {
+    let list = this.http.get(`${SERVER}/${route}`);
+    if (data) {
+        const values = data.join('/');
+        list = this.http.get(`${SERVER}/${route}/${values}`);
+    }
+    return list;
+  }
+  async getTypePayments(){
+    const typePayment= this.validatefirstFormGroup().typePayment;
+    //Código de Administrador y Master no genera nro de voucher
+    if(typePayment && (this.codeId!==0 && this.codeId!==2)){
+      const data= [typePayment.value];
+      const route='options-payments';
+      if(typePayment.value==2 || typePayment.value==3 || typePayment.value==4){
+        this.styleBlockOption='block';
+        const dataOptionPayments:any= await this.getSelectFirstFormGroup(route,data).toPromise();
+        if(dataOptionPayments.code ===200){
+          this.dataOptionPayments=dataOptionPayments.data;
+        }
+      }else{
+        this.styleBlockOption='none';
+      }
+      // this.resetSecondFormGroup(6);
+    }
+  }
+  save(){
+    const data={
+      'id':this.data.type_reservation_id,
+      'user_id':this.data.user_id,
+      'user_code':this.data.user_code,
+      'type_payment':this.firstFormGroup.get('typePaymentCtrl')?.value,
+      'option_payment':this.firstFormGroup.get('optionPaymentCtrl')?.value,
+      'observation_payment':this.firstFormGroup.get('observationPaymentCtrl')?.value,
+    };  
+    if(data.type_payment){
+      this.http.post<any>(`${SERVER}/calendars/reservation/payment`,data).subscribe(
+        (response:any)=>{
+          console.log(response);
+        },error=>{console.log(error);
+        }
+      )
+    }
+    
+    
   }
 }
 export class LanguageApp {

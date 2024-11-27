@@ -61,6 +61,7 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
       responsive: true,
       processing:true,
       columns: [
+        { title: 'Nro Recibo', data: 'nro_voucher' },
         { title: 'Nro Documento', data: 'nro_document' },
         { title: 'Nombres y Apellidos', data: 'name' },
         { title: 'Categoria', data: 'category' },
@@ -73,11 +74,6 @@ export class ReportesCamposDeportivosAdminComponent implements OnDestroy, OnInit
         { title: 'Fecha Pago', data: 'created_at' },  
       ],
       rowCallback: (row: Node, data: any[] | Object, index: number) => {
-        const self = this;
-        // Unbind first in order to avoid any duplicate handler
-        // (see https://github.com/l-lin/angular-datatables/issues/87)
-        // Note: In newer jQuery v3 versions, unbind and bind are
-        // deprecated in favor of off and on
         $('td', row).off('click');
         $('td', row).on('click', () => {
           console.log(data);
