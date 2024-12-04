@@ -63,7 +63,7 @@
                        <td class="font-semibold" [ngClass]="{'text-red-600': item.typePayment === 'PAGO PENDIENTE', 'text-blue-600': item.typePayment !== 'PAGO PENDIENTE'}">
                            {{item.typePayment}}
                         </td>
-                        <td>{{item.date_payment}}</td>
+                        <td>{{formatDate(item.date_payment)}}</td>
                        <div class="w-40 h-[96px] flex justify-center items-center">
                            @if(item.payment_type_bank_card_id){
                             <div class="grid grid-cols-4 gap-4">

@@ -645,7 +645,7 @@ export class TalleresUtilesComponent implements OnInit{
   //THIRD GROUP
   getVoucher(voucherId:number,paymentId:number){
     const module=4;
-    this.http.get(`${SERVER}/payment/voucher/${module}/${voucherId}/${paymentId}`).subscribe(
+    this.http.get(`${SERVER}/voucher/${module}/${voucherId}/${paymentId}`).subscribe(
       (response:any)=>{
         console.log(response);
         this.dataVoucher=response.data;

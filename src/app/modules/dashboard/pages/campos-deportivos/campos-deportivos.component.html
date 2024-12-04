@@ -103,6 +103,7 @@
       @if(dataPayment.length>0){
       <div class="w-fit mx-auto">
           <img mat-raised-button #tooltip="matTooltip"
+          (click)="downloadVoucher(this.dataPayment[0].payment_id)"
           matTooltip="Descargar"
           [matTooltipPosition]="positionOption"
           matTooltipHideDelay="100000"
@@ -161,7 +162,7 @@
                       {{voucher.category}} - {{voucher.type_reservation}}<br>
                       {{voucher.field_name}}-{{voucher.campus}}<br>
                       {{formatHour(voucher.hour_start)}} a {{formatHour(voucher.hour_end)}}<br>
-                      {{voucher.date_reservation}}
+                      {{formatDate(voucher.date_reservation)}}
                     </span>
                   </td>
                   <td class="text-right text-xs"><span>S./{{voucher.price_reservation}}.00</span></td>

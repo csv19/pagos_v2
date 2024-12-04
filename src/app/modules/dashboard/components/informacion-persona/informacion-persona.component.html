@@ -8,7 +8,7 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>Documento</mat-label>
-          <input autocomplete="off" matInput placeholder="Ingrese N° Documento" (change)="getDocument()"
+          <input autocomplete="off" matInput onlyNumber placeholder="Ingrese N° Documento" (change)="getDocument()"
             name="document" formControlName="documentCtrl" [minlength]="sizeCharter" [maxlength]="sizeCharter"
             name="document">
           @if (firstFormGroup.get('documentCtrl')?.hasError('required')) {

@@ -1,7 +1,7 @@
 import { Component,Renderer2,ElementRef, OnInit, ViewChild } from '@angular/core';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams,HttpHeaders } from '@angular/common/http';
 import {FormBuilder, Validators, FormsModule, ReactiveFormsModule, FormControl,FormGroupDirective, NgForm, FormGroup } from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
@@ -60,6 +60,7 @@ export class CamposDeportivosComponent implements OnInit {
    stepp!:number;
    voucher!:number;
    payment!:number;
+   people!:number;
    codeId:number;
    textScheduleLabel:string;
    styleBlockDocument:string='block'; styleBlockRuc:string='none'; styleBlockOption='none'; sizeCharter!:number;
@@ -122,7 +123,7 @@ export class CamposDeportivosComponent implements OnInit {
           this.dataCategory= response.data;
         }
       },
-      (error) => {
+      (error:any) => {
         console.error('Error en la solicitud:', error);
       }
     );
@@ -131,17 +132,18 @@ export class CamposDeportivosComponent implements OnInit {
   @ViewChild('stepper') stepper!: MatStepper;
   public atm:any={};
   ngOnInit(): void {
-    this.route.url.subscribe(url=>{
+    this.route.url.subscribe((url:any)=>{
         const data:any=[];
         url.map((value:any)=>{data.push(value.path)})
         const route:string=(this.authenticate)?'admin/caja':'';
         this.stepp=data[2];
         this.payment=data[3];
+        this.people=data[4];
         if(this.stepp !=2){
           this.router.navigate([`${route}/campos-deportivos`]);  
         }else{
           this.isEditable=false;
-          this.getVoucher(this.payment);
+          this.getVoucher(this.payment,this.people);
         }
     })
   }
@@ -159,7 +161,7 @@ export class CamposDeportivosComponent implements OnInit {
     this.nextDate = `${year}-${month}-${proxday}`;
     this.currentDate= today;
     this.http.post<any>(HOLIDAYS,tokenHoliday).subscribe(
-      (response)=>{
+      (response:any)=>{
         if(response.code === 200){
           this.dataHolidays=response.data;
         }
@@ -174,7 +176,7 @@ export class CamposDeportivosComponent implements OnInit {
     const year = fecha.getFullYear();
     const month = ('0' + (fecha.getMonth() + 1)).slice(-2);
     const day = ('0' + fecha.getDate()).slice(-2);
-    const dateFormat = `${year}-${month}-${day}`;
+    const dateFormat = `${day}-${month}-${year}`;
     return dateFormat;
   }
   formatHour(hour:any) {
@@ -284,7 +286,7 @@ export class CamposDeportivosComponent implements OnInit {
             this.dataTypePayments= response.data;
           }
         },
-        (error) => {
+        (error:any) => {
           console.error('Error en la solicitud:', error);
         }
       );
@@ -347,7 +349,7 @@ export class CamposDeportivosComponent implements OnInit {
         }
         const url = `${SERVER}/schedules?fields=${params}&category=${category.value}&shift=${shift.value}&date=${dateFormat}`;
         this.http.get<any>(`${url}`).subscribe(
-          (response)=>{
+          (response:any)=>{
             response.data.map(
               (value:any)=>{  
                 const dateSystem=`${this.currentDate.getDate()}-${this.currentDate.getMonth()}-${this.currentDate.getYear()}`;
@@ -458,17 +460,18 @@ export class CamposDeportivosComponent implements OnInit {
           } 
           const route='calendars/niubiz';
           this.http.post<any>(`${SERVER}/${route}`, this.calendar).subscribe(
-            (response) => {
+            (response:any) => {
               if (response && response.code === 200) {   
                 this.reserva.calendarId=response.data.calendar_id;
                 this.reserva.paymentId=response.data.payment_id;
                 this.reserva.purchaseNumber=response.data.purchaseNumber;
                 this.reserva.sessionToken=response.data.token_session;
                 this.reserva.total=this.totalPrice;
-                this.pay(this.reserva.calendarId,this.reserva.paymentId,this.reserva.total,this.reserva.purchaseNumber,this.reserva.sessionToken)
+                this.pay(this.reserva.calendarId,this.reserva.paymentId,this.reserva.total,this.reserva.purchaseNumber,this.reserva.sessionToken) 
               }
-            },(error)=>{
+            },(error:any)=>{
               this.showError(error.error.message);
+              
             }
           );
         }
@@ -494,16 +497,17 @@ export class CamposDeportivosComponent implements OnInit {
     } 
     const route='calendars/atm';
     this.http.post<any>(`${SERVER}/${route}`, this.calendar).subscribe(
-      (response) => {
+      (response:any) => {
         if (response && response.code === 200) {   
           console.log(response);
           this.isEditable=false;
           const payment=response.data.payment_id;
-          this.getVoucher(payment);
+          const people=response.data.people_id;
+          this.getVoucher(payment,people);
           this.stepper.next();
           // this.print(payment);
         }
-      },(error)=>{
+      },(error:any)=>{
         console.error(error.error.message)
         this.showError(error.error.message);
       }
@@ -540,9 +544,9 @@ export class CamposDeportivosComponent implements OnInit {
   }
   
   //THIRD GROUP
-  getVoucher(paymentId:number){
+  getVoucher(paymentId:number,peopleId:number){
     const module=3;//CAMPOS DEPORTIVOS
-    this.http.get(`${SERVER}/payment/voucher/${module}/${paymentId}`).subscribe(
+    this.http.get(`${SERVER}/voucher/${module}/${paymentId}/${peopleId}`).subscribe(
       (response:any)=>{
         console.log(response);
         
@@ -557,12 +561,41 @@ export class CamposDeportivosComponent implements OnInit {
         this.reserva.purchaseNumber=this.dataPayment[0].purchaseNumber;
         this.reserva.sessionToken=this.dataPayment[0].sessionToken;
         this.reserva.observation=this.dataPayment[0].observation;
-      },error=>{console.error(error)}
+      },(error:any)=>{
+        this.showError('Error al mostrar recibo');
+      }
+
+
     )
   }
-  print(voucherId:number,paymentId:number) {
-    const url = `${SERVER}/fields/voucher/${voucherId}/${paymentId}/2`; 
-    window.open(url, '_blank');
+  downloadVoucher(operation:number){
+    const option:number=2; //Abrir en nueva pestaña
+    const data={
+      'paymentId':operation,
+      'option': option
+    }
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    this.http.post(`${SERVER}/report/voucher`, data, {
+      headers: headers,
+      responseType: 'blob' // Asegúrate de que la respuesta sea tratada como un blob
+    }).subscribe(
+      (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.target='_blank';
+        link.href = url;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },error => {
+        console.error('Download error:', error);
+      }
+    )
+  }
+  showSuccess(message:string){
+    this.toastr.success(message,'CORRECTO!');
   }
   showError(message:string) {
     this.toastr.error(message,'ERROR!',{closeButton:true, positionClass:'toast-top-right'});

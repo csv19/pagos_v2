@@ -17,7 +17,7 @@ const routes: Routes = [
         { path: 'tramites-servicios', component: TramitesServiciosComponent },
         { path: 'multas', component: MultasComponent },
         { path: 'campos-deportivos', component: CamposDeportivosComponent, data:{authenticate:false} },
-        { path: 'campos-deportivos/recibo/:stepp/:payment', component: CamposDeportivosComponent, data:{authenticate:false} },
+        { path: 'campos-deportivos/recibo/:stepp/:payment/:people', component: CamposDeportivosComponent, data:{authenticate:false} },
         { path: 'talleres-utiles', component: TalleresUtilesComponent, data:{authenticate:false}},
         { path: 'talleres-utiles/recibo/:stepp/:payment', component: TalleresUtilesComponent, data:{authenticate:false} },
         { path: '**', redirectTo: 'errors/404' },

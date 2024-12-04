@@ -1,18 +1,18 @@
 export const environment = {
   production: true,
   HOME:'https://localhost:4200',
-  SERVER: 'https://api_v2.test:4435/api',
+  SERVER: 'https://api_tasas.test:4435/api',
   //MODULE
-  API_DOCUMENT: 'https://api_v2.test:4435/api/documents',
-  API_DASHBOARD_DOCUMENT: 'https://api_v2.test:4435/api/search/person',
-  API_DASHBOARD_DOCUMENT_STUDENT: 'https://api_v2.test:4435/api/search/client',
-  API_WORKSHORP: 'https://api_v2.test:4435/api/workshops',
+  API_DOCUMENT: 'https://api_tasas.test:4435/api/documents',
+  API_DASHBOARD_DOCUMENT: 'https://api_tasas.test:4435/api/search/person',
+  API_DASHBOARD_DOCUMENT_STUDENT: 'https://api_tasas.test:4435/api/search/client',
+  API_WORKSHORP: 'https://api_tasas.test:4435/api/workshops',
 
   //TRIBUTOS MUNICIPALES
-  API_USER:'https://api_v2.test:4435/v1/verify/user',
-  API_MENU:'https://api_v2.test:4435/v1/menu',
-  API_SERVICES:'https://api_v2.test:4435/v1/menu/services',
-  API_ARBITRAGE:'https://api_v2.test:4435/v1/arbitrage/user',
+  API_USER:'https://api_tasas.test:4435/v1/verify/user',
+  API_MENU:'https://api_tasas.test:4435/v1/menu',
+  API_SERVICES:'https://api_tasas.test:4435/v1/menu/services',
+  API_ARBITRAGE:'https://api_tasas.test:4435/v1/arbitrage/user',
   
 
   //HELPDESK
@@ -34,6 +34,6 @@ export const environment = {
   // USER:'g.tige2020@gmail.com',
   // PWD:'$n_0rw0M',
   // URLSESSION: 'https://apiprod.vnforapps.com/api.security/v1/security',
-  // URLTOKEN:'https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/',
+  // URLTOKEN:'https://apiprod.vnforapps.com/api.ecommerce/tasas/ecommerce/token/session/',
   // URLAUTORIZATE:'https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/'
 };
