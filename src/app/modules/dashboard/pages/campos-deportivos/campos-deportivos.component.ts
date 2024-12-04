@@ -180,8 +180,8 @@ export class CamposDeportivosComponent implements OnInit {
        const proxday = ('0' + (today.getDate() + 14)).slice(-2);
       const day=(Number(proxday)>=maxDay)?Number(proxday)-maxDay:proxday;
       const new_month=(Number(proxday)>=maxDay)?Number(month)+1:month;
-      // this.nextDate = new Date(`${year},${new_month},${day}`); // 31 de octubre de 2024
-      this.nextDate = `${year}-${new_month}-${day}`;
+      this.nextDate = new Date(`${year},${new_month},${day}`); // 31 de octubre de 2024
+      // this.nextDate = `${year}-${new_month}-${day}`;
     },
     error=>{console.log(error);
     })

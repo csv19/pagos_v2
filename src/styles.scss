@@ -10,35 +10,36 @@
     --foreground: 222 47% 11%;
     --card: 210 40% 96%;
     --card-foreground: 240 0% 0%;
-    --primary: 347 77% 50%;
+    --primary: 0 0% 20%;
+    --primary-text: 221.2 83.2% 53.3%;
     --primary-foreground: 0 0% 100%;
     --muted: 213 27% 84%;
     --muted-foreground: 215 16% 47%;
     --destructive: 350 100% 40%;
     --destructive-foreground: 0 0% 98%;
     --border: 214 32% 91%;
-    --mat-stepper-header-selected-state-label-text-color: hsl(var(--primary));
+    --mat-stepper-header-selected-state-label-text-color: hsl(var(--primary-text));
     --mat-stepper-header-label-text-color:hsl(var(--muted-foreground));
-    --mat-stepper-header-selected-state-icon-background-color:hsl(var(--primary));
+    --mat-stepper-header-selected-state-icon-background-color:hsl(var(--primary-text));
     --mat-stepper-header-icon-background-color:gray !important;
     --mdc-outlined-text-field-label-text-color: hsl(var(--muted-foreground));
-    --mdc-outlined-text-field-outline-color:hsl(var(--primary));
-    --mdc-outlined-text-field-focus-label-text-color:hsl(var(--primary));
-    --mdc-outlined-text-field-disabled-outline-color:hsl(var(--primary));
-    --mdc-outlined-text-field-disabled-input-text-color:hsl(var(--muted-foreground));
-    --mdc-outlined-text-field-disabled-label-text-color:hsl(var(--muted-foreground));
-    --mat-select-enabled-trigger-text-color:hsl(var(--primary));
-    --mdc-outlined-text-field-focus-outline-color:hsl(var(--primary));
-    --mdc-outlined-text-field-hover-outline-color:hsl(var(--primary));
-    --mat-select-focused-arrow-color:hsl(var(--primary));
-    --mdc-outlined-text-field-input-text-color:hsl(var(--primary));
-    --mdc-outlined-text-field-caret-color:hsl(var(--primary));
-    --mdc-icon-button-icon-color:hsl(var(--primary));
-    --mat-stepper-header-edit-state-icon-background-color:hsl(var(--primary));
-    --mdc-outlined-text-field-hover-label-text-color:hsl(var(--primary));
-    --mat-full-pseudo-checkbox-selected-icon-color:hsl(var(--primary));
-    --mat-option-selected-state-label-text-color:hsl(var(--primary));
-    --mat-minimal-pseudo-checkbox-selected-checkmark-color:hsl(var(--primary)) !important;
+    --mdc-outlined-text-field-outline-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-focus-label-text-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-disabled-outline-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-disabled-input-text-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-disabled-label-text-color:hsl(var(--primary-text));
+    --mat-select-enabled-trigger-text-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-focus-outline-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-hover-outline-color:hsl(var(--primary-text));
+    --mat-select-focused-arrow-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-input-text-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-caret-color:hsl(var(--primary-text));
+    --mdc-icon-button-icon-color:hsl(var(--primary-text));
+    --mat-stepper-header-edit-state-icon-background-color:hsl(var(--primary-text));
+    --mdc-outlined-text-field-hover-label-text-color:hsl(var(--primary-text));
+    --mat-full-pseudo-checkbox-selected-icon-color:hsl(var(--primary-text));
+    --mat-option-selected-state-label-text-color:hsl(var(--primary-text));
+    --mat-minimal-pseudo-checkbox-selected-checkmark-color:hsl(var(--primary-text)) !important;
 
   }
   .dark {
@@ -46,8 +47,8 @@
     --foreground: 0 0% 95%;
     --card: 0 0% 7%;
     --card-foreground: 0 0% 14.9%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 95%;
+    --primary-foreground: 26 83.3% 14.1%;
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
     --destructive: 350 100% 40%;
@@ -91,7 +92,7 @@
     --card: 222 47% 7%;
     --card-foreground: 210 40% 98%;
     --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary-foreground: 0 0% 95%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
     --destructive: 350 100% 40%;
@@ -187,6 +188,11 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+#chart {
+  max-width: 650px;
+  margin: 35px auto;
+}
+
 // Style to fix the weird border with angular material
 .active {
   background-color: rgb(96 165 250 / var(--tw-bg-opacity)) !important;
@@ -215,11 +221,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   display: flex;
   align-items: center;
 }
+.text-primary{
+  color: hsl(var(--primary-text)) !important;
+
+}
 .mat-stepper-vertical, .mat-stepper-horizontal{
   background: transparent !important;
 }
 .mat-mdc-raised-button:not(:disabled) {
-  background-color: hsl(var(--primary)) !important;
+  background-color: hsl(var(--primary-text)) !important;
 }
 .mdc-text-field__input{
   padding: 0 !important;  
@@ -274,4 +284,7 @@ table.dataTable td {
 }
 .filter-column-datatable:focus{
   box-shadow: none !important;
+}
+.swal2-confirm{
+  background-color: hsl(var(--primary)) !important;
 }
