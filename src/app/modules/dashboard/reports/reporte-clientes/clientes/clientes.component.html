@@ -1,30 +1,97 @@
-<div>
-    <div class="relative my-4">
-        <div [ngClass]="{'opacity-0 transition-opacity duration-500 ease-in-out': !preloader}" class="absolute w-full h-[500px] flex justify-center items-center"><mat-spinner class="mx-auto" [diameter]="40"></mat-spinner></div>
-
-    <div [ngClass]="{'hidden': preloader}" class="relative container bg-transparent py-4 my-4 mx-auto h-full">
-    <h3>Lista de Clientes</h3>
-    <table class="py-6" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
-        <thead>
-        <tr class="text-primary">
-            <th>Nro Documento</th>
-            <th>Nombres y Apellidos</th>
-            <th>Correo</th>
-            <th>Celular</th>
-        </tr>
-        </thead>
-        <tbody>
-        @for(item of clients; track item){
-            <tr class="text-muted-foreground uppercase">
-                <td>{{item.nro_document}}</td>
-                <td>{{item.name}} {{item.lastName}}</td>
-                <td>{{item.email}}</td>
-                <td>{{item.phone}}</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-    </div>
-    </div>
+<div class="px-4">
     
+    <p-table
+        #dt2
+        [value]="clients"
+        dataKey="id"
+        [rows]="10"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [loading]="loading"
+        [paginator]="true"
+        [globalFilterFields]="['name', 'lastName', 'email', 'phone']"
+        [tableStyle]="{ 'min-width': '75rem' }"
+    >
+    <ng-template pTemplate="caption">
+        <div class="flex">
+            <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <!-- REVISAR FUNCION -->
+                <input
+                    pInputText
+                    type="text"
+                    (input)="onInputChange($event)"   
+                placeholder="Search keyword"
+                />
+            </p-iconfield>
+        </div>
+    </ng-template>
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="nro_document" style="width:15%">Nro Documento <p-sortIcon field="nro_document" /></th>
+                <th pSortableColumn="name" style="width:25%">Nombre <p-sortIcon field="name" /></th>
+                <th pSortableColumn="lastName" style="width:25%">Apellidos <p-sortIcon field="lastName" /></th>
+                <th pSortableColumn="email" style="width:20%">Correo <p-sortIcon field="email" /></th>
+                <th pSortableColumn="phone" style="width:15%">Celular<p-sortIcon field="phone" /></th>
+            </tr>
+            <tr>
+                <th class="">
+                    <p-columnFilter
+                        class="p-0 border-none"
+                        type="text"
+                        field="nro_document"
+                        placeholder="N° Documento"
+                        ariaLabel="N° Documento"
+                    ></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter
+                        class="p-0 border-none"
+                        type="text"
+                        field="name"
+                        placeholder="Nombres"
+                        ariaLabel="Filtro Nombres"
+                    ></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter
+                        class="p-0 border-none"
+                        type="text"
+                        field="lastName"
+                        placeholder="Apellidos"
+                        ariaLabel="Filtro Apellidos"
+                    ></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter
+                        class="p-0 border-none"
+                        type="text"
+                        field="email"
+                        placeholder="Email"
+                        ariaLabel="Filtro Correo"
+                    ></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter
+                        class="p-0 border-none"
+                        type="text"
+                        field="phone"
+                        placeholder="Search by phone"
+                        ariaLabel="Filtro Celular"
+                    ></p-columnFilter>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-customer>
+            <tr>
+                <td>{{ customer.nro_document }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.lastName  }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.phone }}</td>
+            </tr>
+        </ng-template>
+        
+    </p-table>
 </div>

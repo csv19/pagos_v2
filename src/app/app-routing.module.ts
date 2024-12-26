@@ -30,7 +30,8 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes),RouterModule.forRoot(routes, { useHash: true }), HttpClientModule],
   exports: [RouterModule],
   providers: [
-    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}}
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}
+    }
   ]
 })
 export class AppRoutingModule {}
