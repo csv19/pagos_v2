@@ -1,4 +1,4 @@
-<div class="px-4">
+<div class="container py-4">
     
     <p-table
         #dt2
@@ -17,12 +17,11 @@
                 <p-inputicon>
                     <i class="pi pi-search"></i>
                 </p-inputicon>
-                <!-- REVISAR FUNCION -->
                 <input
                     pInputText
                     type="text"
-                    (input)="onInputChange($event)"   
-                placeholder="Search keyword"
+                    (input)="search($event,dt2)"   
+                placeholder="Buscar"
                 />
             </p-iconfield>
         </div>
@@ -41,7 +40,7 @@
                         class="p-0 border-none"
                         type="text"
                         field="nro_document"
-                        placeholder="N° Documento"
+                        placeholder="Documento"
                         ariaLabel="N° Documento"
                     ></p-columnFilter>
                 </th>
@@ -77,7 +76,7 @@
                         class="p-0 border-none"
                         type="text"
                         field="phone"
-                        placeholder="Search by phone"
+                        placeholder="Celular"
                         ariaLabel="Filtro Celular"
                     ></p-columnFilter>
                 </th>

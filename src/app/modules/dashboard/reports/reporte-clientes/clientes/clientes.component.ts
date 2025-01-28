@@ -6,7 +6,8 @@ import { Table, TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
-
+import { InputIcon } from 'primeng/inputicon';
+import { IconField } from 'primeng/iconfield';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
@@ -22,7 +23,7 @@ interface Column {
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [TableModule, TagModule, IconFieldModule, InputTextModule, InputIconModule, MultiSelectModule, SelectModule, HttpClientModule, CommonModule],
+  imports: [TableModule, TagModule, IconFieldModule, InputTextModule,InputIcon,IconField, InputIconModule, MultiSelectModule, SelectModule, HttpClientModule, CommonModule],
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.scss'
 })
@@ -32,7 +33,6 @@ export class ReportesClientesComponent implements OnInit  {
   cols!: Column[];
   first = 0;rows = 10;
   statuses!: any[];
-  dt2: any; // Asegúrate de inicializar esto correctamente
 
   searchValue: string | undefined;
 
@@ -58,16 +58,12 @@ export class ReportesClientesComponent implements OnInit  {
     // ];
     
    }
-   handleInput(event: Event): void {
+   search(event: Event, dt2:any): void {
     const inputElement = event.target as HTMLInputElement;  // Realiza el casting aquí
-    this.dt2.filterGlobal(inputElement.value, 'contains');
-  }
-   onInputChange(event: Event): void {
-    const inputElement = event.target as HTMLInputElement;  // Cast a HTMLInputElement
-    console.log(inputElement.value);  // Ahora puedes acceder a `value` sin errores
+    dt2.filterGlobal(inputElement.value, 'contains');
   }
   
-   clear(table: Table) {
+  clear(table: Table) {
     table.clear();
     this.searchValue = ''
 

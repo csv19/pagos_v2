@@ -24,7 +24,10 @@ bootstrapApplication(AppComponent, {
   providers: [importProvidersFrom(BrowserModule, AppRoutingModule), provideAnimations(), provideAnimationsAsync(), provideToastr(),
     provideHttpClient(), providePrimeNG({ 
       theme: {
-          preset: Aura
+          preset: Aura,
+          options: {
+            darkModeSelector: '.my-app-dark'
+        }
       }
   })
   ]
